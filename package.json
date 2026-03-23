@@ -1,0 +1,52 @@
+{
+  "name": "labyrinthos-ui",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "dev": "next dev -p 3088",
+    "dev:default": "next dev",
+    "build": "next build",
+    "build:us-centroids": "node scripts/build-us-county-centroids.mjs",
+    "build:us-geonames": "node scripts/build-us-geonames-by-fips.mjs scripts/source/cities1000.txt",
+    "start": "next start -p 3088",
+    "lint": "eslint"
+  },
+  "dependencies": {
+    "@react-three/drei": "^10.7.7",
+    "@react-three/fiber": "^9.5.0",
+    "astronomy-engine": "^2.1.19",
+    "china-location": "^2.1.0",
+    "country-state-city": "^3.2.1",
+    "date-fns": "^4.1.0",
+    "date-fns-tz": "^3.2.0",
+    "fips-county-codes": "^2.1.0",
+    "framer-motion": "^12.38.0",
+    "geo-tz": "^8.1.6",
+    "howler": "^2.2.4",
+    "iso3166-2-db": "^2.3.11",
+    "lucide-react": "^0.577.0",
+    "next": "16.2.0",
+    "pinyin-pro": "^3.28.0",
+    "react": "19.2.4",
+    "react-dom": "19.2.4",
+    "three": "^0.183.2",
+    "utif": "^3.1.0"
+  },
+  "devDependencies": {
+    "@tailwindcss/postcss": "^4",
+    "@types/d3-geo": "^3.1.0",
+    "@types/howler": "^2.2.12",
+    "@types/node": "^20",
+    "@types/react": "^19",
+    "@types/react-dom": "^19",
+    "@types/topojson-client": "^3.1.5",
+    "@types/utif": "^3.0.6",
+    "d3-geo": "^3.1.1",
+    "eslint": "^9",
+    "eslint-config-next": "16.2.0",
+    "tailwindcss": "^4",
+    "topojson-client": "^3.1.0",
+    "typescript": "^5",
+    "us-atlas": "^3.0.1"
+  }
+}

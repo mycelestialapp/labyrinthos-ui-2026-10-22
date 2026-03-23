@@ -1,0 +1,11 @@
+---
+description: 仅 labyrinthos-ui 为正式工程；固定端口 3088
+alwaysApply: true
+---
+
+# 工程边界
+
+- **唯一前端工程**：`D:\labyrinthos-ui`（八种月相、CelestialDashboard、首页三屏）。
+- **不要**在回答或脚本里假设还存在 `D:\liuyao` 或其它重复副本；用户已删除副本以减少跑错项目。
+- **开发/预览**：`npm run dev` → **http://localhost:3088**（端口写死在 `package.json`）。
+- 若用户问「开哪个网址」，只指向 **3088** 与本仓库路径，除非用户明确要求改端口。

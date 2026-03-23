@@ -1,0 +1,2 @@
+us-geonames-by-fips.json 衍生自 GeoNames (https://www.geonames.org/) 的 cities1000 数据转储，
+在应用内按美国县级 FIPS 分组。使用须遵守 GeoNames 许可：https://creativecommons.org/licenses/by/4.0/

@@ -1,0 +1,43 @@
+@import "tailwindcss";
+
+:root {
+  --background: #ffffff;
+  --foreground: #171717;
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --font-sans: var(--font-geist-sans);
+  --font-mono: var(--font-geist-mono);
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --background: #0a0a0a;
+    --foreground: #ededed;
+  }
+}
+
+body {
+  background: var(--background);
+  color: var(--foreground);
+  font-family: Arial, Helvetica, sans-serif;
+}
+
+/**
+ * Windows / Chromium 上原生 <select> 弹层常为浅色底；若继承页面上为深色准备的浅色字，
+ * 会出现「白底 + 浅灰字」不可读。此处仅作用于身份卡表单，避免全站误伤。
+ */
+.identity-gold-native-selects select option {
+  color: #27272a;
+  background-color: #fafafa;
+}
+
+/* 出生日期分段下拉：右侧小三角提示可点开（与深色底协调） */
+.identity-gold-native-selects select.birth-cascade-select {
+  padding-right: 1.65rem;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='%23c9a962' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 0.45rem center;
+}
