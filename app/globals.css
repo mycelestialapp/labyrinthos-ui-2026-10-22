@@ -1,8 +1,8 @@
 @import "tailwindcss";
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --background: #050505;
+  --foreground: #ededed;
 }
 
 @theme inline {
@@ -10,13 +10,6 @@
   --color-foreground: var(--foreground);
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
 }
 
 body {
@@ -35,9 +28,29 @@ body {
 }
 
 /* 出生日期分段下拉：右侧小三角提示可点开（与深色底协调） */
+/* /astro 原生 select 下拉选项可读性 */
+.astro-workspace select option {
+  color: #27272a;
+  background-color: #fafafa;
+}
+
 .identity-gold-native-selects select.birth-cascade-select {
   padding-right: 1.65rem;
   background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='%23c9a962' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");
   background-repeat: no-repeat;
   background-position: right 0.45rem center;
+}
+
+/* 首页罗盘消散后裁决层淡入 */
+@keyframes axis-verdict-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+.axis-verdict-enter {
+  animation: axis-verdict-in 0.35s ease-out both;
 }

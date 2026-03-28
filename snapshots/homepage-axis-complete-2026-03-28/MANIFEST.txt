@@ -1,0 +1,15 @@
+﻿Homepage snapshot (axis + compass + 3-screen home)
+Date: 2026-03-28
+Restore: copy paths back to repo root preserving structure.
+
+app/page.tsx
+app/globals.css (includes .axis-verdict-enter)
+components/StarBackdrop.tsx
+components/home/SpiritualMirror.tsx
+components/home/AxisHomeCompass.tsx
+components/home/AncientClockHero.tsx
+components/home/CelestialDashboard.tsx
+components/home/CosmicEnvelope.tsx
+lib/axis-copy.ts
+lib/home-screen.ts
+public/index.html

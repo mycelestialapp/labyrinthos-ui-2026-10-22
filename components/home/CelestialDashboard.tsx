@@ -43,7 +43,7 @@ function ObservationLetter({ phaseInfo }: { phaseInfo: LunarPhaseInfo | null }) 
       >
         <span className="text-[#D4AF37]">{phaseInfo ? `0${phaseInfo.phaseIndex}` : "—"}</span>
         <span className="text-zinc-500"> ｜ </span>
-        <span>{phaseInfo ? `${phaseInfo.phaseEng} · ${phaseInfo.phaseCn}` : "—"}</span>
+        <span>{phaseInfo ? phaseInfo.phaseCn : "—"}</span>
       </div>
 
       <div className="mt-[clamp(1.05rem,2vw,1.35rem)] space-y-[clamp(1.05rem,2vw,1.45rem)]">
