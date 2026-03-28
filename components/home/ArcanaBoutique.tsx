@@ -64,12 +64,12 @@ export default function ArcanaBoutique() {
     >
       <div className="relative z-10 mx-auto w-full max-w-6xl px-6 py-16 md:py-18">
         <div className="text-center">
-          <div className="text-[11px] tracking-[0.34em] text-zinc-300">ARCANA BOUTIQUE</div>
+          <div className="text-[11px] tracking-[0.34em] text-zinc-300">玄典精品</div>
           <div className={`${playfair.className} mt-6 text-4xl md:text-5xl tracking-[0.22em]`}>
             能量精品预览
           </div>
           <div className="mt-5 text-[12px] tracking-[0.38em] text-zinc-400">
-            TWO LUMINOUS CRYSTALS • EDITED LIKE A LUXURY SPREAD
+            双晶陈列 • 奢感视觉编排
           </div>
         </div>
 

@@ -1,8 +1,17 @@
 "use client";
 
-import React, { useEffect, useMemo, useRef, useState } from "react";
+import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { JetBrains_Mono, Playfair_Display } from "next/font/google";
 import { motion } from "framer-motion";
+import type { NatalBig3 } from "@/lib/natal-chart";
+import { ZODIAC_CN } from "@/lib/natal-chart";
+import {
+  USER_PROFILE_CHANGED_EVENT,
+  USER_PROFILE_STORAGE_KEY,
+  parseStoredUserProfileJson,
+} from "@/lib/stored-user-profile";
+import { birthMomentToUtc } from "@/lib/natal-chart";
+import { computeNatalBig3Swiss } from "@/lib/astro-chart-wheel-swiss";
 
 const mono = JetBrains_Mono({
   subsets: ["latin"],
@@ -20,9 +29,73 @@ function clamp(n: number, a: number, b: number) {
   return Math.max(a, Math.min(b, n));
 }
 
+function zodiacSymbol(z: string): string {
+  const map: Record<string, string> = {
+    ARIES: "♈",
+    TAURUS: "♉",
+    GEMINI: "♊",
+    CANCER: "♋",
+    LEO: "♌",
+    VIRGO: "♍",
+    LIBRA: "♎",
+    SCORPIO: "♏",
+    SAGITTARIUS: "♐",
+    CAPRICORN: "♑",
+    AQUARIUS: "♒",
+    PISCES: "♓",
+  };
+  return map[z] ?? "✶";
+}
+
+function formatBig3Line(b: NatalBig3): string {
+  const cn = (k: keyof typeof ZODIAC_CN) => ZODIAC_CN[k];
+  return `☉${zodiacSymbol(b.sun)} ${cn(b.sun)} · ☽${zodiacSymbol(b.moon)} ${cn(b.moon)} · ↑${zodiacSymbol(b.rising)} ${cn(b.rising)}`;
+}
+
+const DEFAULT_NEBULA_BIG3: NatalBig3 = {
+  sun: "LIBRA",
+  moon: "PISCES",
+  rising: "SAGITTARIUS",
+};
+
 export default function EnergyHeader() {
   const [hz, setHz] = useState(432.17);
   const [tick, setTick] = useState(0);
+  const [natalBig3, setNatalBig3] = useState<NatalBig3 | null>(null);
+
+  const refreshNatalBig3 = useCallback(async () => {
+    try {
+      const raw = window.localStorage.getItem(USER_PROFILE_STORAGE_KEY);
+      const profile = parseStoredUserProfileJson(raw);
+      if (!profile) {
+        setNatalBig3(null);
+        return;
+      }
+      const utc = birthMomentToUtc(profile.birthdate, profile.birthTime, profile.timeZone);
+      if (!utc) {
+        setNatalBig3(null);
+        return;
+      }
+      const next = await computeNatalBig3Swiss(utc, profile.latitude, profile.longitude);
+      setNatalBig3(next);
+    } catch {
+      setNatalBig3(null);
+    }
+  }, []);
+
+  useEffect(() => {
+    void Promise.resolve().then(() => void refreshNatalBig3());
+    const onProfileChanged = () => void refreshNatalBig3();
+    const onStorage = (e: StorageEvent) => {
+      if (e.key === USER_PROFILE_STORAGE_KEY || e.key === null) void refreshNatalBig3();
+    };
+    window.addEventListener(USER_PROFILE_CHANGED_EVENT, onProfileChanged);
+    window.addEventListener("storage", onStorage);
+    return () => {
+      window.removeEventListener(USER_PROFILE_CHANGED_EVENT, onProfileChanged);
+      window.removeEventListener("storage", onStorage);
+    };
+  }, [refreshNatalBig3]);
 
   const base = useMemo(() => 432.17, []);
   const suppressUntilRef = useRef(0);
@@ -97,6 +170,22 @@ export default function EnergyHeader() {
         style={{ letterSpacing: "0.22em" }}
       >
         仪表示数：实时星象同步
+      </div>
+
+      <div
+        className={`${mono.className} mt-2.5 max-w-[min(100%,26rem)] px-3 text-center text-[10px] leading-relaxed tracking-[0.12em] text-[#d4c4a8]/88 md:text-[11px] md:tracking-[0.14em]`}
+      >
+        {natalBig3 ? (
+          <>
+            <span className="block text-zinc-500">本命三主星（热带黄道）</span>
+            <span className="mt-1 block text-[#f0e6d4]">{formatBig3Line(natalBig3)}</span>
+          </>
+        ) : (
+          <>
+            <span className="block text-zinc-500">星云示例三主星（热带黄道）</span>
+            <span className="mt-1 block text-[#f0e6d4]">{formatBig3Line(DEFAULT_NEBULA_BIG3)}</span>
+          </>
+        )}
       </div>
     </div>
   );

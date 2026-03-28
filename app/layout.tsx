@@ -14,7 +14,7 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Labyrinthos · 星云",
+  title: "迷宫坛 · 星云",
   description: "月相、星象与灵知界面",
 };
 
@@ -29,7 +29,7 @@ export default function RootLayout({
       className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
     >
       <body className="min-h-full flex flex-col">
-        <div className="flex-1 pb-24">{children}</div>
+        <div className="flex-1">{children}</div>
         <BottomNav />
       </body>
     </html>

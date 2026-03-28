@@ -87,7 +87,7 @@ export default function InstantOracle() {
     >
       <div className="relative z-10 mx-auto w-full max-w-6xl px-6 py-16 md:py-18">
         <div className="text-center">
-          <div className="text-[11px] tracking-[0.34em] text-zinc-300">INSTANT ORACLE</div>
+          <div className="text-[11px] tracking-[0.34em] text-zinc-300">即时神谕</div>
           <div className={`${playfair.className} mt-6 text-4xl md:text-5xl tracking-[0.22em]`}>
             触碰它，领取今日的共时性信号。
           </div>

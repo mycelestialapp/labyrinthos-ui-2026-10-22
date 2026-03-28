@@ -47,13 +47,13 @@ export type NatalBig3 = {
 
 /** 与界面「计算口径」说明一致，便于产品、法务与高级用户对齐预期 */
 export const NATAL_COMPUTATION_DISCLOSURE_ZH: string[] = [
-  "黄道体系：热带黄道（回归黄道）；星座界为黄道经度每 30° 一档，边界落在精确度极限附近时请以专业排盘软件交叉验证。",
-  "太阳：地心视位置，真黄道历元与观测日期一致（与 astronomy-engine SunPosition / ECT 一致）。",
-  "月亮：地心黄道经度（EclipticLongitude），与太阳同一黄道定义；未改用月面视差下的地平位置（与多数「月亮星座」流行算法一致）。",
-  "上升：本地地平东点（方位角自北顺时针 90°、视高度角 0°，含标准大气折射）；经 HOR→EQJ→ECT 换至真黄道经度，与太阳、月亮对齐同一黄道体系。",
+  "黄道体系：热带黄道（回归黄道）；星座界为黄道经度每 30° 一档。",
+  "引擎：Swiss Ephemeris（通过 sweph-wasm 在本地加载 .se1 星历文件计算）。",
+  "太阳/月亮/行星：以 swe_calc_ut（UT 输入）计算的地心黄经（默认瑞士星历口径；不承诺与任意软件的所有设置完全同一）。",
+  "上升/天顶：通过 swe_houses 计算 ASC/MC（与所选地理经纬度、UT 时刻相关）。",
   "出生地坐标：级联、县域近似、库内点或地名搜索等路径均可落到 WGS84；解锁后本地存档含「定盘方式」字段（数据源层级说明），便于与地图或第二套排盘软件交叉验证，亦可在高级区手改经纬度。",
   "时区：IANA + date-fns-tz，尊重历史夏令时与政区变更规则；极端历史日期若与纸质记录冲突，请核对当时当地官方时间。",
-  "引擎边界：非 Swiss Ephemeris；与任意商业软件「逐角分一致」不作保证。若需司法鉴定级对齐，应注明所依据的星历与宫位制并固定版本。",
+  "一致性：若你在另一套排盘软件里使用相同的黄道体系（热带）、同一时刻（UTC）、同一经纬度与同一宫位制，结果应高度一致；若不一致，优先检查时区/夏令时、出生地经纬度精度、以及软件的默认 flag/视位置选项。",
 ];
 
 export function isValidGregorianDate(year: number, month: number, day: number): boolean {
@@ -157,8 +157,9 @@ const ELEMENT_WORD: Record<Element, string> = {
 };
 
 /**
- * 频率定性文案（可后续替换为完整文案库 / i18n）。
- * 当前：事实句 + 按上升/月亮元素各一句气质描述。
+ * 极简一句版（事实 + 上升/月亮元素各一句）。首页金卡正文在 `IdentityGoldCard` 使用
+ * `buildNatalReadingGoldCardMarkdown`（`natal-reading-full-zh`）+ `NatalReadingMarkdown`。
+ * 本函数保留供测试或其它短文案场景。
  */
 export function natalQualitativeCopy(big3: NatalBig3): string {
   const sunW = ELEMENT_WORD[elementOf(big3.sun)];

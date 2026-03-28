@@ -139,7 +139,7 @@ export default function ArcanaPage() {
           <div className="flex flex-col items-center text-center">
             <div className="mx-auto inline-flex items-center gap-2 rounded-full border border-[#bf953f]/25 bg-white/5 backdrop-blur-md px-4 py-2">
               <ShoppingBag className="h-4 w-4 text-[#fcf6ba]/90" />
-              <span className="text-[11px] tracking-[0.22em] text-zinc-300">ARCANA ENERGY STORE</span>
+              <span className="text-[11px] tracking-[0.22em] text-zinc-300">玄典能量商店</span>
             </div>
 
             <h1

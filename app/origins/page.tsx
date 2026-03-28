@@ -1,10 +1,11 @@
 "use client";
 
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { motion } from "framer-motion";
 import { Heart, Sparkles, Users } from "lucide-react";
 import { Playfair_Display } from "next/font/google";
 import StarBackdrop from "../../components/StarBackdrop";
+import { loadOriginsRelationshipStore, type OriginsRelationshipRecord } from "@/lib/origins-relationships-storage";
 
 const playfair = Playfair_Display({
   subsets: ["latin"],
@@ -184,6 +185,12 @@ function PostCard({ post, idx }: { post: Post; idx: number }) {
 }
 
 export default function OriginsPage() {
+  const [relationshipRecords, setRelationshipRecords] = useState<OriginsRelationshipRecord[]>([]);
+
+  useEffect(() => {
+    setRelationshipRecords(loadOriginsRelationshipStore().records);
+  }, []);
+
   return (
     <StarBackdrop>
       <main className="relative min-h-screen w-full overflow-x-hidden text-zinc-100">
@@ -193,6 +200,32 @@ export default function OriginsPage() {
           </div>
 
           <div className="mt-10 grid grid-cols-1 gap-5">
+            {relationshipRecords.length > 0 ? (
+              <motion.section
+                initial={{ opacity: 0, y: 16 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.6, ease: "easeOut" }}
+                className="rounded-3xl border border-[#bf953f]/15 bg-white/5 backdrop-blur-md p-5 md:p-6"
+              >
+                <div className="inline-flex items-center gap-2 rounded-full border border-[#bf953f]/25 bg-white/5 backdrop-blur-md px-4 py-2">
+                  <Sparkles className="h-4 w-4 text-[#fcf6ba]/90" />
+                  <span className="text-[11px] tracking-[0.22em] text-zinc-300">缘起关系存档</span>
+                </div>
+                <ul className="mt-4 space-y-3">
+                  {relationshipRecords.slice(0, 8).map((r) => (
+                    <li key={r.id} className="rounded-2xl border border-[#bf953f]/15 bg-black/20 p-3 text-sm text-zinc-300">
+                      <div className="text-[12px] tracking-[0.12em] text-[#fcf6ba]/85">{r.relationName}</div>
+                      <div className="mt-1 text-[12px] text-zinc-400">
+                        {r.selfName || r.selfProfile.displayName || "你"} ↔ {r.partnerName || r.partnerProfile.displayName || "对象B"}
+                      </div>
+                      <div className="mt-1 text-[11px] text-zinc-500">
+                        {r.selfProfile.birthdate} {r.selfProfile.birthTime} · {r.partnerProfile.birthdate} {r.partnerProfile.birthTime}
+                      </div>
+                    </li>
+                  ))}
+                </ul>
+              </motion.section>
+            ) : null}
             <div className="inline-flex items-center gap-2 rounded-full border border-[#bf953f]/25 bg-white/5 backdrop-blur-md px-4 py-2 mx-auto">
               <Sparkles className="h-4 w-4 text-[#fcf6ba]/90" />
               <span className="text-[11px] tracking-[0.22em] text-zinc-300">社交极光流</span>
