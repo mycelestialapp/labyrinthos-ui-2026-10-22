@@ -4,12 +4,15 @@
   "private": true,
   "scripts": {
     "dev": "next dev -p 3088",
+    "dev:webpack": "next dev -p 3088 --webpack",
     "dev:default": "next dev",
     "build": "next build",
+    "verify:natal-copy": "node scripts/verify-natal-copy-single-source.mjs",
     "build:us-centroids": "node scripts/build-us-county-centroids.mjs",
     "build:us-geonames": "node scripts/build-us-geonames-by-fips.mjs scripts/source/cities1000.txt",
     "start": "next start -p 3088",
-    "lint": "eslint"
+    "lint": "eslint",
+    "ephe:fetch": "node scripts/fetch-swiss-ephe.mjs"
   },
   "dependencies": {
     "@react-three/drei": "^10.7.7",
@@ -22,7 +25,6 @@
     "fips-county-codes": "^2.1.0",
     "framer-motion": "^12.38.0",
     "geo-tz": "^8.1.6",
-    "howler": "^2.2.4",
     "iso3166-2-db": "^2.3.11",
     "lucide-react": "^0.577.0",
     "next": "16.2.0",
@@ -36,7 +38,6 @@
   "devDependencies": {
     "@tailwindcss/postcss": "^4",
     "@types/d3-geo": "^3.1.0",
-    "@types/howler": "^2.2.12",
     "@types/node": "^20",
     "@types/react": "^19",
     "@types/react-dom": "^19",

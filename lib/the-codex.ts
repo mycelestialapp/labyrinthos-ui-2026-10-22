@@ -5,6 +5,14 @@ export type CodexEntry = {
   body: string;
 };
 
+/** 本命三主星 + 关系镜像：宇宙观测报告全文语料（与星盘简读同源） */
+export {
+  NATAL_INSTRUMENT_KNOWLEDGE_SECTIONS,
+  type NatalInstrumentKnowledgeSection,
+  type NatalInstrumentKnowledgeArticle,
+  type NatalInstrumentLayerId,
+} from "./natal-instrument-knowledge-zh";
+
 export const THE_CODEX_ENTRIES: readonly CodexEntry[] = [
   {
     key: "anchor",
