@@ -43,4 +43,17 @@ next-env.d.ts
 # GeoNames source dumps (regenerate with npm run build:us-geonames)
 /scripts/source/*.txt
 
+# Swiss Ephemeris binaries（本地可运行 npm run ephe:fetch 生成；未生成时客户端会回退镜像）
+/public/swiss-ephe/*.se1
+
+# tarot:money:freeze 临时 bundle
+/scripts/.freeze-money-registers.cjs
+# tarot:study:freeze 临时 bundle
+/scripts/.freeze-study-registers.cjs
+/scripts/.emit-life-six-layers.cjs
+/scripts/.freeze-life-six-registers.cjs
+/scripts/.emit-life-six-master-handbook.cjs
+/scripts/.lint-life-six-health-rubric.cjs
+/scripts/.lint-life-six-b-rubric.cjs
+
 .vercel

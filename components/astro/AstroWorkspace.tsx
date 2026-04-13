@@ -1,15 +1,15 @@
 "use client";
 
-import React, { useCallback, useEffect, useLayoutEffect, useMemo, useState } from "react";
+import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import Link from "next/link";
 import { motion } from "framer-motion";
-import { JetBrains_Mono, Noto_Serif_SC } from "next/font/google";
 import { ChevronDown, ChevronLeft } from "lucide-react";
 import AstroChartStage from "./AstroChartStage";
 import ChartWheelPlaceholder from "./ChartWheelPlaceholder";
 import AstroChartReadout from "./AstroChartReadout";
+import SwissEphemerisErrorCallout from "./SwissEphemerisErrorCallout";
 import HomeIdentityGoldBlock from "@/components/home/HomeIdentityGoldBlock";
-import { InkRevealBlock, MatteTerm } from "./InkReveal";
+import { MatteTerm } from "./InkReveal";
 import {
   createEmptyDossier,
   getActiveDossier,
@@ -36,25 +36,56 @@ import {
   buildNatalReadingFullMarkdown,
 } from "@/lib/natal-reading-full-zh";
 import {
+  type AspectPresetId,
   type ChartKindId,
+  type OrbPresetId,
   type SecondaryYearBasisId,
   type TertiaryMonthBasisId,
+  chartKindHasWheelTableObservation,
   computeWorkspaceChartWheel,
 } from "@/lib/astro-chart-kinds";
 import {
+  CHART_DATA_CARD_TITLE_ZH,
+  OBSERVATION_PANEL_TITLES_ZH,
+  WORKSPACE_DECODE_SURFACE_ZH,
+  workspaceCoreZonesForChartKind,
+} from "@/lib/astro-eight-chart-view-copy-zh";
+import { workspaceDecodeSurfaceVocal } from "@/lib/astro-workspace-master-voice-layers-zh";
+import { resolveChartAspectParams } from "@/lib/astro-aspect-params";
+import {
   computeAstroChartWheelDataSwiss,
-  computeNatalBig3Swiss,
+  computeNatalBig3WithHousesSwiss,
   computePlanetsLongitudesSwiss,
   refineSolarReturnInstantSwiss,
   refineLunarReturnInstantSwiss,
+  resetSwissEphemerisClientForRetry,
 } from "@/lib/astro-chart-wheel-swiss";
 import {
-  computeTransitNatalMajorAspects,
+  computeTransitNatalAspects,
   formatLongitudeInSignZh,
   houseNumberForLongitude,
+  houseSystemLabelZh,
+  type AstroChartWheelData,
+  type AstroTransitNatalAspectDatum,
   type PlanetId,
 } from "@/lib/astro-chart-wheel";
+import { buildAnswerLayerRouting } from "@/lib/astro-answer-routing";
+import { buildTransitRealtimeReport } from "@/lib/astro-transit-report-zh";
+import { buildMajorAspectObservationReport } from "@/lib/astro-major-aspect-report-zh";
+import { buildHouseCuspObservationReport } from "@/lib/astro-house-cusp-report-zh";
+import { buildMinorAspectObservationReport } from "@/lib/astro-minor-aspect-report-zh";
+import { buildAngleAspectObservationReport } from "@/lib/astro-angle-aspect-report-zh";
+import { buildPlanetPositionsObservationReport } from "@/lib/astro-planet-positions-report-zh";
+import { buildAxisInterpretationZh } from "@/lib/astro-axis-interpretation-zh";
+import { houseSystemReadoutHintVocal } from "@/lib/astro-house-system-hint-voice-zh";
+import { astroViewCopyGuideVocal, formatAstroViewCopyGuideMarkdownZh } from "@/lib/astro-view-copy-guide-voice-zh";
+import { houseSystemWorkspaceUiVocal } from "@/lib/astro-workspace-house-system-ui-voice-zh";
 import { appendOriginsRelationshipRecord } from "@/lib/origins-relationships-storage";
+import { chartDataCardSubtitleVocal } from "@/lib/astro-chart-data-card-subtitle-voice-zh";
+import { chartWheelCardSubtitleVocal } from "@/lib/astro-workspace-wheel-card-subtitle-voice-zh";
+import { workspaceReadingMarkdownVocal } from "@/lib/astro-workspace-chrome-voice-zh";
+import { workspaceTodaySpectralLineVocal } from "@/lib/astro-workspace-spectral-line-voice-zh";
+import { selectVoiceStyleIdZh } from "@/lib/astro-voice-style-zh";
 import {
   ASPECT_PRESET_OPTIONS,
   ASTRO_MAINSTREAM_SETTINGS_STORAGE_KEY,
@@ -64,25 +95,28 @@ import {
   TERTIARY_MONTH_BASIS_OPTIONS,
   parseAstroMainstreamSettingsJson,
 } from "@/lib/astro-mainstream-settings";
-import { ASTRO_BENCHMARK_PACK_VERSION } from "@/lib/astro-benchmark-samples";
+import {
+  HOUSE_SYSTEM_MORE_IDS,
+  HOUSE_SYSTEM_OPTIONS_COMMON,
+  HOUSE_SYSTEM_OPTIONS_MORE,
+} from "@/lib/astro-house-systems";
+import { formatSwissEphemerisError, type SwissErrorDisplay } from "@/lib/swiss-ephemeris-error-zh";
 
-const serif = Noto_Serif_SC({
-  weight: ["400", "500", "600"],
-  // @ts-expect-error subset
-  subsets: ["latin", "chinese-simplified"],
-  display: "swap",
-});
-
-const chartMono = JetBrains_Mono({
-  subsets: ["latin"],
-  weight: ["400", "500"],
-  display: "swap",
-});
+/** 不用 next/font 拉 Google 子集，避免多一条字体请求拖慢首屏、在受限网络下长时间 pending。 */
+const SERIF_ZH =
+  "ui-serif, 'Noto Serif SC', 'Source Han Serif SC', 'Songti SC', 'SimSun', Georgia, serif";
 
 const BG = "#0A0A1F";
 const HUB_USER_ID_KEY = "labyrinthos-user-id";
-const PARTNER_PROFILE_STORAGE_KEY = "labyrinthos-partner-profile-v1";
 const PARTNER_RELATION_DRAFT_KEY = "labyrinthos-partner-relation-draft-v1";
+const PARTNER_SLOT_ACTIVE_KEY = "labyrinthos-partner-slot-active-v1";
+
+type PartnerSlotId = "A" | "B" | "C";
+const PARTNER_SLOTS: { id: PartnerSlotId; label: string; storageKey: string }[] = [
+  { id: "A", label: "对象A", storageKey: "labyrinthos-partner-profile-v1-a" },
+  { id: "B", label: "对象B", storageKey: "labyrinthos-partner-profile-v1-b" },
+  { id: "C", label: "对象C", storageKey: "labyrinthos-partner-profile-v1-c" },
+];
 
 const TOPIC_OPTIONS: { id: AstroTopic; label: string }[] = [
   { id: "love", label: "感情窗口" },
@@ -94,6 +128,25 @@ const LENS_OPTIONS: { id: AstroLens; label: string }[] = [
   { id: "time_lord", label: "时间主星" },
   { id: "lunar_cycle", label: "月亮周期" },
 ];
+
+/** 瑞士星历请求指纹：用于失败时判断是否仍应保留「上一份成功结果」（避免换档案后仍显示上一人盘面）。 */
+function swissChartWheelInputKey(
+  cwd: AstroChartWheelData,
+  kind: ChartKindId,
+  aspectPreset: AspectPresetId,
+  orbPreset: OrbPresetId,
+): string {
+  return [
+    cwd.instantUtc.toISOString(),
+    cwd.latitudeDeg.toFixed(6),
+    cwd.longitudeDeg.toFixed(6),
+    cwd.houseSystem,
+    kind,
+    cwd.chartKindMeta?.id ?? "",
+    aspectPreset,
+    orbPreset,
+  ].join("|");
+}
 
 function Big3Narrative({ big3 }: { big3: NatalBig3 | null }) {
   if (!big3) return null;
@@ -123,95 +176,81 @@ function updateActiveDossier(store: AstroDossierStore, patch: Partial<AstroDossi
   };
 }
 
-function InsightBlock({
-  k,
-  title,
-  tone,
-  children,
-  inkDelay = 0,
-}: {
-  k: string;
-  title: string;
-  tone: "cyan" | "gold" | "muted";
-  children: React.ReactNode;
-  inkDelay?: number;
-}) {
-  const head =
-    tone === "cyan" ? "text-[#5F8794]" : tone === "gold" ? "text-[#B8944A]" : "text-zinc-500";
-  return (
-    <InkRevealBlock delay={inkDelay} className="relative pt-4">
-      <div
-        className="absolute left-0 right-0 top-0 h-px opacity-80"
-        style={{
-          background:
-            "linear-gradient(90deg, transparent 0%, rgba(197,160,89,0.4) 40%, rgba(15,158,184,0.22) 62%, transparent 100%)",
-        }}
-      />
-      <p className={`text-[10px] ${head}`} style={{ letterSpacing: "0.3em" }}>
-        {k} {title}
-      </p>
-      <div className="mt-2.5 text-[11px] leading-[2.05] text-zinc-400/93">{children}</div>
-    </InkRevealBlock>
-  );
-}
-
 function BCard({
   title,
   subtitle,
   children,
   className = "",
-  headerMono = false,
   deboxed = false,
+  compact = false,
+  /** 去框折叠：标题行无描边 hover，更像文稿目录 */
+  deboxedFoldBare = false,
+  foldable = false,
+  foldOpen = false,
+  onFoldToggle,
 }: {
   title?: string;
   subtitle?: string;
   children: React.ReactNode;
   className?: string;
-  /** 标题/副标题使用 JetBrains Mono + 宽字距（轮盘区） */
-  headerMono?: boolean;
   /** 去框化：仅保留细分割线与轻标题 */
   deboxed?: boolean;
+  /** 收紧内边距与标题下间距（轮盘等需少留白时用） */
+  compact?: boolean;
+  deboxedFoldBare?: boolean;
+  /** 点击标题栏展开/收起正文（默认收起时 foldOpen=false） */
+  foldable?: boolean;
+  foldOpen?: boolean;
+  onFoldToggle?: () => void;
 }) {
-  const mono = headerMono ? chartMono.className : "";
+  const headerMargin = foldable && !foldOpen ? "mb-0" : compact ? "mb-2" : "mb-4";
+  const foldBtnClass =
+    deboxed && deboxedFoldBare
+      ? "group flex w-full min-w-0 items-start justify-between gap-3 py-1 text-left transition-opacity hover:opacity-90"
+      : "group flex w-full min-w-0 items-start justify-between gap-3 rounded-lg border border-transparent py-0.5 text-left transition-colors hover:border-white/[0.08] hover:bg-white/[0.03]";
   return (
     <section
       className={
         deboxed
           ? `w-full min-w-0 border-t border-[#C5A059]/10 pt-4 sm:pt-5 ${className}`
-          : `w-full min-w-0 rounded-2xl border border-white/[0.08] bg-[#0b0b22]/90 p-4 shadow-[0_12px_48px_rgba(0,0,0,0.4)] backdrop-blur-sm sm:p-5 ${className}`
+          : `w-full min-w-0 rounded-2xl border border-white/[0.08] bg-[#0b0b22]/90 shadow-[0_12px_48px_rgba(0,0,0,0.4)] backdrop-blur-sm ${
+              compact ? "p-3 sm:p-4" : "p-4 sm:p-5"
+            } ${className}`
       }
     >
       {(title || subtitle) && (
-        <header className={`mb-4 min-w-0 ${mono}`}>
-          {title ? (
-            <h2
-              className={
-                headerMono
-                  ? UI_SCALE.cardTitleMono
-                  : deboxed
-                    ? UI_SCALE.cardTitleDeboxed
-                    : UI_SCALE.cardTitleDefault
-              }
+        <header className={`${headerMargin} min-w-0 font-sans`}>
+          {foldable && onFoldToggle ? (
+            <button
+              type="button"
+              onClick={onFoldToggle}
+              aria-expanded={foldOpen}
+              className={foldBtnClass}
             >
-              {title}
-            </h2>
-          ) : null}
-          {subtitle ? (
-            <p
-              className={
-                headerMono
-                  ? UI_SCALE.cardSubtitleMono
-                  : deboxed
-                    ? UI_SCALE.cardSubtitle
-                    : UI_SCALE.cardSubtitle
-              }
-            >
-              {subtitle}
-            </p>
-          ) : null}
+              <div className="min-w-0 flex-1">
+                {title ? (
+                  <h2 className={deboxed ? UI_SCALE.cardTitleDeboxed : UI_SCALE.cardTitleDefault}>{title}</h2>
+                ) : null}
+                {subtitle ? <p className={UI_SCALE.cardSubtitle}>{subtitle}</p> : null}
+              </div>
+              <ChevronDown
+                className={`mt-1 h-5 w-5 shrink-0 text-zinc-500 transition-transform group-hover:text-zinc-400 ${
+                  foldOpen ? "rotate-180" : ""
+                }`}
+                aria-hidden
+              />
+            </button>
+          ) : (
+            <>
+              {title ? (
+                <h2 className={deboxed ? UI_SCALE.cardTitleDeboxed : UI_SCALE.cardTitleDefault}>{title}</h2>
+              ) : null}
+              {subtitle ? <p className={UI_SCALE.cardSubtitle}>{subtitle}</p> : null}
+            </>
+          )}
         </header>
       )}
-      <div className="min-w-0">{children}</div>
+      {(!foldable || foldOpen) && <div className="min-w-0">{children}</div>}
     </section>
   );
 }
@@ -227,62 +266,17 @@ const CHART_KIND_OPTIONS: { id: ChartKindId; label: string }[] = [
   { id: "lunar_return", label: "月返盘" },
 ];
 
-const SECONDARY_BASIS_OPTIONS: { id: SecondaryYearBasisId; label: string }[] = [
-  { id: "tropical", label: "热带年 365.24219（主流）" },
-  { id: "julian", label: "儒略年 365.25" },
-];
-
-const TERTIARY_BASIS_OPTIONS: { id: TertiaryMonthBasisId; label: string }[] = [
-  { id: "synodic", label: "朔望月 29.53（主流）" },
-  { id: "sidereal", label: "恒星月 27.32" },
-];
-
 type CoreZoneId = "origin" | "reality" | "decoding";
-
-const CORE_ZONES: {
-  id: CoreZoneId;
-  title: string;
-  copy: string;
-  anchorId: string;
-}[] = [
-  {
-    id: "origin",
-    title: "初始参数",
-    copy: "填写出生信息与排盘规则",
-    anchorId: "section-chart-birth",
-  },
-  {
-    id: "reality",
-    title: "实相观测",
-    copy: "查看当前星盘与实时数据",
-    anchorId: "section-chart-wheel",
-  },
-  {
-    id: "decoding",
-    title: "灵识解构",
-    copy: "阅读解释与趋势建议",
-    anchorId: "read-section-text",
-  },
-];
-
-const HOUSE_SYSTEM_OPTIONS: { id: HouseSystemId; label: string }[] = [
-  { id: "Placidus", label: "普拉西德" },
-  { id: "Whole Sign", label: "整宫制" },
-];
-
-function houseSystemLabelZh(v: string): string {
-  if (v === "Placidus") return "普拉西德";
-  if (v === "Whole Sign") return "整宫制";
-  return v;
-}
 
 type ReadingDepthId = "short" | "compact" | "full";
 
 const READING_DEPTH_OPTIONS: { id: ReadingDepthId; label: string; subtitle: string }[] = [
-  { id: "short", label: "短卡", subtitle: "应用式大白话，最快浏览" },
-  { id: "compact", label: "精简", subtitle: "约为全文 1/3，结构与金卡相近" },
-  { id: "full", label: "全文", subtitle: "完整导师版长读" },
+  { id: "short", label: "短卡", subtitle: "同源语料首段摘录，最快浏览" },
+  { id: "compact", label: "精简", subtitle: "同源语料精简组装，约为全文 1/3" },
+  { id: "full", label: "全文", subtitle: "同源语料完整长读" },
 ];
+
+const AUTO_REFRESH_KINDS: ChartKindId[] = ["transit", "ephemeris", "secondary", "tertiary", "lunar_return", "synastry"];
 
 const UI_SCALE = {
   pageTitle: "text-4xl sm:text-5xl",
@@ -290,14 +284,11 @@ const UI_SCALE = {
   zoneTitle: "text-[15px] sm:text-[16px] tracking-[0.16em] font-medium text-zinc-300",
   zoneCopy: "text-[13px] sm:text-[14px] tracking-[0.1em] text-zinc-400",
   zoneHint: "text-[13px] font-medium text-zinc-400",
-  panelToggle: "px-3 py-2 text-[13px] font-medium text-[#D4C48A]",
   chartChip: "px-4 py-2.5 text-[14px] sm:text-[15px] tracking-[0.08em] font-medium",
   chartChipLabel: "text-[13px] sm:text-[14px] tracking-[0.04em]",
   optionPill: "px-4 py-2.5 text-[15px] font-medium tracking-[0.06em]",
-  cardTitleMono: "text-[15px] font-medium leading-snug tracking-[0.24em] text-zinc-300",
   cardTitleDeboxed: "text-[16px] font-semibold leading-snug tracking-[0.16em] text-[#D4C48A]",
   cardTitleDefault: "text-[17px] font-semibold leading-snug text-zinc-300",
-  cardSubtitleMono: "mt-2 text-[13px] leading-relaxed tracking-[0.18em] text-zinc-400",
   cardSubtitle: "mt-1 text-[16px] leading-relaxed text-zinc-400",
 } as const;
 
@@ -306,24 +297,51 @@ function OptionPills<T extends string>({
   onChange,
   options,
   ariaLabel,
+  containerClassName,
+  fullWidthPills,
+  variant = "default",
 }: {
   value: T;
   onChange: (v: T) => void;
   options: readonly { id: T; label: string }[];
   ariaLabel?: string;
+  /** 默认 `flex flex-wrap`；宫位制等选项多时可传 grid 类名。 */
+  containerClassName?: string;
+  /** 与 grid 容器搭配：药丸拉满格宽，避免长短不一。 */
+  fullWidthPills?: boolean;
+  /** 幽灵：无底框，选中为底边金线（灵识解构偏好区） */
+  variant?: "default" | "ghost";
 }) {
+  const defaultContainer =
+    variant === "ghost" ? "flex flex-wrap items-end gap-x-1 gap-y-1" : "flex flex-wrap gap-2";
   return (
-    <div className="flex flex-wrap gap-2" role="group" aria-label={ariaLabel}>
+    <div
+      className={containerClassName ?? defaultContainer}
+      role="group"
+      aria-label={ariaLabel}
+    >
       {options.map((o) => (
         <button
           key={o.id}
           type="button"
           onClick={() => onChange(o.id)}
-          className={`border border-white/[0.2] bg-transparent ${UI_SCALE.optionPill} transition-all ${
-            value === o.id
-              ? "border-[#C5A059]/75 text-[#D4C48A] shadow-[0_0_14px_rgba(197,160,89,0.34)]"
-              : "text-zinc-400 hover:border-[#C5A059]/45 hover:text-zinc-300"
-          }`}
+          className={
+            variant === "ghost"
+              ? `rounded-none border-0 border-b-2 bg-transparent px-2 py-1 text-[13px] font-medium tracking-[0.14em] transition-colors ${
+                  fullWidthPills ? "w-full min-w-0 text-left " : ""
+                }${
+                  value === o.id
+                    ? "border-[#C5A059]/75 text-[#E8D4A8]"
+                    : "border-transparent text-zinc-500 hover:text-zinc-300"
+                }`
+              : `border border-white/[0.2] bg-transparent ${UI_SCALE.optionPill} transition-all ${
+                  fullWidthPills ? "w-full min-w-0 " : ""
+                }${
+                  value === o.id
+                    ? "border-[#C5A059]/75 text-[#D4C48A] shadow-[0_0_14px_rgba(197,160,89,0.34)]"
+                    : "text-zinc-400 hover:border-[#C5A059]/45 hover:text-zinc-300"
+                }`
+          }
         >
           {o.label}
         </button>
@@ -332,45 +350,102 @@ function OptionPills<T extends string>({
   );
 }
 
-export default function AstroWorkspace() {
-  const [store, setStore] = useState<AstroDossierStore | null>(null);
-  const [big3, setBig3] = useState<NatalBig3 | null>(null);
+function readAstroDossierStoreSafe(): AstroDossierStore {
+  try {
+    return loadAstroDossierStore();
+  } catch {
+    const d = createEmptyDossier({ title: "本命结构初探" });
+    return { dossiers: [d], activeId: d.id };
+  }
+}
 
-  const [birthPanelOpen, setBirthPanelOpen] = useState(true);
+export default function AstroWorkspace() {
+  /** 由 /astro 页保证仅在客户端挂载后再渲染本组件，此处同步读案卷 */
+  const [store, setStore] = useState<AstroDossierStore>(() => readAstroDossierStoreSafe());
+  const [big3, setBig3] = useState<NatalBig3 | null>(null);
+  const [natalReadingHouses, setNatalReadingHouses] = useState<{ sunHouse: number; moonHouse: number } | null>(
+    null,
+  );
+
+  const [birthPanelOpen, setBirthPanelOpen] = useState(false);
   const [showAspectLines, setShowAspectLines] = useState(true);
+  const [showMinorAspectLines, setShowMinorAspectLines] = useState(false);
+  const [showAngleAspectLines, setShowAngleAspectLines] = useState(true);
   const [showOuterBodies, setShowOuterBodies] = useState(false);
   const [showAllBodies, setShowAllBodies] = useState(false);
   const [showChartRadials, setShowChartRadials] = useState(true);
-  const [chartFactOpen, setChartFactOpen] = useState(false);
   const [readingDepth, setReadingDepth] = useState<ReadingDepthId>("short");
   const [chartInstantRefreshKey, setChartInstantRefreshKey] = useState(0);
+  /** 与瑞士星历「重新计算」共用，便于三主星与轮盘数据一并重拉 */
+  const [swissRetryNonce, setSwissRetryNonce] = useState(0);
+  const [wheelExtrasOpen, setWheelExtrasOpen] = useState(false);
+  /** 默认展开：读数含宫位/宫头，避免误以为被「隐藏」 */
+  const [chartDataOpen, setChartDataOpen] = useState(true);
+  const [settingsOpen, setSettingsOpen] = useState(false);
+  const [synastryProfileOpen, setSynastryProfileOpen] = useState(false);
+  const [todayRefOpen, setTodayRefOpen] = useState(false);
+  /** 默认展开：便于看到「当前案卷已记下」与选项联动 */
+  const [decodePrefsOpen, setDecodePrefsOpen] = useState(true);
+  const [decodeBig3Open, setDecodeBig3Open] = useState(false);
+  const [decodeInterpretOpen, setDecodeInterpretOpen] = useState(false);
+  /** 默认展开：内嵌与「星盘数据→行星位置」同源的读数摘录，避免空壳感 */
+  const [decodeRhythmOpen, setDecodeRhythmOpen] = useState(true);
   const [chartKind, setChartKind] = useState<ChartKindId>("natal");
   const [solarReturnYear, setSolarReturnYear] = useState(() => new Date().getFullYear());
-  const [activeZone, setActiveZone] = useState<CoreZoneId>("reality");
+  // 默认先落在「初始参数」，避免首次进入时只看到观测/轮盘而出生档案却被隐藏。
+  const [activeZone, setActiveZone] = useState<CoreZoneId>("origin");
   const [originPulseKey, setOriginPulseKey] = useState(0);
   const [zoneFxKey, setZoneFxKey] = useState(0);
   const [coordCeremonyKey, setCoordCeremonyKey] = useState(0);
   const [coordStatus, setCoordStatus] = useState<string>("初始参数已锁定，可直接查看星盘。");
   const [houseSystemPulseKey, setHouseSystemPulseKey] = useState(0);
-  const [simpleMode, setSimpleMode] = useState(true);
+  const [houseSystemMoreOpen, setHouseSystemMoreOpen] = useState(false);
+  const zoneTabsScrollRef = useRef<HTMLDivElement | null>(null);
+  const onZoneTabsWheel = useCallback((e: React.WheelEvent<HTMLDivElement>) => {
+    const el = zoneTabsScrollRef.current;
+    if (!el) return;
+    const hasHorizontalOverflow = el.scrollWidth - el.clientWidth > 1;
+    if (!hasHorizontalOverflow) return;
+
+    // 若用户正在做“水平滚动/换向”（deltaX 更明显，或按了 Shift），交给浏览器默认处理。
+    if (e.shiftKey || Math.abs(e.deltaX) > Math.abs(e.deltaY)) return;
+
+    // 把垂直滚轮映射到水平滚动：仅当指针在该容器上时才会触发（没有“自动滚动”）。
+    el.scrollLeft += e.deltaY;
+    e.preventDefault();
+  }, []);
   const [mainstreamSettings, setMainstreamSettings] = useState(DEFAULT_ASTRO_MAINSTREAM_SETTINGS);
+  const [activePartnerSlot, setActivePartnerSlot] = useState<PartnerSlotId>("A");
   const [partnerProfile, setPartnerProfile] = useState<StoredUserProfile | null>(null);
   const [relationName, setRelationName] = useState("");
   const [selfName, setSelfName] = useState("");
   const [partnerName, setPartnerName] = useState("");
+  const [exportStatus, setExportStatus] = useState<"idle" | "ok" | "error">("idle");
 
   const [tick, setTick] = useState(0);
 
+  const activePartnerStorageKey = useMemo(
+    () => PARTNER_SLOTS.find((s) => s.id === activePartnerSlot)?.storageKey ?? PARTNER_SLOTS[0]!.storageKey,
+    [activePartnerSlot],
+  );
+
   const refreshProfile = useCallback(() => {
     setBig3(null); // 先置空，避免短时间展示 astronomy-engine 口径的三主星
+    setNatalReadingHouses(null);
     setTick((n) => n + 1);
   }, []);
 
   useEffect(() => {
     void Promise.resolve().then(() => {
-      setStore(loadAstroDossierStore());
       setBig3(null);
-      const rawPartner = window.localStorage.getItem(PARTNER_PROFILE_STORAGE_KEY);
+      setNatalReadingHouses(null);
+      const cachedActiveSlot = window.localStorage.getItem(PARTNER_SLOT_ACTIVE_KEY) as PartnerSlotId | null;
+      if (cachedActiveSlot && PARTNER_SLOTS.some((s) => s.id === cachedActiveSlot)) {
+        setActivePartnerSlot(cachedActiveSlot);
+      }
+      const slotId = cachedActiveSlot && PARTNER_SLOTS.some((s) => s.id === cachedActiveSlot) ? cachedActiveSlot : "A";
+      const slotKey = PARTNER_SLOTS.find((s) => s.id === slotId)?.storageKey ?? PARTNER_SLOTS[0]!.storageKey;
+      const rawPartner = window.localStorage.getItem(slotKey);
       const parsedPartner = parseStoredUserProfileJson(rawPartner);
       setPartnerProfile(parsedPartner);
       const rawRelation = window.localStorage.getItem(PARTNER_RELATION_DRAFT_KEY);
@@ -389,13 +464,12 @@ export default function AstroWorkspace() {
     });
   }, []);
 
-  useLayoutEffect(() => {
-    void Promise.resolve().then(() => {
-      const raw = window.localStorage.getItem(USER_PROFILE_STORAGE_KEY);
-      const p = parseStoredUserProfileJson(raw);
-      setBirthPanelOpen(!p);
-    });
-  }, []);
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    window.localStorage.setItem(PARTNER_SLOT_ACTIVE_KEY, activePartnerSlot);
+    const rawPartner = window.localStorage.getItem(activePartnerStorageKey);
+    setPartnerProfile(parseStoredUserProfileJson(rawPartner));
+  }, [activePartnerSlot, activePartnerStorageKey]);
 
   useEffect(() => {
     const on = () => refreshProfile();
@@ -416,7 +490,7 @@ export default function AstroWorkspace() {
     window.localStorage.setItem(ASTRO_MAINSTREAM_SETTINGS_STORAGE_KEY, JSON.stringify(mainstreamSettings));
   }, [mainstreamSettings]);
 
-  const dossier: AstroDossier | null = store ? getActiveDossier(store) : null;
+  const dossier = getActiveDossier(store);
 
   const profileRow = useMemo(
     () => {
@@ -428,21 +502,59 @@ export default function AstroWorkspace() {
     [tick],
   );
 
-  // 三主星（太阳/月亮/上升）：使用 Swiss Ephemeris 口径，确保与“星盘数据表”一致。
+  // 三主星（太阳/月亮/上升）+ 日/月宫位：Swiss Ephemeris，与案卷宫位制一致。
   useEffect(() => {
     let cancelled = false;
-    (async () => {
-      if (!profileRow?.birthdate || !profileRow?.birthTime || !profileRow?.timeZone) return;
+    void (async () => {
+      if (!profileRow?.birthdate || !profileRow?.birthTime || !profileRow?.timeZone) {
+        if (!cancelled) {
+          setBig3(null);
+          setNatalReadingHouses(null);
+        }
+        return;
+      }
       const utc = birthMomentToUtc(profileRow.birthdate, profileRow.birthTime, profileRow.timeZone);
-      if (!utc) return;
-      const next = await computeNatalBig3Swiss(utc, profileRow.latitude, profileRow.longitude);
-      if (!cancelled) setBig3(next);
+      if (!utc) {
+        if (!cancelled) {
+          setBig3(null);
+          setNatalReadingHouses(null);
+        }
+        return;
+      }
+      try {
+        const next = await computeNatalBig3WithHousesSwiss(
+          utc,
+          profileRow.latitude,
+          profileRow.longitude,
+          dossier?.houseSystem ?? "Placidus",
+        );
+        if (!cancelled) {
+          setBig3({ sun: next.sun, moon: next.moon, rising: next.rising });
+          setNatalReadingHouses({ sunHouse: next.sunHouse, moonHouse: next.moonHouse });
+        }
+      } catch (e) {
+        if (typeof console !== "undefined" && console.warn) {
+          console.warn("[瑞士星历] 三主星计算失败", e);
+        }
+        if (!cancelled) {
+          setBig3(null);
+          setNatalReadingHouses(null);
+        }
+      }
     })();
 
     return () => {
       cancelled = true;
     };
-  }, [profileRow?.birthdate, profileRow?.birthTime, profileRow?.timeZone, profileRow?.latitude, profileRow?.longitude]);
+  }, [
+    profileRow?.birthdate,
+    profileRow?.birthTime,
+    profileRow?.timeZone,
+    profileRow?.latitude,
+    profileRow?.longitude,
+    dossier?.houseSystem,
+    swissRetryNonce,
+  ]);
 
   const birthYmd = useMemo(() => {
     if (!profileRow?.birthdate) return null;
@@ -492,6 +604,8 @@ export default function AstroWorkspace() {
           solarReturnCalendarYear: Math.max(solarReturnYear, birthYmd.y),
           secondaryYearBasis: mainstreamSettings.secondaryYearBasis,
           tertiaryMonthBasis: mainstreamSettings.tertiaryMonthBasis,
+          aspectPreset: mainstreamSettings.aspectPreset,
+          orbPreset: mainstreamSettings.orbPreset,
         });
       } catch {
         return null;
@@ -507,16 +621,22 @@ export default function AstroWorkspace() {
       solarReturnYear,
       mainstreamSettings.secondaryYearBasis,
       mainstreamSettings.tertiaryMonthBasis,
+      mainstreamSettings.aspectPreset,
+      mainstreamSettings.orbPreset,
     ],
   );
 
   // 「星盘数据」表格口径：用 Swiss Ephemeris（WASM）替换坐标口径，尽量对齐西方主流。
   const [swissChartWheelData, setSwissChartWheelData] = useState<typeof chartWheelData>(null);
   const [swissBusy, setSwissBusy] = useState(false);
-  const [swissError, setSwissError] = useState<string | null>(null);
+  const [swissError, setSwissError] = useState<SwissErrorDisplay | null>(null);
+  const swissLastSuccessInputKeyRef = useRef<string | null>(null);
   const [synastryData, setSynastryData] = useState<{
     partnerLabel: string;
-    aspects: ReturnType<typeof computeTransitNatalMajorAspects>;
+    aspects: AstroTransitNatalAspectDatum[];
+    minorAspects?: AstroTransitNatalAspectDatum[];
+    majorOrbDeg?: number;
+    minorOrbDeg?: number;
     partnerInMyHouses: Array<{ planet: PlanetId; house: number }>;
     myInPartnerHouses: Array<{ planet: PlanetId; house: number }>;
   } | null>(null);
@@ -529,6 +649,7 @@ export default function AstroWorkspace() {
           setSwissChartWheelData(null);
           setSwissBusy(false);
           setSwissError(null);
+          swissLastSuccessInputKeyRef.current = null;
         }
         return;
       }
@@ -539,6 +660,11 @@ export default function AstroWorkspace() {
       }
 
       try {
+        const aspect = resolveChartAspectParams({
+          aspectPreset: mainstreamSettings.aspectPreset,
+          orbPreset: mainstreamSettings.orbPreset,
+        });
+
         let instantUtcForSwiss = chartWheelData.instantUtc;
 
         if ((chartKind === "solar_return" || chartKind === "lunar_return") && profileRow) {
@@ -570,6 +696,7 @@ export default function AstroWorkspace() {
           latitudeDeg: chartWheelData.latitudeDeg,
           longitudeDeg: chartWheelData.longitudeDeg,
           houseSystem: chartWheelData.houseSystem,
+          aspect,
         });
 
         swissBase.chartKindMeta = chartWheelData.chartKindMeta;
@@ -578,7 +705,14 @@ export default function AstroWorkspace() {
           const birthUtc = birthMomentToUtc(profileRow.birthdate, profileRow.birthTime, profileRow.timeZone);
           if (birthUtc) {
             const natalPlanets = await computePlanetsLongitudesSwiss(birthUtc);
-            swissBase.transitNatalAspects = computeTransitNatalMajorAspects(swissBase.planets, natalPlanets, 6);
+            const tn = computeTransitNatalAspects(swissBase.planets, natalPlanets, {
+              majorOrbDeg: aspect.majorOrbDeg,
+              minorOrbDeg: aspect.minorOrbDeg,
+              maxMajor: 40,
+              maxMinor: aspect.includeMinorAspects ? 36 : 0,
+            });
+            swissBase.transitNatalAspects = tn.major;
+            swissBase.transitNatalMinorAspects = tn.minor.length > 0 ? tn.minor : undefined;
           }
         }
 
@@ -586,13 +720,30 @@ export default function AstroWorkspace() {
           setSwissChartWheelData(swissBase);
           setSwissBusy(false);
           setSwissError(null);
+          swissLastSuccessInputKeyRef.current = swissChartWheelInputKey(
+            chartWheelData,
+            chartKind,
+            mainstreamSettings.aspectPreset,
+            mainstreamSettings.orbPreset,
+          );
         }
       } catch (e) {
         if (!cancelled) {
-          setSwissChartWheelData(null);
           setSwissBusy(false);
-          const raw = e instanceof Error ? e.message : String(e);
-          setSwissError(raw.startsWith("瑞士星历") ? raw : `瑞士星历：${raw || "计算失败"}`);
+          const formatted = formatSwissEphemerisError(e);
+          if (typeof console !== "undefined" && console.warn) {
+            console.warn("[瑞士星历] 计算失败", e);
+          }
+          setSwissError(formatted);
+          const failKey = swissChartWheelInputKey(
+            chartWheelData,
+            chartKind,
+            mainstreamSettings.aspectPreset,
+            mainstreamSettings.orbPreset,
+          );
+          if (swissLastSuccessInputKeyRef.current !== failKey) {
+            setSwissChartWheelData(null);
+          }
         }
       }
     })();
@@ -600,7 +751,19 @@ export default function AstroWorkspace() {
     return () => {
       cancelled = true;
     };
-  }, [chartWheelData, chartKind, profileRow]);
+  }, [
+    chartWheelData,
+    chartKind,
+    profileRow,
+    mainstreamSettings.aspectPreset,
+    mainstreamSettings.orbPreset,
+    swissRetryNonce,
+  ]);
+
+  const onSwissRetry = useCallback(() => {
+    resetSwissEphemerisClientForRetry();
+    setSwissRetryNonce((n) => n + 1);
+  }, []);
 
   useEffect(() => {
     let cancelled = false;
@@ -616,6 +779,11 @@ export default function AstroWorkspace() {
         return;
       }
 
+      const aspect = resolveChartAspectParams({
+        aspectPreset: mainstreamSettings.aspectPreset,
+        orbPreset: mainstreamSettings.orbPreset,
+      });
+
       const [myPlanets, partnerPlanets, partnerWheel] = await Promise.all([
         computePlanetsLongitudesSwiss(myBirthUtc),
         computePlanetsLongitudesSwiss(partnerBirthUtc),
@@ -624,10 +792,16 @@ export default function AstroWorkspace() {
           latitudeDeg: partnerProfile.latitude,
           longitudeDeg: partnerProfile.longitude,
           houseSystem: dossier.houseSystem,
+          aspect,
         }),
       ]);
 
-      const aspects = computeTransitNatalMajorAspects(partnerPlanets, myPlanets, 6);
+      const synTn = computeTransitNatalAspects(partnerPlanets, myPlanets, {
+        majorOrbDeg: aspect.majorOrbDeg,
+        minorOrbDeg: aspect.minorOrbDeg,
+        maxMajor: 40,
+        maxMinor: aspect.includeMinorAspects ? 36 : 0,
+      });
       const partnerInMyHouses = partnerPlanets.map((p) => ({
         planet: p.id,
         house: houseNumberForLongitude(p.lonDeg, swissChartWheelData.houseCuspsLonDeg),
@@ -640,7 +814,10 @@ export default function AstroWorkspace() {
       if (!cancelled) {
         setSynastryData({
           partnerLabel: partnerName.trim() || partnerProfile.displayName?.trim() || partnerProfile.placeLabel?.trim() || "对象B",
-          aspects,
+          aspects: synTn.major,
+          minorAspects: synTn.minor.length > 0 ? synTn.minor : undefined,
+          majorOrbDeg: aspect.majorOrbDeg,
+          minorOrbDeg: aspect.minorOrbDeg,
           partnerInMyHouses,
           myInPartnerHouses,
         });
@@ -650,7 +827,23 @@ export default function AstroWorkspace() {
     return () => {
       cancelled = true;
     };
-  }, [chartKind, profileRow, partnerProfile, swissChartWheelData, dossier?.houseSystem, partnerName]);
+  }, [
+    chartKind,
+    profileRow,
+    partnerProfile,
+    swissChartWheelData,
+    dossier,
+    dossier?.houseSystem,
+    partnerName,
+    mainstreamSettings.aspectPreset,
+    mainstreamSettings.orbPreset,
+  ]);
+
+  /** 轮盘次要相位线：需同时打开开关且排盘为「主+次」，与读数区一致。 */
+  const minorAspectLinesOnWheel = useMemo(
+    () => showMinorAspectLines && mainstreamSettings.aspectPreset === "major_and_minor",
+    [showMinorAspectLines, mainstreamSettings.aspectPreset],
+  );
 
   const dailyCalibration = useMemo(
     () => {
@@ -664,88 +857,95 @@ export default function AstroWorkspace() {
     [tick],
   );
 
-  const spectralLine = dailyCalibration
-    ? `${getTodayKey()} · 今日节奏：${dailyCalibration.envElement}象偏强（${dailyCalibration.envIntensity.toFixed(
-        2,
-      )}） · 今日状态：${dailyCalibration.axiom.scene} · 今日建议：${dailyCalibration.axiom.action}`
-    : "今日节奏：加载中…";
-
   const topicLabel = dossier ? TOPIC_OPTIONS.find((t) => t.id === dossier.topic)?.label ?? dossier.topic : "";
+  const lensLabel = dossier ? LENS_OPTIONS.find((x) => x.id === dossier.lens)?.label ?? dossier.lens : "";
+
+  const voiceStyleId = useMemo(() => {
+    if (!swissChartWheelData) return 1 as ReturnType<typeof selectVoiceStyleIdZh>;
+    return selectVoiceStyleIdZh({
+      chartKind,
+      houseSystem: swissChartWheelData.houseSystem,
+      aspectPreset: mainstreamSettings.aspectPreset,
+      orbPreset: mainstreamSettings.orbPreset,
+      includeMinorAspects: swissChartWheelData.aspectMeta?.includeMinorAspects,
+      majorOrbDeg: swissChartWheelData.aspectMeta?.majorOrbDeg,
+      minorOrbDeg: swissChartWheelData.aspectMeta?.minorOrbDeg,
+      instantUtcMs: swissChartWheelData.instantUtc.getTime(),
+    });
+  }, [
+    chartKind,
+    swissChartWheelData,
+    mainstreamSettings.aspectPreset,
+    mainstreamSettings.orbPreset,
+  ]);
+
+  const houseSystemWorkspaceUi = useMemo(() => houseSystemWorkspaceUiVocal(voiceStyleId), [voiceStyleId]);
+
+  const spectralLineStyled = useMemo(
+    () =>
+      workspaceTodaySpectralLineVocal(
+        { dayKey: getTodayKey(), calibration: dailyCalibration },
+        voiceStyleId,
+      ),
+    [dailyCalibration, voiceStyleId],
+  );
+
+  const decodeSurface = WORKSPACE_DECODE_SURFACE_ZH[chartKind];
+  const decodeSurfaceStyled = useMemo(
+    () => workspaceDecodeSurfaceVocal(chartKind, voiceStyleId),
+    [chartKind, voiceStyleId],
+  );
+
+  const coreZones = useMemo(() => workspaceCoreZonesForChartKind(chartKind), [chartKind]);
+
+  const natalReadingOpts = useMemo(() => {
+    const dateLine = getTodayKey().replace(/-/g, ".");
+    return {
+      dateLine,
+      showCaseLine: true as const,
+      sunHouse: natalReadingHouses?.sunHouse,
+      moonHouse: natalReadingHouses?.moonHouse,
+      houseSystemZh: dossier ? houseSystemLabelZh(dossier.houseSystem) : undefined,
+      readingLens: dossier.lens,
+    };
+  }, [natalReadingHouses, dossier]);
 
   const readingMd = useMemo(() => {
     if (!big3) return "";
-    const dateLine = getTodayKey().replace(/-/g, ".");
-    if (readingDepth === "short") return buildAstroWorkspaceUnderstandMarkdown(big3);
-    if (readingDepth === "compact") return buildNatalReadingCompactMarkdown(big3);
-    return buildNatalReadingFullMarkdown(big3, { dateLine, showCaseLine: true });
-  }, [big3, readingDepth]);
+    if (readingDepth === "short") return buildAstroWorkspaceUnderstandMarkdown(big3, natalReadingOpts);
+    if (readingDepth === "compact") return buildNatalReadingCompactMarkdown(big3, natalReadingOpts);
+    return buildNatalReadingFullMarkdown(big3, natalReadingOpts);
+  }, [big3, readingDepth, natalReadingOpts]);
+  const readingMdStyled = useMemo(
+    () => workspaceReadingMarkdownVocal(readingMd, voiceStyleId),
+    [readingMd, voiceStyleId],
+  );
 
-  const chartFactLines = useMemo(() => {
-    const lines: string[] = [];
-    if (big3) {
-      lines.push(`三主星：太阳 ${ZODIAC_CN[big3.sun]} · 月亮 ${ZODIAC_CN[big3.moon]} · 上升 ${ZODIAC_CN[big3.rising]}`);
-      lines.push(
-        chartWheelData
-          ? swissError
-            ? `行星黄经 / 宫位 / 主相位：瑞士星历未就绪（${swissError}）。`
-            : swissChartWheelData
-              ? "行星黄经 / 宫位 / 宫头 / 主相位：已计算并展示于左侧「星盘数据」面板（瑞士星历，热带黄道）。"
-              : swissBusy
-                ? "行星黄经 / 宫位 / 宫头 / 主相位：正在从瑞士星历计算中…"
-                : "行星黄经 / 宫位 / 宫头 / 主相位：等待瑞士星历结果…"
-          : "黄经度数：解锁档案后由星盘计算写入。",
-      );
-    } else {
-      lines.push("未载入出生档案，ChartFact 不完整");
-    }
+  const chartDataCardSubtitleStyled = useMemo(
+    () =>
+      chartDataCardSubtitleVocal(
+        chartKind,
+        {
+          houseSystemZh: dossier ? houseSystemLabelZh(dossier.houseSystem) : null,
+          includeMinorAspects: mainstreamSettings.aspectPreset === "major_and_minor",
+        },
+        voiceStyleId,
+      ),
+    [chartKind, mainstreamSettings.aspectPreset, dossier, voiceStyleId],
+  );
 
-    if (dossier) {
-      lines.push(`宫位制：${houseSystemLabelZh(dossier.houseSystem)}`);
-      lines.push(
-        swissChartWheelData?.chartKindMeta?.lineZh
-          ? `当前盘面：${swissChartWheelData.chartKindMeta.lineZh}`
-          : "当前盘面：未生成（请先解锁档案）",
-      );
-      lines.push(`阅读角度：${LENS_OPTIONS.find((x) => x.id === dossier.lens)?.label ?? dossier.lens}`);
-      lines.push(`议题：${TOPIC_OPTIONS.find((t) => t.id === dossier.topic)?.label ?? dossier.topic}`);
-      if (chartKind === "synastry") {
-        lines.push(
-          partnerProfile
-            ? `合盘对象：已加载（关系：${relationName || "缘起关系"}；你：${selfName || "你"}；对方：${partnerName || partnerProfile.displayName || "对象B"}）`
-            : "合盘对象：未填写，请在初始参数中录入对象出生资料。",
-        );
-      }
-      if (chartKind === "secondary") {
-        lines.push(
-          `次限口径：${mainstreamSettings.secondaryYearBasis === "tropical" ? "热带年 365.24219（主流）" : "儒略年 365.25"}`,
-        );
-      }
-      if (chartKind === "tertiary") {
-        lines.push(
-          `三限口径：${mainstreamSettings.tertiaryMonthBasis === "synodic" ? "朔望月 29.53（主流）" : "恒星月 27.32"}`,
-        );
-      }
-    }
-    if (dailyCalibration) {
-      lines.push(`今日校准 seed：${dailyCalibration.seed}（与 Hub 同日同用户锁定）`);
-    }
-    return lines;
-  }, [
-    big3,
-    dossier,
-    dailyCalibration,
-    chartWheelData,
-    swissChartWheelData,
-    swissBusy,
-    swissError,
-    chartKind,
-    partnerProfile,
-    relationName,
-    selfName,
-    partnerName,
-    mainstreamSettings.secondaryYearBasis,
-    mainstreamSettings.tertiaryMonthBasis,
-  ]);
+  const chartWheelCardSubtitleStyled = useMemo(
+    () =>
+      chartWheelCardSubtitleVocal(
+        chartKind,
+        {
+          houseSystemZh: dossier ? houseSystemLabelZh(dossier.houseSystem) : null,
+          includeMinorAspects: mainstreamSettings.aspectPreset === "major_and_minor",
+        },
+        voiceStyleId,
+      ),
+    [chartKind, mainstreamSettings.aspectPreset, dossier, voiceStyleId],
+  );
 
   const persistStore = useCallback(
     (next: AstroDossierStore) => {
@@ -757,29 +957,7 @@ export default function AstroWorkspace() {
 
   const patchDossier = useCallback(
     (patch: Partial<AstroDossier>) => {
-      if (!store) return;
       persistStore(updateActiveDossier(store, patch));
-    },
-    [store, persistStore],
-  );
-
-  const addDossier = useCallback(() => {
-    if (!store) return;
-    const d = createEmptyDossier({ title: `解读 ${store.dossiers.length + 1}` });
-    persistStore({ dossiers: [...store.dossiers, d], activeId: d.id });
-  }, [store, persistStore]);
-
-  const removeActiveDossier = useCallback(() => {
-    if (!store || store.dossiers.length <= 1) return;
-    const rest = store.dossiers.filter((d) => d.id !== store.activeId);
-    persistStore({ dossiers: rest, activeId: rest[0]!.id });
-  }, [store, persistStore]);
-
-  const onNotesChange = useCallback(
-    (notes: string) => {
-      if (!store) return;
-      const next = updateActiveDossier(store, { notes });
-      persistStore(next);
     },
     [store, persistStore],
   );
@@ -807,6 +985,14 @@ export default function AstroWorkspace() {
     setMainstreamSettings((prev) => ({ ...prev, tertiaryMonthBasis }));
   }, []);
 
+  const onAspectPresetChange = useCallback((aspectPreset: AspectPresetId) => {
+    setMainstreamSettings((prev) => ({ ...prev, aspectPreset }));
+  }, []);
+
+  const onOrbPresetChange = useCallback((orbPreset: OrbPresetId) => {
+    setMainstreamSettings((prev) => ({ ...prev, orbPreset }));
+  }, []);
+
   const applyMainstreamPreset = useCallback(() => {
     patchDossier({ houseSystem: "Placidus" });
     setMainstreamSettings(DEFAULT_ASTRO_MAINSTREAM_SETTINGS);
@@ -820,7 +1006,7 @@ export default function AstroWorkspace() {
   const onPartnerProfileSaved = useCallback(() => {
     const rawSelf = window.localStorage.getItem(USER_PROFILE_STORAGE_KEY);
     const selfProfile = parseStoredUserProfileJson(rawSelf);
-    const raw = window.localStorage.getItem(PARTNER_PROFILE_STORAGE_KEY);
+    const raw = window.localStorage.getItem(activePartnerStorageKey);
     const parsedPartner = parseStoredUserProfileJson(raw);
     setPartnerProfile(parsedPartner);
     if (!selfProfile || !parsedPartner) return;
@@ -831,47 +1017,101 @@ export default function AstroWorkspace() {
       selfProfile,
       partnerProfile: parsedPartner,
     });
-  }, [partnerName, relationName, selfName]);
+  }, [activePartnerStorageKey, partnerName, relationName, selfName]);
 
-  const AUTO_REFRESH_KINDS: ChartKindId[] = ["transit", "ephemeris", "secondary", "tertiary", "lunar_return", "synastry"];
+  const onExportReading = useCallback(async () => {
+    if (!big3 || !readingMd) return;
+    const metaLines = [
+      `导出时间：${new Date().toLocaleString("zh-CN")}`,
+      `盘面：${CHART_KIND_OPTIONS.find((x) => x.id === chartKind)?.label ?? chartKind}`,
+      `宫位制：${houseSystemLabelZh(dossier.houseSystem)}`,
+      `相位：${ASPECT_PRESET_OPTIONS.find((x) => x.id === mainstreamSettings.aspectPreset)?.label ?? mainstreamSettings.aspectPreset}`,
+      `容许度：${ORB_PRESET_OPTIONS.find((x) => x.id === mainstreamSettings.orbPreset)?.label ?? mainstreamSettings.orbPreset}`,
+    ];
+    const lineZh = swissChartWheelData?.chartKindMeta?.lineZh;
+    if (lineZh) metaLines.push(`盘面锚点：${lineZh}`);
+    metaLines.push(`宫位读法：${houseSystemReadoutHintVocal(voiceStyleId, dossier.houseSystem)}`);
+    metaLines.push(`阅读角度：${lensLabel || "—"}`);
+    const meta = metaLines.join("\n");
+    const guideMd = formatAstroViewCopyGuideMarkdownZh(astroViewCopyGuideVocal(chartKind, voiceStyleId));
+    const payload = `${meta}\n\n---\n\n${guideMd}\n\n---\n\n${readingMdStyled}`;
+    try {
+      await navigator.clipboard.writeText(payload);
+      setExportStatus("ok");
+    } catch {
+      setExportStatus("error");
+    }
+    window.setTimeout(() => setExportStatus("idle"), 1800);
+  }, [
+    big3,
+    chartKind,
+    dossier.houseSystem,
+    lensLabel,
+    mainstreamSettings.aspectPreset,
+    mainstreamSettings.orbPreset,
+    readingMd,
+    readingMdStyled,
+    swissChartWheelData,
+    voiceStyleId,
+  ]);
 
   useEffect(() => {
     if (!AUTO_REFRESH_KINDS.includes(chartKind)) return;
     setChartInstantRefreshKey((k) => k + 1);
   }, [chartKind]);
 
-  if (!store || !dossier) {
-    return (
-      <div className="min-h-[100dvh] flex items-center justify-center text-zinc-400" style={{ background: BG }}>
-        加载案卷…
-      </div>
-    );
-  }
+  const answerLayer = useMemo(
+    () =>
+      buildAnswerLayerRouting({
+        chart: swissChartWheelData,
+        topicDetail: dossier.topicDetail,
+      }),
+    [swissChartWheelData, dossier.topicDetail],
+  );
+  const transitRealtimeReport = useMemo(
+    () =>
+      chartKind === "transit"
+        ? buildTransitRealtimeReport(swissChartWheelData, voiceStyleId)
+        : null,
+    [chartKind, swissChartWheelData, voiceStyleId],
+  );
 
-  const stressItems: { label: string; body: string }[] = [
-    ...(dossier.topicDetail?.trim()
-      ? [{ label: "你的补充", body: dossier.topicDetail.trim() }]
-      : []),
-    {
-      label: "今日与月亮",
-      body: big3
-        ? dailyCalibration
-          ? `今日外场为「${dailyCalibration.envElement}」元素（强度 ${dailyCalibration.envIntensity}），与月亮${ZODIAC_CN[big3.moon]}形成可讨论的对撞接口——先读节律，再判对错。`
-          : `月亮${ZODIAC_CN[big3.moon]}：情感节律为结构应力主参考之一。`
-        : "录入身份卡后，此处将合并今日环境元素与出生月亮。",
-    },
-    {
-      label: "阅读角度",
-      body:
-        dossier.lens === "lunar_cycle"
-          ? "当前按「月亮周期」组织解读：适合看情绪节奏与休整窗口，不单日断吉凶。"
-          : "当前按「时间主星」组织解读：适合看中长线主题与压力链，可与日后行运对照。",
-    },
-    {
-      label: "说明",
-      body: "解读结合出生星盘与当日环境参考，不作无依据的宿命结论。",
-    },
-  ];
+  const majorAspectReport = useMemo(
+    () =>
+      chartKindHasWheelTableObservation(chartKind)
+        ? buildMajorAspectObservationReport(swissChartWheelData, chartKind, voiceStyleId)
+        : null,
+    [chartKind, swissChartWheelData, voiceStyleId],
+  );
+  const houseCuspReport = useMemo(
+    () =>
+      chartKindHasWheelTableObservation(chartKind)
+        ? buildHouseCuspObservationReport(swissChartWheelData, chartKind, voiceStyleId)
+        : null,
+    [chartKind, swissChartWheelData, voiceStyleId],
+  );
+  const minorAspectReport = useMemo(
+    () =>
+      chartKindHasWheelTableObservation(chartKind)
+        ? buildMinorAspectObservationReport(swissChartWheelData, chartKind, voiceStyleId)
+        : null,
+    [chartKind, swissChartWheelData, voiceStyleId],
+  );
+  const angleAspectReport = useMemo(
+    () =>
+      chartKindHasWheelTableObservation(chartKind)
+        ? buildAngleAspectObservationReport(swissChartWheelData, chartKind, voiceStyleId)
+        : null,
+    [chartKind, swissChartWheelData, voiceStyleId],
+  );
+  const planetPositionsReport = useMemo(
+    () =>
+      chartKindHasWheelTableObservation(chartKind)
+        ? buildPlanetPositionsObservationReport(swissChartWheelData, chartKind, voiceStyleId)
+        : null,
+    [chartKind, swissChartWheelData, voiceStyleId],
+  );
+  const stressItems = answerLayer.items;
 
   const wheelDataRowClass = "w-full min-w-0 space-y-4";
 
@@ -887,12 +1127,19 @@ export default function AstroWorkspace() {
       { k: "天底" as const, text: formatLongitudeInSignZh(ic).text },
     ];
   })();
+  const axisInterpretation = useMemo(
+    () =>
+      chartKindHasWheelTableObservation(chartKind)
+        ? buildAxisInterpretationZh(swissChartWheelData, chartKind, voiceStyleId)
+        : null,
+    [chartKind, swissChartWheelData, voiceStyleId],
+  );
 
   const switchZone = (zone: CoreZoneId) => {
     setActiveZone(zone);
     setZoneFxKey((k) => k + 1);
     if (zone === "origin") setOriginPulseKey((k) => k + 1);
-    const target = CORE_ZONES.find((z) => z.id === zone)?.anchorId;
+    const target = coreZones.find((z) => z.id === zone)?.anchorId;
     if (target) {
       window.setTimeout(() => {
         document.getElementById(target)?.scrollIntoView({
@@ -923,66 +1170,100 @@ export default function AstroWorkspace() {
         className="relative z-10 mx-auto w-full min-w-0 max-w-6xl px-3 pt-3 sm:px-4 md:pt-4 lg:px-6"
         style={{ fontFamily: "var(--font-geist-sans), sans-serif" }}
       >
-        <header className="relative mb-4 flex min-w-0 items-start justify-center border-b border-white/[0.07] pb-4 pt-1.5">
+        <header className="mb-4 grid min-w-0 grid-cols-[auto_minmax(0,1fr)_auto] items-start gap-2 border-b border-white/[0.07] pb-4 pt-1.5 sm:gap-3">
           <Link
             href="/hub"
-            className="absolute left-0 top-1 inline-flex shrink-0 items-center gap-1 rounded-full border border-[#B8942E]/35 px-2.5 py-2 text-xs text-[#C8A85C] transition-colors hover:border-[#C5A059]/45"
+            className="inline-flex shrink-0 items-center gap-1 rounded-full border border-[#B8942E]/35 px-2.5 py-2 text-xs text-[#C8A85C] transition-colors hover:border-[#C5A059]/45"
           >
             <ChevronLeft className="h-4 w-4" strokeWidth={1.5} />
             返回
           </Link>
           <div className="min-w-0 text-center">
-            <h1 className={`${UI_SCALE.pageTitle} font-bold tracking-[0.08em] text-[#D4C48A] ${serif.className}`}>占星工作台</h1>
+            <h1
+              className={`${UI_SCALE.pageTitle} font-bold tracking-[0.08em] text-[#D4C48A]`}
+              style={{ fontFamily: SERIF_ZH }}
+            >
+              占星工作台
+            </h1>
             <p className="mt-1 text-sm font-medium tracking-[0.08em] text-zinc-400/95 sm:text-base">
               以主流口径立根，以中文语境通神。
             </p>
           </div>
+          {store.dossiers.length > 1 ? (
+            <div className="min-w-0 max-w-[9.5rem] justify-self-end sm:max-w-[11rem]">
+              <label className="sr-only" htmlFor="astro-header-dossier-select">
+                切换案卷
+              </label>
+              <select
+                id="astro-header-dossier-select"
+                className="w-full truncate rounded-lg border border-white/[0.1] bg-black/35 px-2 py-2 text-[11px] text-zinc-300 outline-none focus:border-[#C5A059]/35 sm:text-xs"
+                value={store.activeId}
+                onChange={(e) => persistStore({ ...store, activeId: e.target.value })}
+              >
+                {store.dossiers.map((d) => (
+                  <option key={d.id} value={d.id}>
+                    {d.title}
+                  </option>
+                ))}
+              </select>
+            </div>
+          ) : (
+            <span className="w-0 shrink-0" aria-hidden />
+          )}
         </header>
 
         <div className="sticky top-0 z-30 -mx-3 border-b border-white/[0.06] bg-[#0A0A1F]/92 px-3 py-2 backdrop-blur-md sm:-mx-4 sm:px-4 md:-mx-6 md:px-6 lg:-mx-6">
-          <div className={`flex w-full min-w-0 gap-3 overflow-x-auto pb-1 [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden ${chartMono.className}`}>
-            {CORE_ZONES.map((zone) => {
+          <div
+            ref={zoneTabsScrollRef}
+            onWheelCapture={onZoneTabsWheel}
+            title="可水平滚动（鼠标/触控板向左/向右）"
+            className="flex w-full min-w-0 gap-2 overflow-x-auto pb-1 font-sans [-ms-overflow-style:auto] [scrollbar-width:thin] sm:gap-3 md:overflow-visible [&::-webkit-scrollbar]:h-1.5 [&::-webkit-scrollbar-thumb]:bg-white/[0.18] [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-track]:bg-transparent"
+          >
+            {coreZones.map((zone) => {
               const active = activeZone === zone.id;
               return (
                 <button
                   key={zone.id}
                   type="button"
                   onClick={() => switchZone(zone.id)}
-                  className={`group shrink-0 rounded-lg border px-3 py-2 text-left transition-all duration-300 ${
+                  className={`group flex min-w-[8.75rem] shrink-0 flex-col rounded-xl border px-3 py-2.5 text-left transition-all duration-300 md:min-w-0 md:flex-1 md:basis-0 ${
                     active
-                      ? "border-[#C5A059]/55 bg-[#C5A059]/8 opacity-100 shadow-[0_0_12px_rgba(197,160,89,0.22)]"
+                      ? "border-[#C5A059]/55 bg-[#C5A059]/10 opacity-100 shadow-[0_0_12px_rgba(197,160,89,0.22)]"
                       : "border-white/[0.12] bg-transparent opacity-85 hover:border-[#C5A059]/35 hover:opacity-100"
                   }`}
                 >
-                  <div className={UI_SCALE.zoneTitle}>
+                  <div
+                    className={`${UI_SCALE.zoneTitle} transition-colors ${active ? "text-[#E8D4A8]" : "group-hover:text-zinc-200"}`}
+                  >
                     {zone.title}
                   </div>
-                  <div className={`mt-1 ${UI_SCALE.zoneCopy}`}>{zone.copy}</div>
-                  <div
-                    className={`mt-1.5 h-[0.5px] transition-all ${active ? "w-full bg-[#C5A059]" : "w-full bg-white/[0.1]"}`}
-                    style={active ? { boxShadow: "0 0 10px rgba(197,160,89,0.45), 0 0 18px rgba(197,160,89,0.28)" } : undefined}
-                  />
+                  <div className={`mt-0.5 max-w-[20rem] leading-snug md:max-w-none ${UI_SCALE.zoneCopy}`}>
+                    {zone.copy}
+                  </div>
                 </button>
               );
             })}
           </div>
-          <div className="mt-1 flex items-center justify-between gap-2">
-            <p className={UI_SCALE.zoneHint}>先用「实相观测」看盘；需要改生日和规则时切到「初始参数」。</p>
-            <button
-              type="button"
-              onClick={() => setSimpleMode((v) => !v)}
-              className={`shrink-0 border border-[#C5A059]/45 bg-transparent ${UI_SCALE.panelToggle} transition-colors hover:border-[#C5A059]/70`}
-            >
-              {simpleMode ? "显示完整模式" : "切回简洁模式"}
-            </button>
+          <div className="mt-1">
+            <p className={UI_SCALE.zoneHint}>
+              轮盘与星盘数据表在下方始终可见，与顶部三档是否高亮无关。三档用于滚动定位：「初始参数」管档案与排盘设置；「实相观测」锚到轮盘与数据卡；「灵识解构」锚到解读与读数分层。改生日、宫位制等请切「初始参数」。
+            </p>
           </div>
         </div>
 
-        <motion.div
-          className="mt-3 space-y-2"
-        >
+        <div className="mt-3">
+          <div className="flex w-full min-w-0 flex-col gap-1 rounded-lg border border-white/[0.1] bg-black/20 px-3 py-2.5">
+            <div className="text-sm text-zinc-400">
+              <span className="font-medium text-zinc-300">盘面类型与时刻选项</span>
+            </div>
+            <div className="text-[12px] text-zinc-600">
+              当前：{CHART_KIND_OPTIONS.find((x) => x.id === chartKind)?.label ?? chartKind}
+            </div>
+          </div>
+
+          <motion.div className="mt-2 space-y-2" initial={false}>
             <div className="flex w-full min-w-0 flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
-              <div className={`flex w-full min-w-0 gap-3.5 overflow-x-auto pb-1 [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden ${chartMono.className}`}>
+              <div className="flex w-full min-w-0 gap-3.5 overflow-x-auto pb-1 font-sans [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
                 {CHART_KIND_OPTIONS.map((o) => (
                   <button
                     key={o.id}
@@ -999,7 +1280,16 @@ export default function AstroWorkspace() {
                   </button>
                 ))}
               </div>
+              <button
+                type="button"
+                onClick={onRefreshNow}
+                className="shrink-0 rounded-lg border border-[#C5A059]/45 px-3 py-2 text-sm font-medium tracking-[0.08em] text-[#D4C48A] transition-colors hover:border-[#C5A059]/70"
+                title="强制重算当前盘面与时刻"
+              >
+                立即重算
+              </button>
             </div>
+
             {chartKind === "solar_return" && birthYmd ? (
               <div className="flex flex-wrap items-center gap-2">
                 <label className="text-xs text-zinc-500" htmlFor="astro-solar-return-year">
@@ -1021,6 +1311,7 @@ export default function AstroWorkspace() {
               </div>
             ) : null}
           </motion.div>
+        </div>
 
         <motion.main
           key={zoneFxKey}
@@ -1029,47 +1320,70 @@ export default function AstroWorkspace() {
           animate={{ opacity: 1, filter: "blur(0px)", scale: 1 }}
           transition={{ duration: 0.4, ease: "easeOut" }}
         >
-          <div className={`w-full min-w-0 space-y-4 ${activeZone === "decoding" ? "hidden" : ""}`}>
+          {/* 勿在「灵识解构」下整段隐藏：否则用户切到解读区会看不到轮盘与宫位数据表 */}
+          <div className="w-full min-w-0 space-y-4">
             {activeZone === "origin" && chartKind === "synastry" ? (
               <div className="scroll-mt-24">
-                <div className="grid grid-cols-1 gap-2 sm:grid-cols-3">
-                  <label className="text-sm text-zinc-300">
-                    关系名
-                    <input
-                      type="text"
-                      value={relationName}
-                      onChange={(e) => setRelationName(e.target.value)}
-                      placeholder="例如：A 与 B"
-                      className="mt-1 w-full rounded-xl border border-white/[0.08] bg-black/30 px-3 py-2.5 text-base text-zinc-300 outline-none placeholder:text-zinc-500 focus:border-[#C5A059]/35"
-                    />
-                  </label>
-                  <label className="text-sm text-zinc-300">
-                    你的称呼
-                    <input
-                      type="text"
-                      value={selfName}
-                      onChange={(e) => setSelfName(e.target.value)}
-                      placeholder="例如：小赵"
-                      className="mt-1 w-full rounded-xl border border-white/[0.08] bg-black/30 px-3 py-2.5 text-base text-zinc-300 outline-none placeholder:text-zinc-500 focus:border-[#C5A059]/35"
-                    />
-                  </label>
-                  <label className="text-sm text-zinc-300">
-                    对象称呼
-                    <input
-                      type="text"
-                      value={partnerName}
-                      onChange={(e) => setPartnerName(e.target.value)}
-                      placeholder="例如：小A"
-                      className="mt-1 w-full rounded-xl border border-white/[0.08] bg-black/30 px-3 py-2.5 text-base text-zinc-300 outline-none placeholder:text-zinc-500 focus:border-[#C5A059]/35"
-                    />
-                  </label>
+                <div className="mt-2 rounded-lg border border-white/[0.1] bg-black/20 px-3 py-2.5">
+                  <div className="mb-2 text-sm font-medium text-zinc-300">合盘称呼与关系名</div>
+                  <div className="mb-2.5">
+                    <p className="mb-2 text-xs text-zinc-500">对象档位（独立存储）</p>
+                    <div className="flex flex-wrap gap-2">
+                      {PARTNER_SLOTS.map((slot) => (
+                        <button
+                          key={slot.id}
+                          type="button"
+                          onClick={() => setActivePartnerSlot(slot.id)}
+                          className={`rounded-lg border px-2.5 py-1.5 text-xs tracking-[0.08em] transition-colors ${
+                            activePartnerSlot === slot.id
+                              ? "border-[#C5A059]/70 bg-[#C5A059]/12 text-[#D4C48A]"
+                              : "border-white/[0.12] text-zinc-400 hover:border-[#C5A059]/35 hover:text-zinc-300"
+                          }`}
+                        >
+                          {slot.label}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+                  <div className="grid grid-cols-1 gap-2 sm:grid-cols-3">
+                    <label className="text-sm text-zinc-300">
+                      关系名
+                      <input
+                        type="text"
+                        value={relationName}
+                        onChange={(e) => setRelationName(e.target.value)}
+                        placeholder="例如：A 与 B"
+                        className="mt-1 w-full rounded-xl border border-white/[0.08] bg-black/30 px-3 py-2.5 text-base text-zinc-300 outline-none placeholder:text-zinc-500 focus:border-[#C5A059]/35"
+                      />
+                    </label>
+                    <label className="text-sm text-zinc-300">
+                      你的称呼
+                      <input
+                        type="text"
+                        value={selfName}
+                        onChange={(e) => setSelfName(e.target.value)}
+                        placeholder="例如：小赵"
+                        className="mt-1 w-full rounded-xl border border-white/[0.08] bg-black/30 px-3 py-2.5 text-base text-zinc-300 outline-none placeholder:text-zinc-500 focus:border-[#C5A059]/35"
+                      />
+                    </label>
+                    <label className="text-sm text-zinc-300">
+                      对象称呼
+                      <input
+                        type="text"
+                        value={partnerName}
+                        onChange={(e) => setPartnerName(e.target.value)}
+                        placeholder="例如：小A"
+                        className="mt-1 w-full rounded-xl border border-white/[0.08] bg-black/30 px-3 py-2.5 text-base text-zinc-300 outline-none placeholder:text-zinc-500 focus:border-[#C5A059]/35"
+                      />
+                    </label>
+                  </div>
                 </div>
               </div>
             ) : null}
             <div id="section-chart-birth" className={`scroll-mt-24 ${activeZone === "origin" ? "" : "hidden"}`}>
               <BCard deboxed title="出生档案" subtitle="与首页身份金卡同档；解锁后即可稳定生成各类盘面。">
                 <div className="flex flex-wrap items-center justify-between gap-2">
-                  <div className={`flex min-w-0 flex-1 items-center gap-4 overflow-x-auto whitespace-nowrap text-sm tracking-[0.08em] ${chartMono.className} [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden`}>
+                  <div className="flex min-w-0 flex-1 items-center gap-4 overflow-x-auto whitespace-nowrap font-sans text-sm tracking-wide [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
                     <span className="text-zinc-200">{profileRow ? "已保存出生信息" : "尚未录入"}</span>
                     <span className="text-[#E8D4A8]/95">{coordStatus}</span>
                   </div>
@@ -1110,6 +1424,9 @@ export default function AstroWorkspace() {
                 deboxed
                 title="排盘设置"
                 subtitle="统一管理排盘口径。先用主流默认，再做研究级微调。"
+                foldable
+                foldOpen={settingsOpen}
+                onFoldToggle={() => setSettingsOpen((o) => !o)}
               >
                 <div className="space-y-5">
                   <div className="flex flex-wrap items-center justify-between gap-2">
@@ -1123,13 +1440,54 @@ export default function AstroWorkspace() {
                     </button>
                   </div>
                   <div>
-                    <p className="mb-2 text-sm font-medium text-zinc-300">宫位制（决定宫位切分，影响落宫与主题重心）</p>
+                    <p className="mb-2 text-sm font-medium text-zinc-300">{houseSystemWorkspaceUi.sectionTitle}</p>
                     <OptionPills
-                      ariaLabel="宫位制"
+                      ariaLabel={houseSystemWorkspaceUi.ariaCommon}
                       value={dossier.houseSystem}
                       onChange={onHouseSystemChange}
-                      options={HOUSE_SYSTEM_OPTIONS}
+                      options={HOUSE_SYSTEM_OPTIONS_COMMON}
+                      containerClassName="grid grid-cols-2 gap-2 sm:grid-cols-3 xl:grid-cols-4"
+                      fullWidthPills
                     />
+                    {!houseSystemMoreOpen && HOUSE_SYSTEM_MORE_IDS.has(dossier.houseSystem) ? (
+                      <p className="mt-2 text-[13px] leading-relaxed text-zinc-500">
+                        {houseSystemWorkspaceUi.moreListPrefix}
+                        <span className="font-medium text-[#D4C48A]">{houseSystemLabelZh(dossier.houseSystem)}</span>
+                        {houseSystemWorkspaceUi.moreListSuffix}
+                        <button
+                          type="button"
+                          onClick={() => setHouseSystemMoreOpen(true)}
+                          className="ml-2 border-b border-[#C5A059]/50 pb-px text-[13px] font-medium tracking-[0.06em] text-[#D4C48A] transition-colors hover:border-[#C5A059] hover:text-[#E8D4A8]"
+                        >
+                          {houseSystemWorkspaceUi.expandMoreLink}
+                        </button>
+                      </p>
+                    ) : null}
+                    <button
+                      type="button"
+                      onClick={() => setHouseSystemMoreOpen((o) => !o)}
+                      className="mt-3 flex w-full items-center justify-center gap-2 rounded-lg border border-white/[0.1] bg-black/25 py-2.5 text-[13px] font-medium tracking-[0.12em] text-zinc-400 transition-colors hover:border-[#C5A059]/35 hover:text-[#D4C48A] sm:w-auto sm:px-5"
+                      aria-expanded={houseSystemMoreOpen}
+                    >
+                      {houseSystemMoreOpen ? houseSystemWorkspaceUi.collapseMoreBar : houseSystemWorkspaceUi.expandMoreBar}
+                    </button>
+                    {houseSystemMoreOpen ? (
+                      <div className="mt-3 border-t border-white/[0.08] pt-3">
+                        <p className="mb-2 text-[12px] font-medium tracking-[0.14em] text-zinc-500">
+                          {houseSystemWorkspaceUi.moreHeading}
+                        </p>
+                        <div className="max-h-[min(380px,50vh)] overflow-y-auto overscroll-y-contain rounded-md pr-1 [-webkit-overflow-scrolling:touch] [scrollbar-color:rgba(197,160,89,0.35)_transparent] [scrollbar-width:thin]">
+                          <OptionPills
+                            ariaLabel={houseSystemWorkspaceUi.ariaMore}
+                            value={dossier.houseSystem}
+                            onChange={onHouseSystemChange}
+                            options={HOUSE_SYSTEM_OPTIONS_MORE}
+                            containerClassName="grid grid-cols-2 gap-2 sm:grid-cols-3 xl:grid-cols-4"
+                            fullWidthPills
+                          />
+                        </div>
+                      </div>
+                    ) : null}
                   </div>
                   <div>
                     <p className="mb-2 text-sm font-medium text-zinc-300">次限口径（设定次限推运基准；默认：热带年）</p>
@@ -1149,20 +1507,37 @@ export default function AstroWorkspace() {
                       options={TERTIARY_MONTH_BASIS_OPTIONS}
                     />
                   </div>
-                  <div className="grid grid-cols-1 gap-2 text-sm sm:grid-cols-2">
-                    <div className="rounded-xl border border-white/[0.08] bg-black/20 px-3 py-2 text-zinc-200">
-                      相位集：{ASPECT_PRESET_OPTIONS.find((x) => x.id === mainstreamSettings.aspectPreset)?.label ?? "主相位"}
-                    </div>
-                    <div className="rounded-xl border border-white/[0.08] bg-black/20 px-3 py-2 text-zinc-200">
-                      容许度：{ORB_PRESET_OPTIONS.find((x) => x.id === mainstreamSettings.orbPreset)?.label ?? "主流默认"}
-                    </div>
+                  <div>
+                    <p className="mb-2 text-sm font-medium text-zinc-300">相位集（盘内、轴点、行运×本命、合盘共用）</p>
+                    <OptionPills
+                      ariaLabel="相位集"
+                      value={mainstreamSettings.aspectPreset}
+                      onChange={onAspectPresetChange}
+                      options={ASPECT_PRESET_OPTIONS}
+                    />
+                  </div>
+                  <div>
+                    <p className="mb-2 text-sm font-medium text-zinc-300">容许度（主相位 / 次要相位共用一对数值）</p>
+                    <OptionPills
+                      ariaLabel="容许度预设"
+                      value={mainstreamSettings.orbPreset}
+                      onChange={onOrbPresetChange}
+                      options={ORB_PRESET_OPTIONS}
+                    />
                   </div>
                 </div>
               </BCard>
             </div>
 
             <div id="section-chart-synastry-profile" className={`scroll-mt-24 ${activeZone === "origin" && chartKind === "synastry" ? "" : "hidden"}`}>
-              <BCard deboxed title="合盘对象（对象B）" subtitle="合盘不贴标签，而是识别关系结构中的引力、阻力与成长路径。">
+              <BCard
+                deboxed
+                title="合盘对象（对象B）"
+                subtitle="合盘不贴标签，而是识别关系结构中的引力、阻力与成长路径。"
+                foldable
+                foldOpen={synastryProfileOpen}
+                onFoldToggle={() => setSynastryProfileOpen((o) => !o)}
+              >
                 <HomeIdentityGoldBlock
                   layoutVariant="embedded"
                   withEnergyHeader={false}
@@ -1170,25 +1545,102 @@ export default function AstroWorkspace() {
                   onUnlockPersistSuccess={onPartnerProfileSaved}
                   useSwissEphemeris={true}
                   preferFormWhenProfileExists={true}
-                  profileStorageKey={PARTNER_PROFILE_STORAGE_KEY}
+                  profileStorageKey={activePartnerStorageKey}
                   notifyProfileChange={false}
                 />
               </BCard>
             </div>
 
-            <div className={`${wheelDataRowClass} ${activeZone === "reality" || activeZone === "origin" ? "" : "hidden"}`}>
+            <div className={wheelDataRowClass}>
               <div id="section-chart-wheel" className="min-w-0 scroll-mt-24">
-                <BCard
-                  headerMono
-                  title="轮盘"
-                  subtitle="下方开关可简化盘面；右侧（宽屏）为星盘数据表，可一同对照。"
-                >
-                  {swissChartWheelData?.chartKindMeta?.lineZh ? (
-                    <p
-                      className={`${chartMono.className} mb-3 text-[11px] leading-relaxed tracking-[0.4em] text-zinc-500`}
-                    >
-                      {swissChartWheelData.chartKindMeta.lineZh}
-                    </p>
+                      <BCard compact title="轮盘" subtitle={chartWheelCardSubtitleStyled} className="p-2 sm:p-4">
+                  {swissChartWheelData ? (
+                    <div className="mb-3 rounded-md border border-white/[0.08] bg-black/20 px-3 py-2 font-sans">
+                      <div className="flex min-w-0 flex-wrap gap-x-4 gap-y-2">
+                        <button
+                          type="button"
+                          onClick={() => setShowAspectLines((v) => !v)}
+                          className={`bg-transparent px-0 pb-1 text-[13px] tracking-wide transition-colors ${
+                            showAspectLines
+                              ? "border-b-[0.3px] border-[#C5A059] text-[#C5A059]"
+                              : "border-b-[0.3px] border-transparent text-zinc-500 hover:border-[#C5A059]/35 hover:text-zinc-400"
+                          }`}
+                        >
+                          相位线
+                        </button>
+                        <button
+                          type="button"
+                          disabled={!showAspectLines || mainstreamSettings.aspectPreset === "major_only"}
+                          onClick={() => setShowMinorAspectLines((v) => !v)}
+                          className={`bg-transparent px-0 pb-1 text-[13px] tracking-wide transition-colors disabled:cursor-not-allowed disabled:opacity-35 ${
+                            minorAspectLinesOnWheel
+                              ? "border-b-[0.3px] border-[#C5A059] text-[#C5A059]"
+                              : "border-b-[0.3px] border-transparent text-zinc-500 hover:border-[#C5A059]/35 hover:text-zinc-400"
+                          }`}
+                          title={
+                            !showAspectLines
+                              ? "请先开启相位线"
+                              : mainstreamSettings.aspectPreset === "major_only"
+                                ? "相位集为「仅主相位」时轮盘不绘制次要相位线（与读数区一致）"
+                                : undefined
+                          }
+                        >
+                          次要相位线
+                        </button>
+                        <button
+                          type="button"
+                          disabled={!showAspectLines}
+                          onClick={() => setShowAngleAspectLines((v) => !v)}
+                          className={`bg-transparent px-0 pb-1 text-[13px] tracking-wide transition-colors disabled:cursor-not-allowed disabled:opacity-35 ${
+                            showAngleAspectLines
+                              ? "border-b-[0.3px] border-[#C5A059] text-[#C5A059]"
+                              : "border-b-[0.3px] border-transparent text-zinc-500 hover:border-[#C5A059]/35 hover:text-zinc-400"
+                          }`}
+                          title={
+                            !showAspectLines
+                              ? "请先开启相位线"
+                              : mainstreamSettings.aspectPreset === "major_only"
+                                ? "仅主相位时轮盘不绘轴点次要相位；行星↔上升/天顶的主相位仍会显示"
+                                : undefined
+                          }
+                        >
+                          轴点相位线
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => setShowOuterBodies((v) => !v)}
+                          className={`bg-transparent px-0 pb-1 text-[13px] tracking-wide transition-colors ${
+                            showOuterBodies
+                              ? "border-b-[0.3px] border-[#C5A059] text-[#C5A059]"
+                              : "border-b-[0.3px] border-transparent text-zinc-500 hover:border-[#C5A059]/35 hover:text-zinc-400"
+                          }`}
+                        >
+                          外行星
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => setShowChartRadials((v) => !v)}
+                          className={`bg-transparent px-0 pb-1 text-[13px] tracking-wide transition-colors ${
+                            showChartRadials
+                              ? "border-b-[0.3px] border-[#C5A059] text-[#C5A059]"
+                              : "border-b-[0.3px] border-transparent text-zinc-500 hover:border-[#C5A059]/35 hover:text-zinc-400"
+                          }`}
+                        >
+                          径向线
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => setShowAllBodies((v) => !v)}
+                          className={`bg-transparent px-0 pb-1 text-[13px] tracking-wide transition-colors ${
+                            showAllBodies
+                              ? "border-b-[0.3px] border-[#C5A059] text-[#C5A059]"
+                              : "border-b-[0.3px] border-transparent text-zinc-500 hover:border-[#C5A059]/35 hover:text-zinc-400"
+                          }`}
+                        >
+                          全盘高亮
+                        </button>
+                      </div>
+                    </div>
                   ) : null}
                   <div className="w-full min-w-0 overflow-x-visible px-0 sm:px-0">
                     <motion.div
@@ -1196,95 +1648,100 @@ export default function AstroWorkspace() {
                       animate={activeZone === "origin" ? { scale: [1, 1.012, 0.996, 1], rotate: [0, -1.2, 0.6, 0] } : { scale: 1, rotate: 0 }}
                       transition={{ duration: 0.24, ease: "easeOut" }}
                     >
-                    <motion.div
-                      key={houseSystemPulseKey}
-                      initial={false}
-                      animate={{ rotate: [0, 0.9, -0.6, 0], scale: [1, 1.006, 0.998, 1] }}
-                      transition={{ duration: 0.42, ease: "easeInOut" }}
-                    >
-                    <AstroChartStage className="w-full">
-                      <div className="mx-auto aspect-square w-full min-w-0 max-w-[min(96vw,100%)] overflow-x-visible sm:max-w-[min(94vw,100%)] xl:max-w-[min(100%,min(96vw,96vh))]">
-                        <ChartWheelPlaceholder
-                          monoClassName={chartMono.className}
-                          highlightSkeleton={!showAllBodies}
-                          showAspectLines={showAspectLines}
-                          showOuterBodies={showOuterBodies}
-                          showRadials={showChartRadials}
-                          chartData={swissChartWheelData}
-                          className="h-full w-full max-w-none"
-                        />
-                      </div>
-                    </AstroChartStage>
-                    </motion.div>
+                      <motion.div
+                        key={houseSystemPulseKey}
+                        initial={false}
+                        animate={{ rotate: [0, 0.9, -0.6, 0], scale: [1, 1.006, 0.998, 1] }}
+                        transition={{ duration: 0.42, ease: "easeInOut" }}
+                      >
+                        <AstroChartStage className="w-full">
+                          <div className="mx-auto aspect-square w-full min-w-0 max-w-[min(100vw,100%)] overflow-x-visible sm:max-w-[min(98vw,100%)] xl:max-w-[min(100%,min(96vw,96vh))]">
+                            <ChartWheelPlaceholder
+                              monoClassName="font-mono tabular-nums"
+                              highlightSkeleton={!showAllBodies}
+                              showAspectLines={showAspectLines}
+                              showMinorAspectLines={minorAspectLinesOnWheel}
+                              showAngleAspectLines={showAngleAspectLines}
+                              showOuterBodies={showOuterBodies}
+                              showRadials={showChartRadials}
+                              chartData={swissChartWheelData}
+                              className="h-full w-full max-w-none"
+                            />
+                          </div>
+                        </AstroChartStage>
+                      </motion.div>
                     </motion.div>
                   </div>
-                  {axisInlineRows.length > 0 ? (
-                    <div className={`mt-3 rounded-md border border-white/[0.06] bg-black/25 px-3 py-2 ${chartMono.className}`}>
-                      <div className="mb-1 text-[11px] tracking-[0.16em] text-zinc-400">轴线定位</div>
-                      <div className="grid grid-cols-2 gap-x-4 gap-y-1 sm:grid-cols-4">
+
+                  {swissChartWheelData && axisInlineRows.length > 0 ? (
+                    <div className="mt-2 rounded-md border border-white/[0.08] bg-black/25 px-3 py-2.5 font-sans">
+                      <div className="mb-1.5 text-[11px] font-medium tracking-[0.12em] text-zinc-500">轴线定位</div>
+                      <div className="grid grid-cols-2 gap-x-4 gap-y-2 sm:grid-cols-4">
                         {axisInlineRows.map((r) => (
-                          <div key={r.k} className="flex items-baseline gap-2 text-[13px]">
-                            <span className="text-zinc-400">{r.k}</span>
-                            <span className="text-zinc-400">{r.text}</span>
+                          <div key={r.k} className="flex min-w-0 flex-col gap-0.5 sm:flex-row sm:items-baseline sm:gap-2">
+                            <span className="shrink-0 text-[12px] text-zinc-500">{r.k}</span>
+                            <span className="font-mono text-[12px] tabular-nums leading-snug text-zinc-300 sm:text-[13px]">
+                              {r.text}
+                            </span>
                           </div>
                         ))}
                       </div>
+                      {axisInterpretation ? (
+                        <div className="mt-2 border-t border-white/[0.06] pt-2 text-[11px] leading-relaxed text-zinc-400">
+                          <p className="text-zinc-500">常规解读：{axisInterpretation.regular}</p>
+                          <p className="mt-1.5 text-zinc-500">专业解读：{axisInterpretation.professional}</p>
+                        </div>
+                      ) : (
+                        <p className="mt-2 border-t border-white/[0.06] pt-2 text-[11px] leading-relaxed text-zinc-500">
+                          四轴是读数；含义、宫头与相位解读在下方「星盘数据」各张表里（每表下有【核心快照】起头的说明）。
+                        </p>
+                      )}
                     </div>
                   ) : null}
-                  {swissChartWheelData ? (
-                    <div className={`mt-5 flex min-w-0 flex-wrap gap-6 ${chartMono.className}`}>
-                      <button
-                        type="button"
-                        onClick={() => setShowAspectLines((v) => !v)}
-                        className={`bg-transparent px-0 pb-1 text-[13px] tracking-[0.15em] transition-colors ${
-                          showAspectLines
-                            ? "border-b-[0.3px] border-[#C5A059] text-[#C5A059]"
-                            : "border-b-[0.3px] border-transparent text-zinc-500 hover:border-[#C5A059]/35 hover:text-zinc-400"
-                        }`}
-                      >
-                        相位线
-                      </button>
-                      <button
-                        type="button"
-                        onClick={() => setShowOuterBodies((v) => !v)}
-                        className={`bg-transparent px-0 pb-1 text-[13px] tracking-[0.15em] transition-colors ${
-                          showOuterBodies
-                            ? "border-b-[0.3px] border-[#C5A059] text-[#C5A059]"
-                            : "border-b-[0.3px] border-transparent text-zinc-500 hover:border-[#C5A059]/35 hover:text-zinc-400"
-                        }`}
-                      >
-                        外行星
-                      </button>
-                      <button
-                        type="button"
-                        onClick={() => setShowChartRadials((v) => !v)}
-                        className={`bg-transparent px-0 pb-1 text-[13px] tracking-[0.15em] transition-colors ${
-                          showChartRadials
-                            ? "border-b-[0.3px] border-[#C5A059] text-[#C5A059]"
-                            : "border-b-[0.3px] border-transparent text-zinc-500 hover:border-[#C5A059]/35 hover:text-zinc-400"
-                        }`}
-                      >
-                        径向线
-                      </button>
-                      <button
-                        type="button"
-                        onClick={() => setShowAllBodies((v) => !v)}
-                        className={`bg-transparent px-0 pb-1 text-[13px] tracking-[0.15em] transition-colors ${
-                          showAllBodies
-                            ? "border-b-[0.3px] border-[#C5A059] text-[#C5A059]"
-                            : "border-b-[0.3px] border-transparent text-zinc-500 hover:border-[#C5A059]/35 hover:text-zinc-400"
-                        }`}
-                      >
-                        全盘高亮
-                      </button>
+
+                  {chartWheelData && swissError ? (
+                    <div className="mt-4">
+                      <SwissEphemerisErrorCallout display={swissError} compact onRetry={onSwissRetry} />
+                      {swissChartWheelData ? (
+                        <p className="mt-2 text-[11px] text-zinc-500">已保留上次可用盘面数据；可继续查看并稍后重算。</p>
+                      ) : null}
                     </div>
-                  ) : chartWheelData && swissError ? (
-                    <p className="mt-4 text-xs leading-relaxed text-rose-300/90">{swissError}</p>
-                  ) : chartWheelData && swissBusy ? (
+                  ) : null}
+                  {chartWheelData && swissBusy && !swissChartWheelData ? (
                     <p className="mt-4 text-xs leading-relaxed text-zinc-400">正在从瑞士星历生成轮盘…</p>
-                  ) : (
+                  ) : null}
+                  {!chartWheelData ? (
                     <p className="mt-4 text-xs leading-relaxed text-zinc-500">录入并解锁档案后，这里会显示轮盘与数据表。</p>
-                  )}
+                  ) : null}
+
+                  {swissChartWheelData ? (
+                    <>
+                      <button
+                        type="button"
+                        onClick={() => setWheelExtrasOpen((o) => !o)}
+                        className="mt-3 flex w-full min-w-0 items-center justify-between gap-2 rounded-lg border border-white/[0.08] bg-black/20 px-3 py-2 text-left text-[12px] text-zinc-400 transition-colors hover:border-[#C5A059]/22"
+                        aria-expanded={wheelExtrasOpen}
+                      >
+                        <span>{wheelExtrasOpen ? "收起" : "展开"}盘面说明与显示开关</span>
+                        <ChevronDown
+                          className={`h-4 w-4 shrink-0 text-zinc-500 transition-transform ${wheelExtrasOpen ? "rotate-180" : ""}`}
+                          aria-hidden
+                        />
+                      </button>
+                      {wheelExtrasOpen ? (
+                        <div className="mt-3 space-y-3">
+                          {swissChartWheelData.chartKindMeta?.lineZh ? (
+                            <p className="font-sans text-[12px] leading-relaxed text-zinc-500 sm:text-[13px]">
+                              {swissChartWheelData.chartKindMeta.lineZh}
+                            </p>
+                          ) : null}
+                          <p className="font-sans text-[12px] leading-relaxed text-zinc-500">
+                            显示开关已移到轮盘上方横条，便于边看边调。
+                          </p>
+                        </div>
+                      ) : null}
+                    </>
+                  ) : null}
                 </BCard>
               </div>
 
@@ -1292,22 +1749,49 @@ export default function AstroWorkspace() {
                 id="section-chart-data"
                 className="min-w-0 scroll-mt-24"
               >
-                <BCard title="星盘数据" subtitle="行星落点、宫位与主相位（可上下滑动查看）。" className="xl:min-w-[420px]">
+                <BCard
+                  title={CHART_DATA_CARD_TITLE_ZH[chartKind]}
+                  subtitle={chartDataCardSubtitleStyled}
+                  className="xl:min-w-[420px]"
+                  foldable
+                  foldOpen={chartDataOpen}
+                  onFoldToggle={() => setChartDataOpen((o) => !o)}
+                >
                   {swissChartWheelData ? (
                     <div className="max-h-[min(86vh,980px)] overflow-y-auto overflow-x-hidden [-webkit-overflow-scrolling:touch]">
+                      {swissError ? (
+                        <div className="mb-3">
+                          <SwissEphemerisErrorCallout display={swissError} compact onRetry={onSwissRetry} />
+                          <p className="mt-2 text-[11px] text-zinc-500">当前表格为上次可用结果。</p>
+                        </div>
+                      ) : null}
                       <AstroChartReadout
+                        key={chartKind}
                         data={swissChartWheelData}
                         synastry={chartKind === "synastry" ? synastryData : null}
+                        omitOuterSummary
                         className="!mx-auto !w-full !max-w-[960px] !border-0 !bg-transparent !p-0 !shadow-none"
+                        natalInlineReports={
+                          chartKindHasWheelTableObservation(chartKind) &&
+                          (planetPositionsReport ||
+                            majorAspectReport ||
+                            houseCuspReport ||
+                            minorAspectReport ||
+                            angleAspectReport)
+                            ? {
+                                planetPositionsReport,
+                                majorAspectReport,
+                                houseCuspReport,
+                                minorAspectReport,
+                                angleAspectReport,
+                                panelTitles: OBSERVATION_PANEL_TITLES_ZH[chartKind],
+                              }
+                            : null
+                        }
                       />
                     </div>
                   ) : chartWheelData && swissError ? (
-                    <div className="space-y-2 text-xs leading-relaxed">
-                      <p className="text-rose-300/90">{swissError}</p>
-                      <p className="text-zinc-500">
-                        请确认能访问本站目录 <span className="font-mono text-zinc-400">/swiss-ephe/</span> 下的星历文件，或刷新页面后重试。
-                      </p>
-                    </div>
+                    <SwissEphemerisErrorCallout display={swissError} onRetry={onSwissRetry} />
                   ) : chartWheelData && swissBusy ? (
                     <p className="text-xs leading-relaxed text-zinc-400">正在从瑞士星历计算星盘数据…</p>
                   ) : (
@@ -1321,278 +1805,262 @@ export default function AstroWorkspace() {
           <motion.div
             initial={false}
             animate={activeZone === "decoding" ? { opacity: 1, y: 0 } : { opacity: 1, y: 0 }}
-            className={`w-full min-w-0 space-y-4 ${activeZone === "origin" ? "hidden" : ""}`}
+            className={`w-full min-w-0 space-y-8 lg:space-y-10 ${activeZone === "origin" ? "hidden" : ""}`}
           >
               <div id="read-section-prefs" className="scroll-mt-24">
                 {activeZone === "decoding" ? (
-                  <BCard title="解读偏好" subtitle="话题与阅读角度会写入案卷；「环境与节奏」会跟着变。">
-                    <div className="space-y-5">
-                      <div>
-                        <p className="mb-2 text-xs font-medium text-zinc-500">关注话题</p>
-                        <OptionPills
-                          ariaLabel="关注话题"
-                          value={dossier.topic}
-                          onChange={(topic) => patchDossier({ topic })}
-                          options={TOPIC_OPTIONS}
-                        />
-                      </div>
-                      <div>
-                        <p className="mb-2 text-xs font-medium text-zinc-500">阅读角度</p>
-                        <OptionPills
-                          ariaLabel="阅读角度"
-                          value={dossier.lens}
-                          onChange={(lens) => patchDossier({ lens })}
-                          options={LENS_OPTIONS}
-                        />
-                      </div>
-                      <div>
-                        <p className="mb-2 text-xs font-medium text-zinc-500">议题补充（可选）</p>
-                        <textarea
-                          value={dossier.topicDetail}
-                          onChange={(e) => patchDossier({ topicDetail: e.target.value })}
-                          rows={3}
-                          className="w-full min-h-[4.5rem] resize-y rounded-xl border border-white/[0.08] bg-black/30 p-3 text-sm leading-relaxed text-zinc-200 outline-none placeholder:text-zinc-600 focus:border-[#3D7A86]/40"
-                          placeholder="例如：最近在换工作、在一段距离里、想看清一段关系…"
-                        />
-                      </div>
-                    </div>
-                  </BCard>
-                ) : null}
-              </div>
-
-              <div id="read-section-big3" className="scroll-mt-24">
-                {activeZone === "decoding" ? (
-                  <BCard title="你的日月升" subtitle="先看这三颗，最容易对上日常感受。">
-                    {big3 ? (
-                      <div className={`text-sm leading-relaxed text-zinc-300 ${serif.className}`}>
-                        <Big3Narrative big3={big3} />
-                      </div>
-                    ) : (
-                      <p className="text-sm text-zinc-500">请先在上方「出生档案」里录入并解锁。</p>
-                    )}
-                    {profileRow ? (
-                      <pre className="mt-4 max-w-full overflow-x-auto whitespace-pre-wrap break-words rounded-lg bg-black/25 p-3 text-[11px] leading-relaxed text-zinc-500" style={{ fontFamily: "var(--font-geist-mono), monospace" }}>
-                        {`${profileRow.birthdate} ${profileRow.birthTime}\n${profileRow.timeZone}\n${profileRow.placeLabel ?? `${profileRow.latitude}, ${profileRow.longitude}`}`}
-                      </pre>
+                  <section className="space-y-3">
+                    <button
+                      type="button"
+                      onClick={() => setDecodePrefsOpen((o) => !o)}
+                      className="flex w-full min-w-0 items-center justify-between text-left"
+                      aria-expanded={decodePrefsOpen}
+                    >
+                      <h2 className="text-[12px] font-medium uppercase tracking-[0.2em] text-zinc-500">解读校准</h2>
+                      <ChevronDown
+                        className={`h-4 w-4 shrink-0 text-zinc-600 transition-transform ${decodePrefsOpen ? "rotate-180" : ""}`}
+                        aria-hidden
+                      />
+                    </button>
+                    {decodePrefsOpen ? (
+                      <>
+                        <ul className="space-y-2 text-sm leading-relaxed text-zinc-300">
+                          <li>
+                            <span className="mr-2 text-zinc-600">关注话题：</span>
+                            {topicLabel || "自我认识"}
+                          </li>
+                          <li>
+                            <span className="mr-2 text-zinc-600">阅读角度：</span>
+                            {lensLabel || "时间主星"}
+                          </li>
+                          <li>
+                            <span className="mr-2 text-zinc-600">议题补充：</span>
+                            {dossier.topicDetail.trim() || "围绕本次读盘目标给出可执行建议。"}
+                          </li>
+                        </ul>
+                      </>
                     ) : null}
-                  </BCard>
+                  </section>
                 ) : null}
               </div>
 
               <div id="read-section-today" className="scroll-mt-24">
                 {activeZone === "reality" ? (
-                  <BCard title="今日参考" subtitle="仅供当天心情与节奏参考，不改变出生结构。">
-                    <p className="text-sm leading-relaxed text-zinc-400">{spectralLine}</p>
-                  </BCard>
-                ) : null}
-              </div>
-
-              <div id="read-section-text" className="scroll-mt-24 space-y-4">
-                {activeZone === "decoding" ? (
-                  <motion.div
-                    initial={{ opacity: 0, clipPath: "inset(0 0 100% 0)" }}
-                    animate={{ opacity: 1, clipPath: "inset(0 0 0% 0)" }}
-                    transition={{ duration: 0.35, ease: "easeOut" }}
-                    className="space-y-4"
+                  <BCard
+                    title="今日参考"
+                    subtitle={decodeSurfaceStyled.todayRefSubtitle}
+                    foldable
+                    foldOpen={todayRefOpen}
+                    onFoldToggle={() => setTodayRefOpen((o) => !o)}
                   >
-                    <BCard title="正文深度" subtitle="同一套算法，三种篇幅；全文较长，建议宽屏或慢慢滑。">
-                      <div className="flex flex-col gap-3 sm:flex-row sm:flex-wrap sm:items-start">
-                        {READING_DEPTH_OPTIONS.map((opt) => (
-                          <button
-                            key={opt.id}
-                            type="button"
-                            onClick={() => setReadingDepth(opt.id)}
-                            className={`flex min-w-0 flex-1 flex-col rounded-xl border px-3 py-2.5 text-left transition-colors sm:min-w-[7.5rem] sm:flex-none ${
-                              readingDepth === opt.id ? "border-[#C5A059]/40 bg-[#C5A059]/10" : "border-white/[0.08] hover:border-white/15"
-                            }`}
-                          >
-                            <span className="text-sm font-medium text-zinc-400">{opt.label}</span>
-                            <span className="mt-0.5 text-[11px] leading-snug text-zinc-500">{opt.subtitle}</span>
-                          </button>
-                        ))}
-                      </div>
-                    </BCard>
-
-                    <BCard
-                      title={
-                        readingDepth === "short"
-                          ? "通俗解读（短卡）"
-                          : readingDepth === "compact"
-                            ? "通俗解读（精简）"
-                            : "通俗解读（全文）"
-                      }
-                      subtitle={
-                        readingDepth === "short"
-                          ? "日月升与关系向短句，和首页长文错层。"
-                          : readingDepth === "compact"
-                            ? "结构与金卡相近的精简长文。"
-                            : "完整导师版；可收藏、可慢慢对照。"
-                      }
-                    >
-                      {big3 ? (
-                        <NatalReadingMarkdown source={readingMd} className="astro-workspace-reading text-sm leading-relaxed text-zinc-300" />
-                      ) : (
-                        <p className="text-sm text-zinc-500">载入档案后显示。</p>
-                      )}
-                    </BCard>
-                  </motion.div>
-                ) : null}
-              </div>
-
-              <div id="read-section-rhythm" className="scroll-mt-24">
-                {activeZone === "decoding" ? (
-                  <BCard title="环境与节奏" subtitle="把「今天」和「你的月亮」放在一起看。">
-                    <ul className="space-y-4">
-                      {stressItems.map((s) => (
-                        <li key={s.label} className="border-l-2 border-[#C5A059]/25 pl-3">
-                          <p className="text-xs font-medium text-[#C5A059]">{s.label}</p>
-                          <p className="mt-1.5 text-sm leading-relaxed text-zinc-400">{s.body}</p>
-                        </li>
-                      ))}
-                    </ul>
+                    <p className="text-sm leading-relaxed text-zinc-400">{spectralLineStyled}</p>
                   </BCard>
                 ) : null}
               </div>
+
+              {activeZone === "decoding" ? (
+                <div className="grid min-w-0 gap-12 xl:grid-cols-[minmax(0,1fr)_450px] xl:items-start xl:gap-14">
+                  <div id="read-section-text" className="scroll-mt-24 min-w-0">
+                    <section className="space-y-4">
+                      <button
+                        type="button"
+                        onClick={() => setDecodeInterpretOpen((o) => !o)}
+                        className="flex w-full min-w-0 items-center justify-between text-left"
+                        aria-expanded={decodeInterpretOpen}
+                      >
+                        <div className="min-w-0">
+                          <h2 className="text-[22px] font-semibold tracking-[0.06em] text-zinc-100" style={{ fontFamily: SERIF_ZH }}>
+                            结构解读
+                          </h2>
+                          <p className="mt-1 text-sm leading-relaxed text-zinc-500">{decodeSurfaceStyled.structureDecodeSubtitle}</p>
+                        </div>
+                        <ChevronDown
+                          className={`h-5 w-5 shrink-0 text-zinc-600 transition-transform ${decodeInterpretOpen ? "rotate-180" : ""}`}
+                          aria-hidden
+                        />
+                      </button>
+                      {decodeInterpretOpen ? (
+                        <>
+                          <section className="space-y-4">
+                            <h3 className="text-[10px] font-medium uppercase tracking-[0.22em] text-zinc-500">解读深度</h3>
+                            <p className="max-w-xl text-xs leading-relaxed text-zinc-500">
+                              同一套语料，三种篇幅；默认先读短卡，再进入精简或全文。{decodeSurfaceStyled.decodeDepthLead}
+                            </p>
+                            <div className="flex flex-wrap items-end gap-x-1 gap-y-1">
+                              {READING_DEPTH_OPTIONS.map((opt) => (
+                                <button
+                                  key={opt.id}
+                                  type="button"
+                                  onClick={() => setReadingDepth(opt.id)}
+                                  className={`rounded-none border-0 border-b-2 bg-transparent px-2 py-1 text-[13px] font-medium tracking-[0.14em] transition-colors ${
+                                    readingDepth === opt.id
+                                      ? "border-[#C5A059]/75 text-[#E8D4A8]"
+                                      : "border-transparent text-zinc-500 hover:text-zinc-300"
+                                  }`}
+                                >
+                                  {opt.label}
+                                </button>
+                              ))}
+                            </div>
+                            <p className="max-w-xl text-[11px] leading-relaxed text-zinc-600">
+                              {READING_DEPTH_OPTIONS.find((o) => o.id === readingDepth)?.subtitle}
+                            </p>
+                            <p className="max-w-xl text-[11px] leading-relaxed text-zinc-600/90">
+                              {astroViewCopyGuideVocal(chartKind, voiceStyleId).anchor}
+                            </p>
+                            <div className="flex flex-wrap items-center gap-x-4 gap-y-1">
+                              <button
+                                type="button"
+                                onClick={onExportReading}
+                                disabled={!big3}
+                                className="border-0 bg-transparent text-xs tracking-[0.14em] text-[#C5A059] underline decoration-[#C5A059]/40 underline-offset-4 transition-colors hover:text-[#E8D4A8] hover:decoration-[#C5A059]/70 disabled:cursor-not-allowed disabled:no-underline disabled:opacity-40"
+                              >
+                                复制当前解读
+                              </button>
+                              {exportStatus === "ok" ? <span className="text-xs text-emerald-400/90">已复制到剪贴板</span> : null}
+                              {exportStatus === "error" ? <span className="text-xs text-rose-300/90">复制失败，请检查浏览器权限</span> : null}
+                            </div>
+                          </section>
+
+                          <section className="space-y-5 pt-8">
+                            <h3 className="text-lg font-medium tracking-[0.08em] text-zinc-100 sm:text-xl">
+                              {readingDepth === "short"
+                                ? "解读（短卡）"
+                                : readingDepth === "compact"
+                                  ? "解读（精简）"
+                                  : "解读（全文）"}
+                            </h3>
+                            <p className="max-w-xl text-xs leading-relaxed text-zinc-500">
+                              {readingDepth === "short"
+                                ? "首段摘录：用于快速建立方向。"
+                                : readingDepth === "compact"
+                                  ? "精简组装：用于中等深度复核。"
+                                  : "完整长读：用于完整判读与归档。"}
+                            </p>
+                            {big3 ? (
+                              <div
+                                className="relative min-w-0 max-w-[52rem] px-0 py-7"
+                                style={{
+                                  fontFamily: SERIF_ZH,
+                                  background:
+                                    "radial-gradient(ellipse 85% 55% at 50% 0%, rgba(197, 160, 89, 0.09) 0%, transparent 58%)",
+                                }}
+                              >
+                                <NatalReadingMarkdown
+                                  source={readingMdStyled}
+                                  className="astro-workspace-reading text-[15px] leading-[1.78] text-zinc-200/95 sm:text-base sm:leading-[1.85]"
+                                />
+                              </div>
+                            ) : (
+                              <p className="text-sm text-zinc-500">载入档案后显示。</p>
+                            )}
+                          </section>
+                        </>
+                      ) : null}
+                    </section>
+                  </div>
+
+                  <aside className="min-w-0 space-y-10 xl:sticky xl:top-28 xl:self-start">
+                    <div id="read-section-big3" className="scroll-mt-24 space-y-3">
+                      <button
+                        type="button"
+                        onClick={() => setDecodeBig3Open((o) => !o)}
+                        className="flex w-full min-w-0 items-center justify-between text-left"
+                        aria-expanded={decodeBig3Open}
+                      >
+                        <h3 className="text-[12px] font-medium uppercase tracking-[0.2em] text-[#C8A85C]">{decodeSurface.big3Title}</h3>
+                        <ChevronDown
+                          className={`h-4 w-4 shrink-0 text-zinc-600 transition-transform ${decodeBig3Open ? "rotate-180" : ""}`}
+                          aria-hidden
+                        />
+                      </button>
+                      {decodeBig3Open ? (
+                        <>
+                          <p className="text-[12px] leading-relaxed text-zinc-500">{decodeSurfaceStyled.big3Subtitle}</p>
+                          {big3 ? (
+                            <div className="text-sm leading-relaxed text-zinc-300" style={{ fontFamily: SERIF_ZH }}>
+                              <Big3Narrative big3={big3} />
+                            </div>
+                          ) : (
+                            <p className="text-sm text-zinc-500">请先在上方「出生档案」里录入并解锁。</p>
+                          )}
+                          <dl className="space-y-1 text-[12px] leading-relaxed text-zinc-400">
+                            <div className="flex items-start justify-between gap-3">
+                              <dt className="text-zinc-600">宫位制</dt>
+                              <dd className="text-right text-zinc-300">{houseSystemLabelZh(dossier.houseSystem)}</dd>
+                            </div>
+                            <div className="flex items-start justify-between gap-3">
+                              <dt className="text-zinc-600">当前盘面</dt>
+                              <dd className="text-right text-zinc-300">{CHART_KIND_OPTIONS.find((x) => x.id === chartKind)?.label ?? chartKind}</dd>
+                            </div>
+                            <div className="flex items-start justify-between gap-3">
+                              <dt className="text-zinc-600">相位集</dt>
+                              <dd className="text-right text-zinc-300">
+                                {ASPECT_PRESET_OPTIONS.find((x) => x.id === mainstreamSettings.aspectPreset)?.label ??
+                                  mainstreamSettings.aspectPreset}
+                              </dd>
+                            </div>
+                            <div className="flex items-start justify-between gap-3">
+                              <dt className="text-zinc-600">容许度</dt>
+                              <dd className="text-right text-zinc-300">
+                                {ORB_PRESET_OPTIONS.find((x) => x.id === mainstreamSettings.orbPreset)?.label ?? mainstreamSettings.orbPreset}
+                              </dd>
+                            </div>
+                          </dl>
+                        </>
+                      ) : null}
+                    </div>
+
+                    <div id="read-section-rhythm" className="scroll-mt-24 space-y-3">
+                      <button
+                        type="button"
+                        onClick={() => setDecodeRhythmOpen((o) => !o)}
+                        className="flex w-full min-w-0 items-center justify-between text-left"
+                        aria-expanded={decodeRhythmOpen}
+                      >
+                        <h3 className="text-[12px] font-medium uppercase tracking-[0.2em] text-[#C8A85C]">读数分层</h3>
+                        <ChevronDown
+                          className={`h-4 w-4 shrink-0 text-zinc-600 transition-transform ${decodeRhythmOpen ? "rotate-180" : ""}`}
+                          aria-hidden
+                        />
+                      </button>
+                      {decodeRhythmOpen ? (
+                        <>
+                          <p className="text-[12px] leading-relaxed text-zinc-500">{decodeSurfaceStyled.rhythmLayerSubtitle}</p>
+                          {chartKind === "transit" && transitRealtimeReport ? (
+                            <div className="space-y-2 text-sm leading-relaxed text-zinc-300">
+                              <p className="text-xs text-zinc-500">{transitRealtimeReport.statusLine}</p>
+                              <p>【核心快照】{transitRealtimeReport.answer.happened}</p>
+                              <p className="text-zinc-400">{transitRealtimeReport.answer.today}</p>
+                            </div>
+                          ) : chartKindHasWheelTableObservation(chartKind) ? (
+                            <div className="space-y-2">
+                              <p className="text-sm leading-relaxed text-zinc-400">{decodeSurfaceStyled.readoutLayerBlurb}</p>
+                              {planetPositionsReport ? (
+                                <p className="text-sm leading-relaxed text-zinc-300">{planetPositionsReport.answer.happened}</p>
+                              ) : (
+                                <p className="text-[12px] leading-snug text-zinc-600">星盘数据就绪后，此处会摘录行星位置观测报告要点。</p>
+                              )}
+                            </div>
+                          ) : (
+                            <div className="space-y-2">
+                              <p className="text-sm leading-relaxed text-zinc-300">{answerLayer.humanSummary}</p>
+                              {stressItems.slice(0, 2).map((s) => (
+                                <p key={s.label} className="text-sm leading-relaxed text-zinc-400">
+                                  <span className="text-zinc-500">{s.label}：</span>
+                                  {s.body}
+                                </p>
+                              ))}
+                            </div>
+                          )}
+                        </>
+                      ) : null}
+                    </div>
+                  </aside>
+                </div>
+              ) : null}
             </motion.div>
 
-          {simpleMode ? (
-            <div className="mt-8 w-full min-w-0 border-t border-white/[0.06] pt-6">
-              <BCard title="更多工具（已收起）" subtitle="已为你简化页面：当前只保留看盘所需核心区域。">
-                <p className="text-sm leading-relaxed text-zinc-400">
-                  如需管理案卷、写便签、查看技术条目，点上方「显示完整模式」即可展开。
-                </p>
-              </BCard>
-            </div>
-          ) : null}
-
-          <div className={`mt-8 w-full min-w-0 space-y-4 border-t border-white/[0.06] pt-6 ${simpleMode ? "hidden" : ""}`}>
-            <p className="text-xs tracking-wide text-zinc-500">案卷与备忘</p>
-            <BCard title="案卷" subtitle="多份本地存档可切换；标题只给自己看。">
-              <div className="space-y-4">
-                <div>
-                  <label className="text-xs text-zinc-500" htmlFor="astro-dossier-select">
-                    切换到
-                  </label>
-                  <select
-                    id="astro-dossier-select"
-                    className="mt-1.5 w-full min-w-0 rounded-xl border border-white/[0.08] bg-black/30 px-3 py-2.5 text-sm text-zinc-200 outline-none focus:border-[#C5A059]/35"
-                    value={store.activeId}
-                    onChange={(e) => persistStore({ ...store, activeId: e.target.value })}
-                  >
-                    {store.dossiers.map((d) => (
-                      <option key={d.id} value={d.id}>
-                        {d.title}
-                      </option>
-                    ))}
-                  </select>
-                </div>
-                <div>
-                  <label className="text-xs text-zinc-500" htmlFor="astro-dossier-title">
-                    案卷标题
-                  </label>
-                  <input
-                    id="astro-dossier-title"
-                    type="text"
-                    value={dossier.title}
-                    onChange={(e) => patchDossier({ title: e.target.value })}
-                    className="mt-1.5 w-full min-w-0 rounded-xl border border-white/[0.08] bg-black/30 px-3 py-2.5 text-sm text-zinc-200 outline-none placeholder:text-zinc-600 focus:border-[#C5A059]/35"
-                    placeholder="例如：出生结构初探"
-                  />
-                </div>
-                <div className="flex flex-wrap gap-2">
-                  <button
-                    type="button"
-                    onClick={addDossier}
-                    className="rounded-full border border-[#3D7A86]/38 px-3 py-1.5 text-xs text-[#5F8794] transition-colors hover:border-[#4A8A96]/55"
-                  >
-                    新建案卷
-                  </button>
-                  {store.dossiers.length > 1 ? (
-                    <button
-                      type="button"
-                      onClick={removeActiveDossier}
-                      className="rounded-full border border-rose-500/25 px-3 py-1.5 text-xs text-rose-300/90 transition-colors hover:border-rose-400/45"
-                    >
-                      删除当前案卷
-                    </button>
-                  ) : null}
-                </div>
-              </div>
-            </BCard>
-
-            <BCard title="出生摘要" subtitle="当前案卷与排盘方式一览。">
-              <dl className="space-y-2 text-sm text-zinc-400">
-                <div className="flex flex-wrap justify-between gap-2">
-                  <dt className="text-zinc-500">宫位制</dt>
-                  <dd className="text-zinc-300">{houseSystemLabelZh(dossier.houseSystem)}</dd>
-                </div>
-                <div className="flex flex-wrap justify-between gap-2">
-                  <dt className="text-zinc-500">阅读角度</dt>
-                  <dd className="text-zinc-300">{LENS_OPTIONS.find((x) => x.id === dossier.lens)?.label ?? dossier.lens}</dd>
-                </div>
-                <div className="flex flex-wrap justify-between gap-2">
-                  <dt className="text-zinc-500">关注话题</dt>
-                  <dd className="text-zinc-300">{topicLabel || "—"}</dd>
-                </div>
-              </dl>
-            </BCard>
-
-            <BCard title="对照思考" subtitle="把盘当成镜子，用问题代替结论。">
-              <div className="space-y-5">
-                <InsightBlock k="·" title="事实" tone="cyan" inkDelay={0}>
-                  {big3 ? (
-                    <>
-                      太阳在<MatteTerm>{ZODIAC_CN[big3.sun]}</MatteTerm>，月亮在<MatteTerm>{ZODIAC_CN[big3.moon]}</MatteTerm>，上升在
-                      <MatteTerm>{ZODIAC_CN[big3.rising]}</MatteTerm>；宫位制 {houseSystemLabelZh(dossier.houseSystem)}。
-                    </>
-                  ) : (
-                    <span className="text-zinc-500">无档案时无法列出。</span>
-                  )}
-                </InsightBlock>
-                <InsightBlock k="·" title="可以怎么想" tone="gold" inkDelay={0}>
-                  <>
-                    太阳偏「我想成为什么」，月亮偏「我需要什么才安心」，上升偏「别人先看到的我」。结合你选的话题「{topicLabel || "—"}」慢慢对照即可。
-                  </>
-                </InsightBlock>
-                <InsightBlock k="·" title="一个小问题" tone="muted" inkDelay={0}>
-                  今天若重复卡在同一情绪里，它更像月亮的敏感、太阳的自尊，还是上升的自我保护？
-                </InsightBlock>
-              </div>
-            </BCard>
-
-            <BCard title="便签" subtitle="只给自己看的几句备忘。">
-              <textarea
-                value={dossier.notes}
-                onChange={(e) => onNotesChange(e.target.value)}
-                rows={5}
-                className="w-full min-h-[6rem] resize-y rounded-xl border border-white/[0.08] bg-black/30 p-3 text-sm leading-relaxed text-zinc-200 outline-none ring-0 placeholder:text-zinc-600 focus:border-[#3D7A86]/40"
-                placeholder="写一句今天想记住的…"
-              />
-            </BCard>
-
-            <BCard title="技术说明" subtitle="不止结论，更有证据：口径、参数、数据源与回归轨迹。">
-              <button
-                type="button"
-                onClick={() => setChartFactOpen((o) => !o)}
-                className="flex w-full min-w-0 items-center justify-between gap-2 py-2 text-left text-sm text-zinc-500 transition-colors hover:text-[#C5A059]"
-              >
-                <span className="truncate">{chartFactOpen ? "收起" : "展开"}排盘与校准条目</span>
-                <ChevronDown className={`h-4 w-4 shrink-0 transition-transform ${chartFactOpen ? "rotate-180" : ""}`} />
-              </button>
-              {chartFactOpen ? (
-                <ul className="mt-3 space-y-2 border-t border-white/[0.06] pt-3 text-xs leading-relaxed text-zinc-500" style={{ fontFamily: "var(--font-geist-mono), monospace" }}>
-                  <li className="break-words border-l border-[#C5A059]/20 pl-2.5">
-                    对标样例库：{ASTRO_BENCHMARK_PACK_VERSION}（同输入、同参数的持续回归基线）
-                  </li>
-                  {chartFactLines.map((line) => (
-                    <li key={line} className="break-words border-l border-[#C5A059]/20 pl-2.5">
-                      {line}
-                    </li>
-                  ))}
-                </ul>
-              ) : null}
-            </BCard>
-          </div>
         </motion.main>
       </div>
     </div>

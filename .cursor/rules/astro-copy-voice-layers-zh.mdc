@@ -1,0 +1,63 @@
+---
+description: 星盘/本命中文文案分层口吻与句库位置（与观测报告、路由、导览统一）
+alwaysApply: true
+---
+
+# 星盘中文：用户可见分层（定稿小标题）
+
+产品内与导出 Markdown 统一使用：
+
+| 段位 | 用户可见标题 | 口吻 |
+|------|----------------|------|
+| L1 | **【核心快照】** | 像**普通人说话**——短句、能扫懂、可照做；避免运维隐喻（带宽、熔断、载荷、协议、注入、颗粒度校准等）。 |
+| L2 | **【逻辑推演】** | 保留**判读感与术语骨架**（相位、宫位、轴等）；禁止整段鸡汤；一次只作极轻顺读微调。 |
+| L3 | **【原始读数】** | 参数、表行、英文括号来源、`orb`、权重 H/M/L、矩阵名；不要塞进核心快照。 |
+| L4 | **【执行备忘】** | 可执行条目、今日动作。 |
+
+路由侧列表项 L1 标签与「核心快照」一致。工作台折叠卡标题：**读数分层**。各数据表下方解读顶栏 `statusLine` 统一用 **「本表在说什么：」** 起句（勿再用「这一屏在说」）。
+
+## 句库真源（改文案优先打开这些）
+
+| 区块 | 主要文件 |
+|------|----------|
+| 行星位置观测（快照 + pro） | 基座 `lib/astro-planet-positions-copy-config-zh.ts`；八种盘 patch `lib/astro-observation-main-copy-planet-by-kind-zh.ts` |
+| 主/次相位观测 | 基座 `lib/astro-major-aspect-copy-config-zh.ts`、`lib/astro-minor-aspect-copy-config-zh.ts` |
+| 宫头观测 | 基座 `lib/astro-house-cusp-copy-config-zh.ts` |
+| 轴点相位 | 基座 `lib/astro-angle-aspect-copy-config-zh.ts`；拼装 `lib/astro-angle-aspect-report-zh.ts` |
+| 五联主解读按盘型合并 | `lib/astro-observation-main-copy-by-chart-kind-zh.ts`（`planetPositionsCopyForChartKind` 等） |
+| 行运实时报告 | `lib/astro-transit-report-zh.ts` |
+| 宫位焦点、路由消息 | `lib/astro-answer-routing-config.ts`、`lib/astro-answer-routing.ts` |
+| 八盘导览 | `lib/astro-copy-templates-zh.ts` |
+| 相位中文名 | `lib/astro-aspect-type-label-zh.ts` |
+| 出生盘 Markdown | `lib/natal-reading-rewrite-zh.ts`（`## 核心快照` / `逻辑推演` / `原始读数` / `执行备忘`） |
+| 星盘数据区「综合结论」（Tab 旁规则合成） | `lib/astro-chart-readout-synthesis-zh.ts` |
+| 宫位制读数区一句提示（Tab 上；导出剪贴板「宫位读法」同源） | 基座 `lib/astro-house-system-hint-zh.ts`；十声部 `lib/astro-house-system-hint-voice-zh.ts` |
+| 工作台初始参数·宫位制区块标题/aria/展开收起/判读摘要相关固定句 | `lib/astro-workspace-house-system-ui-voice-zh.ts` |
+| 五联观测「本表在说什么 / 矩阵标题」按盘型 | `lib/astro-observation-five-chart-kind-layer-zh.ts` |
+| 八种盘：读数 Tab / 五联卡顶栏 / 灵识解构区副文案 / 星盘数据卡副标题 / 三区导览 / 主流判读提示 / 综合结论上升·天顶·四宫句 | `lib/astro-eight-chart-view-copy-zh.ts` |
+| 八盘导览模板（导出/未来接线） | `lib/astro-copy-templates-zh.ts` |
+| 行运工作台实时块（非五联） | `lib/astro-transit-report-zh.ts` |
+
+## 核心快照忌讳词
+
+`载荷`、`熔断`、`协议`（套语）、`带宽`、`注入层`、`稳态输出`、`二值化`、`结论密度`；用户可见纯文本慎用未渲染的 Markdown `**`。
+
+## 逻辑推演忌讳
+
+不要全盘口语化；专业名词保留，**一次 diff 改一两处词**即可。
+
+## 面板结构参考
+
+`natal-observation-report-panels.tsx`、`AstroWorkspace` 行运块：**核心快照 → 逻辑推演 → 原始读数 → 执行备忘**。
+
+## 十声部：结项标准与实现边界（定稿）
+
+- **用户可见**（读数 Tab、综合结论、灵识解构、宫位制提示与工作台相关句、行运叙事等）：**一律**以 **成稿表 / 模板填空（`*Vocal`）** 落地；**已移除** `applyVoiceStyleZhText` / `applyVoiceStyleZhDeep`（`lib/astro-voice-style-zh.ts` 仅保留 `selectVoiceStyleIdZh`）。
+- **声部 1**：与 2–10 相同机制——无补丁处用 **基座原文**（如 `WORKSPACE_DECODE_SURFACE_ZH`、`MAINSTREAM_INSIGHT_LINES_ZH`、长文 normalize 后正文）；**不再**做全文短语 replace。
+- **新增** Tab / 盘面 / 声部：只补补丁或基座，**禁止**再接回 `apply`。
+
+**相关实现入口（改声部时顺手可打开）**：`lib/astro-readout-panel-context-patches-zh.ts`、`lib/astro-readout-panel-voice-zh.ts`、`lib/astro-chart-readout-synthesis-body-voice-zh.ts`、`lib/astro-house-system-hint-voice-zh.ts`、`lib/astro-workspace-house-system-ui-voice-zh.ts`、`lib/astro-workspace-decode-subtitle-voice-patch-zh.ts`、`lib/astro-workspace-master-voice-layers-zh.ts`、`lib/workspace-reading-markdown-voice-zh.ts`。
+
+## 人读备份
+
+`docs/ASTRO_COPY_VOICE_LAYERS_ZH.md`。

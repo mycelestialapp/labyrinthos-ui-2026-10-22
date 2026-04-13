@@ -1,0 +1,18 @@
+---
+description: 塔罗学业/财运小牌 pre 句大师向口径
+alwaysApply: false
+---
+
+# 小牌起句（拼装器类目）
+
+- **大师级**：沉稳、指点、有分寸；四元素为骨，**中性不绑单题**（忌室友/群聊等强场景词套进任意题干）。
+- **忌**：网络轻浮、卖萌比喻、与具体第几问强绑定（除非整表按 qi 分维）。
+- **真源（唯一）**：`lib/tarot-minor-pre-lines-master-zh.ts`  
+  - 学业用 `TAROT_MINOR_PRE_LINES_MASTER`  
+  - 财运用 `TAROT_MINOR_PRE_LINES_MONEY`  
+  引擎仅引用：`tarot-master-question-content-study-engine.ts`、`tarot-master-question-content-money-engine.ts`
+- **改后须**：`npm run tarot:study:freeze` + `build:tarot-question-study`，`npm run tarot:money:freeze` + `build:tarot-question-money`。
+
+# 感情 / 事业 / 生活八大类题干模块
+
+- **无此 pre 层**：小牌多为整段 `cardSpeaking` 手写入库；大师级须**逐牌/逐问**写手审，勿指望与上表同文件一改全量。

@@ -1,0 +1,483 @@
+/* 塔罗 Oracle 布局（TarotPanelOracle / 原版 HTML 样式） */
+@import url("https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700;900&family=Cormorant+Garamond:ital,wght@0,400;0,600;1,400&display=swap");
+
+.tarot-oracle-root {
+  position: relative;
+  min-height: 100vh;
+  background: #03010a;
+  overflow-x: hidden;
+  padding: 1rem;
+}
+
+/* 动态宇宙背景 (三层流动) */
+.tarot-cosmic-bg {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 0;
+    pointer-events: none;
+    transition: background-color 1.2s ease;
+}
+.tarot-nebula-1 {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    background: radial-gradient(circle at 30% 40%, rgba(96, 58, 128, 0.6) 0%, transparent 40%),
+                radial-gradient(circle at 80% 70%, rgba(180, 130, 50, 0.4) 0%, transparent 45%);
+    filter: blur(40px);
+    animation: tarot-drift 60s infinite alternate ease-in-out;
+}
+.tarot-nebula-2 {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    background: radial-gradient(circle at 20% 80%, rgba(30, 60, 130, 0.5) 0%, transparent 50%),
+                radial-gradient(circle at 90% 20%, rgba(140, 70, 140, 0.4) 0%, transparent 40%);
+    filter: blur(60px);
+    animation: tarot-drift2 50s infinite alternate ease-in-out;
+}
+.tarot-stars {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    background-image: 
+        radial-gradient(2px 2px at 5% 10%, #fff, rgba(0,0,0,0)),
+        radial-gradient(2px 2px at 15% 60%, #ffe5b0, rgba(0,0,0,0)),
+        radial-gradient(3px 3px at 25% 30%, #d4b8ff, rgba(0,0,0,0)),
+        radial-gradient(2px 2px at 35% 80%, #fff2c0, rgba(0,0,0,0)),
+        radial-gradient(1px 1px at 45% 20%, #ffd78a, rgba(0,0,0,0)),
+        radial-gradient(2px 2px at 55% 70%, #f0d0ff, rgba(0,0,0,0)),
+        radial-gradient(2px 2px at 65% 40%, #ffe4b5, rgba(0,0,0,0)),
+        radial-gradient(3px 3px at 75% 90%, #c2b0e6, rgba(0,0,0,0)),
+        radial-gradient(1px 1px at 85% 50%, #ffeac2, rgba(0,0,0,0));
+    background-repeat: repeat;
+    opacity: 0.8;
+    animation: tarot-twinkle 4s infinite alternate;
+}
+@keyframes tarot-drift {
+    0% { transform: scale(1) translate(0, 0); }
+    100% { transform: scale(1.2) translate(-3%, -2%); }
+}
+@keyframes tarot-drift2 {
+    0% { transform: scale(1.2) translate(-2%, 1%); }
+    100% { transform: scale(1) translate(2%, -1%); }
+}
+@keyframes tarot-twinkle {
+    0% { opacity: 0.7; }
+    100% { opacity: 1; }
+}
+
+/* 主界面 */
+.oracle-chamber {
+    position: relative;
+    z-index: 20;
+    width: 100%;
+    max-width: 1300px;
+    background: rgba(6, 2, 12, 0.35);
+    backdrop-filter: blur(12px) saturate(180%);
+    -webkit-backdrop-filter: blur(12px) saturate(180%);
+    border-radius: 60px;
+    padding: 2rem 1.5rem;
+    border: 1px solid rgba(212, 175, 55, 0.3);
+    box-shadow: 0 40px 80px -20px black;
+    margin: 0 auto;
+}
+.title-domain {
+    text-align: center;
+    margin-bottom: 2rem;
+}
+.arcane-line {
+    font-family: 'Cinzel', serif;
+    font-weight: 900;
+    font-size: clamp(2rem, 6vw, 3.8rem);
+    letter-spacing: 8px;
+    background: linear-gradient(180deg, #f9e2b0, #b38f4a);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+    text-shadow: 0 0 30px #ffb86b;
+}
+.arcane-sub {
+    font-size: 1rem;
+    letter-spacing: 6px;
+    color: #cbaf7a;
+    border-bottom: 1px solid #b6974b;
+    border-top: 1px solid #b6974b;
+    padding: 0.4rem 2rem;
+    display: inline-block;
+    background: rgba(10,3,18,0.5);
+    border-radius: 40px;
+}
+
+/* 控制区 */
+.control-panel {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 1.5rem;
+    margin-bottom: 2.5rem;
+    align-items: center;
+}
+.spread-selector {
+    display: flex;
+    gap: 0.8rem;
+    background: rgba(20, 10, 25, 0.6);
+    padding: 0.6rem 1rem;
+    border-radius: 60px;
+    border: 1px solid #a9844a;
+    flex-wrap: wrap;
+    justify-content: center;
+}
+.spread-option {
+    padding: 0.5rem 1.5rem;
+    border-radius: 40px;
+    background: transparent;
+    color: #d4b68a;
+    font-family: 'Cinzel', serif;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: 0.3s;
+    border: 1px solid transparent;
+    white-space: nowrap;
+}
+.spread-option:hover {
+    background: rgba(182, 144, 66, 0.2);
+}
+.spread-option.active {
+    background: #b69042;
+    color: #0c0712;
+    box-shadow: 0 0 20px #fabc2f;
+    border-color: #ffdd99;
+}
+.draw-btn {
+    background: linear-gradient(145deg, #4a3a22, #2a1e12);
+    border: 1px solid #dbb45c;
+    color: #ffdfa7;
+    font-family: 'Cinzel', serif;
+    font-size: 1.3rem;
+    padding: 0.8rem 2.5rem;
+    border-radius: 60px;
+    cursor: pointer;
+    box-shadow: 0 0 20px #9e7f45;
+    transition: 0.3s;
+    letter-spacing: 2px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+.draw-btn:hover {
+    background: #5e4b2e;
+    box-shadow: 0 0 40px #dbb45c;
+    transform: scale(1.02);
+}
+
+/* 牌阵展示区 */
+.spread-area {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 2rem;
+    margin: 2rem 0 3rem;
+    perspective: 1200px;
+}
+.card-slot {
+    width: 200px;
+    min-width: 160px;
+    background: rgba(10, 5, 15, 0.5);
+    backdrop-filter: blur(8px);
+    border-radius: 24px;
+    padding: 1.2rem 0.8rem;
+    border: 2px dashed #b4934870;
+    box-shadow: 0 10px 30px -10px black;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    transition: 0.4s;
+    position: relative;
+    transform-style: preserve-3d;
+}
+.card-slot.filled {
+    border-style: solid;
+    border-color: #ffd966;
+    box-shadow: 0 0 40px #fabc2f80;
+}
+.slot-label {
+    font-family: 'Cinzel', serif;
+    color: #eace9b;
+    font-size: 1.1rem;
+    letter-spacing: 2px;
+    margin-bottom: 0.8rem;
+    text-transform: uppercase;
+}
+
+/* 卡片样式 */
+.slot-card {
+    width: 100%;
+    background: linear-gradient(150deg, #2a1e30, #140e20);
+    border-radius: 18px;
+    padding: 0.8rem 0.3rem;
+    border: 1px solid #ad8f51;
+    box-shadow: 0 10px 20px -5px black;
+    text-align: center;
+    transition: all 0.3s cubic-bezier(0.2, 0.9, 0.4, 1.2);
+    cursor: pointer;
+    position: relative;
+    transform-style: preserve-3d;
+    aspect-ratio: 2/3;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+.slot-card.selected {
+    transform: translateY(-10px) scale(1.03) rotateX(2deg);
+    box-shadow: 0 20px 40px -5px #fabc2f, 0 0 0 2px #f5c84e inset, 0 0 30px #ffd966;
+    animation: tarot-breathe 1.8s infinite alternate;
+}
+@keyframes tarot-breathe {
+    0% { box-shadow: 0 20px 40px -5px #fabc2f, 0 0 0 2px #f5c84e inset, 0 0 30px #ffd966; }
+    100% { box-shadow: 0 25px 50px -5px #ffc85e, 0 0 0 4px #ffdd99 inset, 0 0 60px #ffd966; }
+}
+.slot-card.selected::before {
+    content: '';
+    position: absolute;
+    inset: -5px;
+    border-radius: 22px;
+    background: radial-gradient(circle at 30% 20%, #ffefb0, transparent 70%);
+    opacity: 0.6;
+    z-index: -1;
+    animation: tarot-glowConverge 1.2s infinite alternate;
+}
+@keyframes tarot-glowConverge {
+    0% { opacity: 0.3; transform: scale(0.95); }
+    100% { opacity: 0.8; transform: scale(1.05); }
+}
+.slot-card.reversed {
+    transform: rotate(180deg);
+}
+.slot-card.reversed.selected {
+    transform: rotate(180deg) translateY(-10px) scale(1.03) rotateX(2deg);
+}
+.slot-card-icon {
+    font-size: 2.5rem;
+    color: #eedbba;
+    text-shadow: 0 0 20px #ffae6a;
+    margin: 0.2rem 0;
+}
+.slot-card-name {
+    font-family: 'Cinzel', serif;
+    font-size: 0.9rem;
+    background: linear-gradient(135deg, #f9efd8, #c8a86e);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+    font-weight: 700;
+    line-height: 1.3;
+}
+.slot-card-suit {
+    font-size: 0.8rem;
+    color: #cbaf7a;
+    margin-top: 0.2rem;
+}
+.slot-card.reversed .slot-card-name,
+.slot-card.reversed .slot-card-suit {
+    transform: rotate(180deg);
+}
+
+/* 解读区双栏 */
+.reading-panel {
+    display: flex;
+    gap: 2rem;
+    flex-wrap: wrap;
+    margin-top: 2rem;
+}
+.spread-interpretation {
+    flex: 2;
+    min-width: 280px;
+    background: rgba(10, 5, 18, 0.6);
+    backdrop-filter: blur(16px);
+    border-radius: 40px;
+    padding: 1.8rem;
+    border: 1px solid rgba(212, 175, 55, 0.4);
+}
+.card-detail-panel {
+    flex: 1;
+    min-width: 240px;
+    background: rgba(10, 5, 18, 0.6);
+    backdrop-filter: blur(16px);
+    border-radius: 40px;
+    padding: 1.8rem;
+    border: 1px solid rgba(212, 175, 55, 0.4);
+}
+.section-title {
+    font-family: 'Cinzel', serif;
+    color: #e7cf9c;
+    font-size: 1.5rem;
+    border-bottom: 1px solid #b5944b;
+    padding-bottom: 0.5rem;
+    margin-bottom: 1.5rem;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+.spread-summary {
+    font-size: 1.2rem;
+    color: #f2e1ba;
+    line-height: 1.6;
+    margin-bottom: 2rem;
+}
+.card-meanings {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+}
+.meaning-item {
+    border-left: 3px solid #f5c84e;
+    padding-left: 1rem;
+    opacity: 0;
+    animation: tarot-slideIn 0.4s forwards;
+}
+.meaning-item:nth-child(1) { animation-delay: 0.1s; }
+.meaning-item:nth-child(2) { animation-delay: 0.3s; }
+.meaning-item:nth-child(3) { animation-delay: 0.5s; }
+@keyframes tarot-slideIn {
+    from { opacity: 0; transform: translateX(-10px); }
+    to { opacity: 1; transform: translateX(0); }
+}
+.meaning-position {
+    font-family: 'Cinzel', serif;
+    color: #ffdfa7;
+    font-size: 1.2rem;
+}
+.meaning-text {
+    color: #d3c7b0;
+    font-size: 1rem;
+    margin-top: 0.3rem;
+    line-height: 1.5;
+}
+.meaning-text .highlight {
+    color: #fad475;
+    font-weight: 600;
+    text-shadow: 0 0 5px #d7a534;
+}
+
+/* 行动金边卡片 */
+.action-card {
+    background: rgba(26, 17, 33, 0.8);
+    border-radius: 30px;
+    padding: 1rem 1.5rem;
+    margin: 1.5rem 0 0.5rem;
+    border: 2px solid #ad8f51;
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    backdrop-filter: blur(5px);
+    box-shadow: 0 0 20px #fabc2f80;
+}
+.action-number {
+    font-family: 'Cinzel', serif;
+    font-size: 2.5rem;
+    font-weight: 900;
+    background: linear-gradient(145deg, #f8d98c, #a67c36);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+    line-height: 1;
+    min-width: 60px;
+    text-align: center;
+    text-shadow: 0 0 20px #ffb13c;
+}
+.action-text {
+    font-size: 1.1rem;
+    color: #f2e1ba;
+    display: flex;
+    flex-direction: column;
+}
+.action-text i {
+    color: #f5c84e;
+    margin-right: 6px;
+}
+
+/* 单牌详解 */
+.detail-name {
+    font-size: 1.8rem;
+    font-family: 'Cinzel', serif;
+    background: linear-gradient(135deg, #fff1d0, #cbae7a);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+}
+.detail-status {
+    color: #f5c84e;
+    font-style: italic;
+    margin: 0.5rem 0 1rem;
+}
+.detail-desc {
+    font-size: 1rem;
+    line-height: 1.5;
+    color: #d3c7b0;
+}
+.desc-line {
+    display: block;
+    margin-bottom: 0.5rem;
+    opacity: 0;
+    animation: tarot-fadeLine 0.4s forwards;
+}
+@keyframes tarot-fadeLine {
+    from { opacity: 0; transform: translateY(4px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+/* 粒子容器 */
+.particle-container {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    z-index: 9999;
+}
+.particle {
+    position: absolute;
+    width: 8px;
+    height: 8px;
+    background: radial-gradient(circle, #ffdb7c, #e8a73b);
+    border-radius: 50%;
+    box-shadow: 0 0 15px #fabe2e;
+    pointer-events: none;
+    animation: tarot-particleBurst 1s ease-out forwards;
+}
+@keyframes tarot-particleBurst {
+    0% { opacity: 1; transform: translate(0, 0) scale(1); }
+    100% { opacity: 0; transform: translate(var(--dx), var(--dy)) scale(0.2); }
+}
+
+/* 手机适配 */
+@media screen and (max-width: 700px) {
+    .spread-area {
+        gap: 1rem;
+    }
+    .card-slot {
+        width: 160px;
+        min-width: 130px;
+    }
+    .control-panel {
+        flex-direction: column;
+        align-items: stretch;
+    }
+    .spread-selector {
+        width: 100%;
+    }
+    .draw-btn {
+        width: 100%;
+        justify-content: center;
+    }
+}
+@media screen and (max-width: 450px) {
+    .card-slot {
+        width: 140px;
+    }
+}

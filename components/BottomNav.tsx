@@ -42,6 +42,7 @@ export default function BottomNav() {
               <Link
                 key={item.href}
                 href={item.href}
+                prefetch={false}
                 onClick={() => handleNavClick(item.href, active)}
                 aria-label={item.label}
                 className="relative flex w-full flex-col items-center justify-center gap-1 rounded-xl py-2"

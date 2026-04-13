@@ -6,7 +6,31 @@ export type AstroTopic = "love" | "career" | "self";
 
 export type AstroLens = "time_lord" | "lunar_cycle";
 
-export type HouseSystemId = "Placidus" | "Whole Sign";
+/** 与 UI / Swiss 字母表见 `lib/astro-house-systems.ts`；新增时需同时改该文件与 `astro-chart-wheel-swiss`。 */
+export type HouseSystemId =
+  | "Placidus"
+  | "Whole Sign"
+  | "Koch"
+  | "Equal"
+  | "Campanus"
+  | "Regiomontanus"
+  | "Porphyry"
+  | "Alcabitus"
+  | "Morinus"
+  | "Sripati"
+  | "Krusinski"
+  | "EqualMc"
+  | "Horizontal"
+  | "EqualAries"
+  | "Meridian"
+  | "Vehlow"
+  | "Sunshine"
+  | "PolichPage"
+  | "Carter"
+  | "Gauquelin"
+  | "PullenSd"
+  | "PullenSr"
+  | "Apc";
 
 export type TimeAnchorId = "natal" | "now";
 

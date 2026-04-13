@@ -23,7 +23,7 @@ const STAGE_BASE =
 export default function AstroChartStage({ children, className = "" }: Props) {
   return (
     <div
-      className={`relative flex min-w-0 justify-center overflow-hidden rounded-2xl py-5 sm:py-7 ${className}`}
+      className={`relative flex min-w-0 justify-center overflow-hidden rounded-2xl py-3 sm:py-6 ${className}`}
       style={{ background: STAGE_BASE }}
     >
       {/* 动态胶片噪点 */}
@@ -62,7 +62,7 @@ export default function AstroChartStage({ children, className = "" }: Props) {
         aria-hidden
       />
 
-      <div className="relative z-[3] flex w-full min-w-0 items-center justify-center px-1 sm:px-2">
+      <div className="relative z-[3] flex w-full min-w-0 items-center justify-center px-0 sm:px-2">
         <div className="relative z-[2] flex w-full min-w-0 justify-center">{children}</div>
       </div>
     </div>

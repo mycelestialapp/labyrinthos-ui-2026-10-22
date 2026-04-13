@@ -12,6 +12,16 @@ const eslintConfig = defineConfig([
     "out/**",
     "build/**",
     "next-env.d.ts",
+    // Third-party bundled assets (not source files):
+    "public/vendor/**",
+    "**/*.min.js",
+    // esbuild 临时 Node 产物（含 require；见 package.json tarot:*:freeze / emit-layers）
+    "scripts/.freeze-*.cjs",
+    "scripts/.emit-*.cjs",
+    // 塔罗静态 IIFE 大包（非手改源码）
+    "public/tarotQuestion*.js",
+    "public/tarotData.js",
+    "public/tarotMasterReadings.js",
   ]),
 ]);
 

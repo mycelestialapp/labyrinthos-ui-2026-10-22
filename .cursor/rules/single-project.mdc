@@ -7,5 +7,5 @@ alwaysApply: true
 
 - **唯一前端工程**：`D:\labyrinthos-ui`（八种月相、CelestialDashboard、首页三屏）。
 - **不要**在回答或脚本里假设还存在 `D:\liuyao` 或其它重复副本；用户已删除副本以减少跑错项目。
-- **开发/预览**：`npm run dev` → **http://localhost:3088**（端口写死在 `package.json`）。
+- **开发/预览**：`npm run dev` → **http://localhost:3088**（端口写死在 `package.json`）；默认 **Webpack**（`next dev` 默认监听 `0.0.0.0`，一般 **`localhost` 与 `127.0.0.1` 均可**）。若本机 `localhost` 异常可试 **`http://127.0.0.1:3088`**，或 `npm run dev:ipv4` / `npm run dev:ipv6`。连通性探测：**`/healthz`** 应返回纯文本 `ok`。若 3088 已卡死（大量 CLOSE_WAIT），先结束占用端口的 `node` 再重启 `npm run dev`。
 - 若用户问「开哪个网址」，只指向 **3088** 与本仓库路径，除非用户明确要求改端口。

@@ -12,7 +12,7 @@ import {
   computeNatalBig3,
   parseLatLon,
 } from "../../lib/natal-chart";
-import { computeNatalBig3Swiss } from "@/lib/astro-chart-wheel-swiss";
+import { computeNatalBig3WithHousesSwiss, type NatalBig3WithHouses } from "@/lib/astro-chart-wheel-swiss";
 import { buildNatalReadingGoldCardMarkdown } from "@/lib/natal-reading-full-zh";
 import NatalReadingMarkdown from "./NatalReadingMarkdown";
 import {
@@ -35,6 +35,7 @@ import {
   parseStoredUserProfileJson,
   type StoredUserProfile,
 } from "@/lib/stored-user-profile";
+import { mergeAbortSignalWithDeadline } from "@/lib/merge-abort-signal-timeout";
 
 const mono = JetBrains_Mono({
   subsets: ["latin"],
@@ -59,6 +60,11 @@ type CascadeStateRow = { code: string; name: string; labelZh?: string };
 type BirthTierRow = { code: string; label: string; lat?: string | null; lon?: string | null };
 const RELATION_TAG_OPTIONS = ["本人", "家庭", "情人", "朋友", "客户", "领导", "同事", "老师", "同学"] as const;
 
+/** 同源 API 若无限 pending，Chromium 标签页会一直显示加载中 */
+const API_PLACES_DEADLINE_MS = 25_000;
+const API_GEOCODE_DEADLINE_MS = 25_000;
+const API_TZ_DEADLINE_MS = 15_000;
+
 function formatLatLonInput(lat: number, lon: number) {
   return `${lat.toFixed(5)}, ${lon.toFixed(5)}`;
 }
@@ -74,7 +80,9 @@ async function fetchGeocodeFirstHit(q: string, countriesIso?: string): Promise<G
     countriesIso && /^[a-z]{2}(,[a-z]{2}){0,24}$/i.test(countriesIso)
       ? `&countries=${encodeURIComponent(countriesIso.toLowerCase())}`
       : "";
-  const res = await fetch(`/api/geocode?q=${encodeURIComponent(q)}${scope}`);
+  const res = await fetch(`/api/geocode?q=${encodeURIComponent(q)}${scope}`, {
+    signal: mergeAbortSignalWithDeadline(undefined, API_GEOCODE_DEADLINE_MS),
+  });
   const data = (await res.json()) as { results?: GeocodeHit[] };
   const hit = data.results?.[0];
   return hit && Number.isFinite(hit.lat) && Number.isFinite(hit.lon) ? hit : null;
@@ -492,7 +500,9 @@ export default function IdentityGoldCard({
     if (!hydrated || countriesList.length > 0) return;
     const ac = new AbortController();
     setCascadeLoading("countries");
-    void fetch("/api/places/countries", { signal: ac.signal })
+    void fetch("/api/places/countries", {
+      signal: mergeAbortSignalWithDeadline(ac.signal, API_PLACES_DEADLINE_MS),
+    })
       .then((r) => r.json())
       .then((d: { countries?: CascadeCountry[] }) => {
         if (!ac.signal.aborted) setCountriesList(Array.isArray(d.countries) ? d.countries : []);
@@ -519,7 +529,7 @@ export default function IdentityGoldCard({
     const ac = new AbortController();
     setCascadeLoading("states");
     void fetch(`/api/places/states?country=${encodeURIComponent(birthCountryCode)}`, {
-      signal: ac.signal,
+      signal: mergeAbortSignalWithDeadline(ac.signal, API_PLACES_DEADLINE_MS),
     })
       .then((r) => r.json())
       .then(async (d: { states?: CascadeStateRow[] }) => {
@@ -535,7 +545,7 @@ export default function IdentityGoldCard({
           try {
             const t2 = await fetch(
               `/api/places/tier2?country=${encodeURIComponent(birthCountryCode)}&state=`,
-              { signal: ac.signal }
+              { signal: mergeAbortSignalWithDeadline(ac.signal, API_PLACES_DEADLINE_MS) },
             );
             const t2d = (await t2.json()) as { tier2?: BirthTierRow[] };
             if (!ac.signal.aborted) setTier2List(Array.isArray(t2d.tier2) ? t2d.tier2 : []);
@@ -575,7 +585,7 @@ export default function IdentityGoldCard({
     setCascadeLoading("cities");
     void fetch(
       `/api/places/tier2?country=${encodeURIComponent(birthCountryCode)}&state=${encodeURIComponent(birthStateCode)}`,
-      { signal: ac.signal }
+      { signal: mergeAbortSignalWithDeadline(ac.signal, API_PLACES_DEADLINE_MS) },
     )
       .then((r) => r.json())
       .then((d: { tier2?: BirthTierRow[] }) => {
@@ -608,7 +618,8 @@ export default function IdentityGoldCard({
   const syncTzFromLatLon = useCallback(async (lat: number, lon: number, countryIso: string) => {
     try {
       const r = await fetch(
-        `/api/timezone-from-latlon?lat=${encodeURIComponent(String(lat))}&lon=${encodeURIComponent(String(lon))}&country=${encodeURIComponent(countryIso)}`
+        `/api/timezone-from-latlon?lat=${encodeURIComponent(String(lat))}&lon=${encodeURIComponent(String(lon))}&country=${encodeURIComponent(countryIso)}`,
+        { signal: mergeAbortSignalWithDeadline(undefined, API_TZ_DEADLINE_MS) },
       );
       const d = (await r.json()) as { timeZone?: string; error?: string };
       if (!r.ok || !d.timeZone) {
@@ -720,7 +731,7 @@ export default function IdentityGoldCard({
     setCascadeLoading("cities");
     void fetch(
       `/api/places/tier3?country=${encodeURIComponent(birthCountryCode)}&parent=${encodeURIComponent(birthTier2Code)}`,
-      { signal: ac.signal }
+      { signal: mergeAbortSignalWithDeadline(ac.signal, API_PLACES_DEADLINE_MS) },
     )
       .then((r) => r.json())
       .then((d: { tier3?: BirthTierRow[] }) => {
@@ -772,7 +783,7 @@ export default function IdentityGoldCard({
       void (async () => {
         try {
           const res = await fetch(`/api/geocode?q=${encodeURIComponent(q)}${scope}`, {
-            signal: ac.signal,
+            signal: mergeAbortSignalWithDeadline(ac.signal, API_GEOCODE_DEADLINE_MS),
           });
           const data = (await res.json()) as { results?: GeocodeHit[] };
           if (!ac.signal.aborted) {
@@ -808,30 +819,45 @@ export default function IdentityGoldCard({
   const locked = !profile || editing;
 
   const [big3, setBig3] = useState<NatalBig3 | null>(null);
+  const [natalHouses, setNatalHouses] = useState<Pick<NatalBig3WithHouses, "sunHouse" | "moonHouse"> | null>(
+    null,
+  );
 
   useEffect(() => {
     let cancelled = false;
 
     (async () => {
       if (!profile) {
-        if (!cancelled) setBig3(null);
+        if (!cancelled) {
+          setBig3(null);
+          setNatalHouses(null);
+        }
         return;
       }
 
       const utc = birthMomentToUtc(profile.birthdate, profile.birthTime, profile.timeZone);
       if (!utc) {
-        if (!cancelled) setBig3(null);
+        if (!cancelled) {
+          setBig3(null);
+          setNatalHouses(null);
+        }
         return;
       }
 
       if (useSwissEphemeris) {
-        const next = await computeNatalBig3Swiss(utc, profile.latitude, profile.longitude);
-        if (!cancelled) setBig3(next);
+        const next = await computeNatalBig3WithHousesSwiss(utc, profile.latitude, profile.longitude);
+        if (!cancelled) {
+          setBig3({ sun: next.sun, moon: next.moon, rising: next.rising });
+          setNatalHouses({ sunHouse: next.sunHouse, moonHouse: next.moonHouse });
+        }
         return;
       }
 
       const next = computeNatalBig3(utc, profile.latitude, profile.longitude);
-      if (!cancelled) setBig3(next);
+      if (!cancelled) {
+        setBig3(next);
+        setNatalHouses(null);
+      }
     })();
 
     return () => {
@@ -839,10 +865,13 @@ export default function IdentityGoldCard({
     };
   }, [profile, useSwissEphemeris]);
 
-  const goldCardReadingMd = useMemo(
-    () => (big3 ? buildNatalReadingGoldCardMarkdown(big3) : ""),
-    [big3]
-  );
+  const goldCardReadingMd = useMemo(() => {
+    if (!big3) return "";
+    return buildNatalReadingGoldCardMarkdown(big3, {
+      sunHouse: natalHouses?.sunHouse,
+      moonHouse: natalHouses?.moonHouse,
+    });
+  }, [big3, natalHouses]);
 
   const timeZoneOptions = useMemo(() => {
     const set = new Set(BIRTH_TIMEZONE_PRESETS);

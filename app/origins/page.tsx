@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import { motion } from "framer-motion";
 import { Heart, Sparkles, Users } from "lucide-react";
 import { Playfair_Display } from "next/font/google";
@@ -185,11 +185,7 @@ function PostCard({ post, idx }: { post: Post; idx: number }) {
 }
 
 export default function OriginsPage() {
-  const [relationshipRecords, setRelationshipRecords] = useState<OriginsRelationshipRecord[]>([]);
-
-  useEffect(() => {
-    setRelationshipRecords(loadOriginsRelationshipStore().records);
-  }, []);
+  const [relationshipRecords] = useState<OriginsRelationshipRecord[]>(() => loadOriginsRelationshipStore().records);
 
   return (
     <StarBackdrop>

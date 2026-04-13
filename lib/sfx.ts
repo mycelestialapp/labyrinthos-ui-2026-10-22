@@ -1,60 +1,12 @@
 "use client";
 
-import type { Howl } from "howler";
+/**
+ * 交互音效：仅用 Web Audio 合成，不请求 /sfx/*.mp3，避免控制台 404 与资源缺失。
+ */
 
-let clickHowl: Howl | null = null;
-let unlockHowl: Howl | null = null;
 let audioCtx: AudioContext | null = null;
-let portalRumbleHowl: Howl | null = null;
 let hoverOsc: OscillatorNode | null = null;
 let hoverGain: GainNode | null = null;
-
-async function ensureHowler() {
-  const mod = await import("howler");
-  return mod.Howl;
-}
-
-async function init() {
-  if (clickHowl && unlockHowl && portalRumbleHowl) return;
-  try {
-    const HowlCtor = await ensureHowler();
-    clickHowl =
-      clickHowl ??
-      new HowlCtor({
-        src: ["/sfx/crystal-click.mp3"],
-        volume: 0.22,
-        html5: true,
-      });
-    unlockHowl =
-      unlockHowl ??
-      new HowlCtor({
-        src: ["/sfx/crystal-unlock.mp3"],
-        volume: 0.26,
-        html5: true,
-      });
-    portalRumbleHowl =
-      portalRumbleHowl ??
-      new HowlCtor({
-        src: ["/sfx/portal-rumble.mp3"],
-        volume: 0.36,
-        html5: true,
-      });
-  } catch {
-    clickHowl = null;
-    unlockHowl = null;
-    portalRumbleHowl = null;
-  }
-}
-
-function howlerIsLoaded(howl: Howl | null) {
-  try {
-    if (!howl) return false;
-    const state = (howl as unknown as { state?: () => unknown }).state?.();
-    return state === "loaded";
-  } catch {
-    return false;
-  }
-}
 
 function ensureAudioCtx() {
   if (audioCtx) return audioCtx;
@@ -64,7 +16,6 @@ function ensureAudioCtx() {
 }
 
 async function beep(opts: { type: "click" | "unlock" | "focus" }) {
-  // 兜底：无需任何资源，也能在用户交互后发声
   try {
     const ctx = ensureAudioCtx();
     if (ctx.state === "suspended") await ctx.resume();
@@ -86,7 +37,7 @@ async function beep(opts: { type: "click" | "unlock" | "focus" }) {
     lp.type = "lowpass";
     lp.frequency.setValueAtTime(
       opts.type === "unlock" ? 1400 : opts.type === "focus" ? 1800 : 2200,
-      now
+      now,
     );
 
     osc1.type = "sine";
@@ -98,11 +49,11 @@ async function beep(opts: { type: "click" | "unlock" | "focus" }) {
 
     g1.gain.setValueAtTime(
       opts.type === "unlock" ? 0.42 : opts.type === "focus" ? 0.08 : 0.28,
-      now
+      now,
     );
     g2.gain.setValueAtTime(
       opts.type === "unlock" ? 0.26 : opts.type === "focus" ? 0.05 : 0.18,
-      now
+      now,
     );
 
     osc1.connect(g1);
@@ -115,7 +66,7 @@ async function beep(opts: { type: "click" | "unlock" | "focus" }) {
     const dur = opts.type === "unlock" ? 0.22 : opts.type === "focus" ? 0.14 : 0.08;
     out.gain.exponentialRampToValueAtTime(
       opts.type === "unlock" ? 0.8 : opts.type === "focus" ? 0.18 : 0.55,
-      now + 0.012
+      now + 0.012,
     );
     out.gain.exponentialRampToValueAtTime(0.0001, now + dur);
 
@@ -129,38 +80,15 @@ async function beep(opts: { type: "click" | "unlock" | "focus" }) {
 }
 
 export async function playClick() {
-  await init();
-  try {
-    if (howlerIsLoaded(clickHowl)) {
-      clickHowl?.play();
-      return;
-    }
-    await beep({ type: "click" });
-  } catch {
-    await beep({ type: "click" });
-  }
+  await beep({ type: "click" });
 }
 
 export async function playUnlock() {
-  await init();
-  try {
-    if (howlerIsLoaded(unlockHowl)) {
-      unlockHowl?.play();
-      return;
-    }
-    await beep({ type: "unlock" });
-  } catch {
-    await beep({ type: "unlock" });
-  }
+  await beep({ type: "unlock" });
 }
 
 export async function playFocus() {
-  await init();
-  try {
-    await beep({ type: "focus" });
-  } catch {
-    await beep({ type: "focus" });
-  }
+  await beep({ type: "focus" });
 }
 
 export async function startPortalHoverTone() {
@@ -209,18 +137,7 @@ export async function stopPortalHoverTone() {
 }
 
 export async function playPortalEnter() {
-  await init();
   await stopPortalHoverTone();
-  try {
-    if (howlerIsLoaded(portalRumbleHowl)) {
-      portalRumbleHowl?.play();
-      return;
-    }
-  } catch {
-    // continue to fallback
-  }
-
-  // fallback low rumble
   try {
     const ctx = ensureAudioCtx();
     if (ctx.state === "suspended") await ctx.resume();
@@ -245,4 +162,3 @@ export async function playPortalEnter() {
     // ignore
   }
 }
-

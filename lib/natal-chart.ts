@@ -39,6 +39,22 @@ export const ZODIAC_CN: Record<ZodiacKey, string> = {
   PISCES: "双鱼",
 };
 
+/** 西方星历表常用三字母星座缩写（热带黄道顺序） */
+export const ZODIAC_EN_ABBR: Record<ZodiacKey, string> = {
+  ARIES: "Ari",
+  TAURUS: "Tau",
+  GEMINI: "Gem",
+  CANCER: "Can",
+  LEO: "Leo",
+  VIRGO: "Vir",
+  LIBRA: "Lib",
+  SCORPIO: "Sco",
+  SAGITTARIUS: "Sag",
+  CAPRICORN: "Cap",
+  AQUARIUS: "Aqu",
+  PISCES: "Pis",
+};
+
 export type NatalBig3 = {
   sun: ZodiacKey;
   moon: ZodiacKey;

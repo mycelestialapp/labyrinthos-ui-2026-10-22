@@ -6,11 +6,18 @@
 import * as Astronomy from "astronomy-engine";
 import type { HouseSystemId } from "@/lib/astro-dossier-storage";
 import {
+  resolveChartAspectParams,
+  type AspectPresetId,
+  type OrbPresetId,
+} from "@/lib/astro-aspect-params";
+import {
   computeAstroChartWheelData,
   computePlanetsLongitudes,
-  computeTransitNatalMajorAspects,
+  computeTransitNatalAspects,
   type AstroChartWheelData,
 } from "@/lib/astro-chart-wheel";
+
+export type { AspectPresetId, OrbPresetId } from "@/lib/astro-aspect-params";
 
 export type ChartKindId =
   | "natal"
@@ -21,6 +28,25 @@ export type ChartKindId =
   | "tertiary"
   | "solar_return"
   | "lunar_return";
+
+/**
+ * 在「星盘数据」各表下展示五联观测报告的盘型（与当前 Swiss 轮几何一致）。
+ * 合盘时主轮为案主本命，双人相位在合盘 Tab。
+ */
+export const CHART_KINDS_WITH_WHEEL_TABLE_OBSERVATION: ChartKindId[] = [
+  "natal",
+  "synastry",
+  "transit",
+  "ephemeris",
+  "secondary",
+  "tertiary",
+  "solar_return",
+  "lunar_return",
+];
+
+export function chartKindHasWheelTableObservation(kind: ChartKindId): boolean {
+  return CHART_KINDS_WITH_WHEEL_TABLE_OBSERVATION.includes(kind);
+}
 
 export type SecondaryYearBasisId = "tropical" | "julian";
 export type TertiaryMonthBasisId = "synodic" | "sidereal";
@@ -115,11 +141,11 @@ export function findNearestLunarReturnUtc(params: { natalMoonLonDeg: number; aft
 
 const CHART_KIND_LABELS: Record<ChartKindId, string> = {
   natal: "出生盘：出生时刻（出生地）",
-  synastry: "合盘（Synastry）：两人出生盘对照（双人主相位与互落宫）",
-  transit: "行运盘（Transits）：当前天体相对本命；含行运↔本命主相位",
-  ephemeris: "时刻盘（Event Chart）：当前天体位置（仅盘内主相位）",
-  secondary: "次限推运盘（Secondary Progression）：1 推进日 = 1 回归年",
-  tertiary: "三限推运盘（Tertiary Progression）：1 推进日 = 1 朔望月（约 29.53 日）",
+  synastry: "合盘：两人出生盘对照（双人主相位与互落宫）",
+  transit: "行运盘：当前天体相对本命；含行运与本命主相位",
+  ephemeris: "时刻盘：当前天体位置（仅盘内主相位）",
+  secondary: "次限推运盘：1 推进日 = 1 回归年",
+  tertiary: "三限推运盘：1 推进日 = 1 朔望月（约 29.53 日）",
   solar_return: "日返盘：太阳回归出生太阳黄经",
   lunar_return: "月返盘：月亮回归出生月亮黄经（相对此刻向后搜索）",
 };
@@ -136,10 +162,18 @@ export function computeWorkspaceChartWheel(input: {
   solarReturnCalendarYear: number;
   secondaryYearBasis: SecondaryYearBasisId;
   tertiaryMonthBasis: TertiaryMonthBasisId;
+  aspectPreset: AspectPresetId;
+  orbPreset: OrbPresetId;
 }): AstroChartWheelData {
+  const aspect = resolveChartAspectParams({
+    aspectPreset: input.aspectPreset,
+    orbPreset: input.orbPreset,
+  });
+
   const natalPlanets = computePlanetsLongitudes(input.birthUtc);
   let instantUtc: Date;
   let transitNatalAspects: AstroChartWheelData["transitNatalAspects"];
+  let transitNatalMinorAspects: AstroChartWheelData["transitNatalMinorAspects"];
   let extraLine = "";
 
   switch (input.kind) {
@@ -149,11 +183,14 @@ export function computeWorkspaceChartWheel(input: {
       break;
     case "transit": {
       instantUtc = input.nowUtc;
-      transitNatalAspects = computeTransitNatalMajorAspects(
-        computePlanetsLongitudes(instantUtc),
-        natalPlanets,
-        6,
-      );
+      const tn = computeTransitNatalAspects(computePlanetsLongitudes(instantUtc), natalPlanets, {
+        majorOrbDeg: aspect.majorOrbDeg,
+        minorOrbDeg: aspect.minorOrbDeg,
+        maxMajor: 40,
+        maxMinor: aspect.includeMinorAspects ? 36 : 0,
+      });
+      transitNatalAspects = tn.major;
+      transitNatalMinorAspects = tn.minor.length > 0 ? tn.minor : undefined;
       break;
     }
     case "ephemeris":
@@ -200,6 +237,7 @@ export function computeWorkspaceChartWheel(input: {
     latitudeDeg: input.latitudeDeg,
     longitudeDeg: input.longitudeDeg,
     houseSystem: input.houseSystem,
+    aspect,
   });
 
   const baseLabel = CHART_KIND_LABELS[input.kind];
@@ -208,6 +246,7 @@ export function computeWorkspaceChartWheel(input: {
   return {
     ...base,
     transitNatalAspects,
+    transitNatalMinorAspects,
     ephemerisSource: "astronomy-engine",
     chartKindMeta: { id: input.kind, lineZh },
   };

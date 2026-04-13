@@ -33,9 +33,9 @@ import { computeNatalBig3Swiss } from "@/lib/astro-chart-wheel-swiss";
 
 const hubSerif = Noto_Serif_SC({
   weight: ["300", "400", "500", "600"],
-  // Next 类型未声明，但 Google Fonts 提供简体子集；中文否则会回退成系统黑体
-  // @ts-expect-error chinese-simplified 为 Noto Serif SC 有效 subset
-  subsets: ["latin", "chinese-simplified"],
+  // 注意：当前 next/font/google 版本不认识 chinese-simplified subset
+  // 使用 latin 保证构建稳定；中文会走本地字体回退栈
+  subsets: ["latin"],
   display: "swap",
   preload: true,
 });
@@ -86,6 +86,7 @@ const CARDS: HubCard[] = [
     plan:
       "经典牌阵与可变张数；正逆位、元素与牌位一并写入短句结论，每条皆可回溯到具体位置。适用于决策、关系与情绪周期的阶段性复盘，而非替你做选择。",
     Icon: Layers,
+    href: "/tarot",
   },
   {
     title: "生命密码",
@@ -1313,6 +1314,7 @@ export default function UniverseHub() {
                       className="block h-full rounded-[28px] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[rgba(197,160,89,0.45)] focus-visible:ring-offset-2 focus-visible:ring-offset-[#060508]"
                       onClick={() => {
                         if (c.href === "/astro") trackHubEvent("hub_card_astro_open");
+                        if (c.href === "/tarot") trackHubEvent("hub_card_tarot_open");
                       }}
                     >
                       <div
@@ -1350,6 +1352,7 @@ export default function UniverseHub() {
                     className="block h-full rounded-[14px] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[rgba(197,160,89,0.45)] focus-visible:ring-offset-2 focus-visible:ring-offset-[#0a0c14]"
                     onClick={() => {
                       if (c.href === "/astro") trackHubEvent("hub_card_astro_open");
+                      if (c.href === "/tarot") trackHubEvent("hub_card_tarot_open");
                     }}
                   >
                     <div

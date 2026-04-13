@@ -1,0 +1,1789 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <!-- 文档 URL 为 /tarot 时，相对路径脚本/样式须相对站点根解析，否则易全白 -->
+    <base href="/">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes">
+    <title>圣域塔罗 · 完整六大牌阵 · 大师版</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700;900&family=Cormorant+Garamond:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        /* ---------- 全局样式 ---------- */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        html {
+            font-size: 18px; /* 基础放大 */
+        }
+        body {
+            background: #0b0510;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-family: 'Cormorant Garamond', serif;
+            color: #e5d5b3;
+            padding: 2rem;
+            position: relative;
+            overflow-x: hidden;
+            font-size: 1.1rem;
+        }
+        /* 宇宙背景（三层星云+星光） */
+        .cosmic-bg {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 0;
+            pointer-events: none;
+        }
+        .nebula-1 {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            background: radial-gradient(circle at 30% 40%, rgba(96, 58, 128, 0.4) 0%, transparent 40%),
+                        radial-gradient(circle at 80% 70%, rgba(180, 130, 50, 0.3) 0%, transparent 45%);
+            filter: blur(50px);
+            animation: drift 60s infinite alternate ease-in-out;
+        }
+        .nebula-2 {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            background: radial-gradient(circle at 20% 80%, rgba(30, 20, 60, 0.5) 0%, transparent 50%),
+                        radial-gradient(circle at 90% 20%, rgba(100, 50, 100, 0.3) 0%, transparent 40%);
+            filter: blur(70px);
+            animation: drift2 50s infinite alternate ease-in-out;
+        }
+        .stars {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            background-image:
+                radial-gradient(2px 2px at 5% 10%, #fff, rgba(0,0,0,0)),
+                radial-gradient(2px 2px at 15% 60%, #ffe5b0, rgba(0,0,0,0)),
+                radial-gradient(3px 3px at 25% 30%, #d4b8ff, rgba(0,0,0,0)),
+                radial-gradient(2px 2px at 35% 80%, #fff2c0, rgba(0,0,0,0)),
+                radial-gradient(1px 1px at 45% 20%, #ffd78a, rgba(0,0,0,0)),
+                radial-gradient(2px 2px at 55% 70%, #f0d0ff, rgba(0,0,0,0)),
+                radial-gradient(2px 2px at 65% 40%, #ffe4b5, rgba(0,0,0,0)),
+                radial-gradient(3px 3px at 75% 90%, #c2b0e6, rgba(0,0,0,0)),
+                radial-gradient(1px 1px at 85% 50%, #ffeac2, rgba(0,0,0,0));
+            background-repeat: repeat;
+            opacity: 0.7;
+            animation: twinkle 4s infinite alternate;
+        }
+        @keyframes drift {
+            0% { transform: scale(1) translate(0, 0); }
+            100% { transform: scale(1.2) translate(-3%, -2%); }
+        }
+        @keyframes drift2 {
+            0% { transform: scale(1.2) translate(-2%, 1%); }
+            100% { transform: scale(1) translate(2%, -1%); }
+        }
+        @keyframes twinkle {
+            0% { opacity: 0.6; }
+            100% { opacity: 1; }
+        }
+
+        /* 主圣所 */
+        .sanctum {
+            position: relative;
+            z-index: 20;
+            width: 100%;
+            max-width: 1600px;
+            background: rgba(6, 2, 12, 0.4);
+            backdrop-filter: blur(16px) saturate(180%);
+            -webkit-backdrop-filter: blur(16px) saturate(180%);
+            border-radius: 60px;
+            padding: 3.5rem 3rem;
+            border: 1px solid rgba(212, 175, 55, 0.3);
+            box-shadow: 0 40px 80px -20px black;
+        }
+
+        /* 标题区 */
+        .sanctum-header {
+            text-align: center;
+            margin-bottom: 3rem;
+        }
+        .sanctum-header h1 {
+            font-family: 'Cinzel', serif;
+            font-weight: 900;
+            font-size: clamp(3rem, 7vw, 5rem);
+            letter-spacing: 10px;
+            background: linear-gradient(180deg, #f9e2b0, #b38f4a);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            text-shadow: 0 0 30px #ffb86b;
+            margin-bottom: 0.5rem;
+        }
+        .sanctum-header .sub {
+            font-size: 1.4rem;
+            letter-spacing: 8px;
+            color: #b6974b;
+            border-bottom: 1px solid rgba(212, 175, 55, 0.5);
+            border-top: 1px solid rgba(212, 175, 55, 0.5);
+            display: inline-block;
+            padding: 0.5rem 2.5rem;
+            background: rgba(0,0,0,0.2);
+            border-radius: 40px;
+        }
+
+        /* 牌阵导航 */
+        .spread-nav {
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+            gap: 1rem;
+            margin-bottom: 2.5rem;
+        }
+        .spread-tag {
+            background: rgba(20,10,25,0.6);
+            border: 1px solid #7a6a4b;
+            border-radius: 40px;
+            padding: 0.7rem 2.2rem;
+            font-family: 'Cinzel', serif;
+            font-size: 1.15rem;
+            color: #d4b68a;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+        .spread-tag:hover {
+            background: rgba(212, 175, 55, 0.2);
+            border-color: #b6974b;
+        }
+        .spread-tag.active {
+            background: #b69042;
+            color: #0c0712;
+            border-color: #ffdd99;
+            box-shadow: 0 0 15px #fabc2f;
+        }
+
+        /* 问题库入口 */
+        .question-sanctum {
+            background: rgba(10, 5, 15, 0.5);
+            backdrop-filter: blur(8px);
+            border-radius: 48px;
+            padding: 2rem 2.5rem;
+            margin-bottom: 3rem;
+            border: 1px solid rgba(212, 175, 55, 0.2);
+        }
+        .category-selector {
+            display: flex;
+            flex-direction: column;
+            gap: 1.2rem;
+            align-items: stretch;
+        }
+        .category-tabs {
+            display: flex;
+            flex-direction: row;
+            flex-wrap: nowrap;
+            align-items: center;
+            gap: 0.45rem 0.65rem;
+            width: 100%;
+            overflow-x: auto;
+            overflow-y: hidden;
+            padding-bottom: 0.25rem;
+            -webkit-overflow-scrolling: touch;
+            scrollbar-width: thin;
+            scrollbar-color: rgba(212, 175, 55, 0.35) transparent;
+        }
+        .category-tabs::-webkit-scrollbar {
+            height: 4px;
+        }
+        .category-tabs::-webkit-scrollbar-thumb {
+            background: rgba(212, 175, 55, 0.35);
+            border-radius: 4px;
+        }
+        .category-tab {
+            flex: 0 0 auto;
+            white-space: nowrap;
+            background: rgba(0, 0, 0, 0.35);
+            border: 1px solid #7a6a4b;
+            border-radius: 40px;
+            padding: 0.5rem 1rem;
+            font-family: 'Cormorant Garamond', serif;
+            font-size: 1rem;
+            color: #c9b896;
+            cursor: pointer;
+            outline: none;
+            transition: 0.2s;
+        }
+        .category-tab:hover {
+            border-color: #b6974b;
+            color: #f3e6d2;
+            background: rgba(212, 175, 55, 0.12);
+        }
+        .category-tab.active {
+            background: rgba(182, 144, 66, 0.35);
+            border-color: #dbb45c;
+            color: #ffefa8;
+            box-shadow: 0 0 12px rgba(250, 188, 47, 0.2);
+        }
+        .category-tab:focus-visible {
+            outline: 2px solid #deb887;
+            outline-offset: 2px;
+        }
+        /* 大类标签下方：本类 20 题整块可折叠（非十个独立手风琴） */
+        .category-questions-details {
+            margin-top: 1rem;
+            border: 1px solid rgba(122, 106, 75, 0.5);
+            border-radius: 20px;
+            background: rgba(0, 0, 0, 0.22);
+            overflow: hidden;
+        }
+        .category-questions-details > summary {
+            list-style: none;
+            cursor: pointer;
+            padding: 0.75rem 1.1rem;
+            font-family: 'Cormorant Garamond', serif;
+            font-size: 1.05rem;
+            color: #e7cf9c;
+            user-select: none;
+            transition: background 0.2s;
+        }
+        .category-questions-details > summary::-webkit-details-marker {
+            display: none;
+        }
+        .category-questions-details > summary::before {
+            content: '▸';
+            display: inline-block;
+            margin-right: 0.5rem;
+            color: #b6974b;
+            transition: transform 0.2s ease;
+        }
+        .category-questions-details[open] > summary::before {
+            transform: rotate(90deg);
+        }
+        .category-questions-details > summary:hover {
+            background: rgba(212, 175, 55, 0.08);
+        }
+        .category-questions-details > summary:focus-visible {
+            outline: 2px solid #deb887;
+            outline-offset: -2px;
+        }
+        .category-questions-body {
+            padding: 0 1rem 1.1rem;
+            border-top: 1px solid rgba(212, 175, 55, 0.12);
+        }
+        .question-grid {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+        .question-option {
+            background: rgba(255,255,255,0.02);
+            border: 1px solid #5d4d31;
+            border-radius: 40px;
+            padding: 0.6rem 1.5rem;
+            font-size: 1.1rem;
+            color: #d3c7b0;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+        .question-option:hover {
+            background: rgba(212, 175, 55, 0.1);
+            border-color: #b6974b;
+            color: #ffdfa7;
+        }
+        .question-option.selected {
+            background: #b69042;
+            color: #0c0712;
+            border-color: #ffdd99;
+        }
+        .question-more {
+            font-size: 1rem;
+            color: #a48e62;
+            font-style: italic;
+            padding: 0.5rem 1.2rem;
+            cursor: default;
+        }
+
+        /* 牌阵容器 */
+        .spread-container {
+            display: none;
+            margin: 2.5rem 0 3rem;
+        }
+        .spread-container.active {
+            display: block;
+        }
+
+        /* 左右分栏布局（适用于所有牌阵） */
+        .spread-layout {
+            display: flex;
+            gap: 3rem;
+            flex-wrap: wrap;
+        }
+        .position-panel {
+            flex: 1.2;
+            min-width: 320px;
+            background: rgba(10, 5, 15, 0.5);
+            backdrop-filter: blur(8px);
+            border-radius: 48px;
+            padding: 2.5rem 2rem;
+            border: 1px solid rgba(212, 175, 55, 0.2);
+        }
+        .position-panel h3 {
+            font-family: 'Cinzel', serif;
+            color: #e7cf9c;
+            font-size: 1.9rem;
+            border-bottom: 1px solid #b5944b;
+            padding-bottom: 0.7rem;
+            margin-bottom: 2rem;
+            letter-spacing: 3px;
+        }
+        .position-list {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+        .position-item {
+            display: flex;
+            align-items: baseline;
+            justify-content: space-between;
+            padding: 1rem 1.3rem;
+            border-radius: 40px;
+            background: rgba(255,255,255,0.02);
+            border: 1px solid transparent;
+            transition: 0.2s;
+            cursor: pointer;
+            opacity: 0; /* 动画控制 */
+            transform: translateY(-20px);
+        }
+        .position-item:hover {
+            background: rgba(212, 175, 55, 0.1);
+            border-color: #b6974b;
+        }
+        .position-item.active {
+            background: rgba(180, 140, 70, 0.2);
+            border-color: #e5b95c;
+            box-shadow: 0 0 15px rgba(230, 190, 80, 0.3);
+        }
+        .pos-name {
+            font-family: 'Cinzel', serif;
+            font-size: 1.25rem;
+            color: #ffdfa7;
+        }
+        .pos-card {
+            font-size: 1.15rem;
+            color: #d3c7b0;
+            font-style: italic;
+            background: rgba(0,0,0,0.2);
+            padding: 0.3rem 1rem;
+            border-radius: 30px;
+            border: 1px solid #6a5a3a;
+        }
+
+        /* 右侧解读区 */
+        .reading-panel {
+            flex: 2;
+            min-width: 350px;
+            background: rgba(10, 5, 18, 0.6);
+            backdrop-filter: blur(16px);
+            border-radius: 48px;
+            padding: 2.5rem 2.5rem;
+            border: 1px solid rgba(212, 175, 55, 0.3);
+        }
+        .reading-header {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            border-bottom: 1px solid #b5944b;
+            padding-bottom: 1.2rem;
+            margin-bottom: 2rem;
+        }
+        .reading-header i {
+            font-size: 2.4rem;
+            color: #deb887;
+        }
+        .reading-header h2 {
+            font-family: 'Cinzel', serif;
+            font-size: 2.1rem;
+            color: #e7cf9c;
+            letter-spacing: 3px;
+        }
+        .card-detail {
+            opacity: 0;
+            transform: translateY(8px);
+            animation: fadeIn 0.4s forwards;
+        }
+        @keyframes fadeIn {
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .detail-cardname {
+            font-size: 2.5rem;
+            font-family: 'Cinzel', serif;
+            background: linear-gradient(135deg, #fff1d0, #cbae7a);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            line-height: 1.3;
+            margin-bottom: 0.7rem;
+        }
+        .detail-sub {
+            color: #f5c84e;
+            font-size: 1.4rem;
+            font-style: italic;
+            border-left: 4px solid #f5c84e;
+            padding-left: 1.2rem;
+            margin: 1.2rem 0 1.8rem;
+        }
+        .detail-desc {
+            font-size: 1.25rem;
+            line-height: 1.7;
+            color: #d3c7b0;
+            margin-bottom: 1.8rem;
+        }
+        .core-lesson {
+            background: rgba(26, 17, 33, 0.8);
+            border-left: 5px solid #dbb45c;
+            padding: 1.3rem 1.8rem;
+            border-radius: 30px;
+            margin: 1.8rem 0;
+        }
+        .core-lesson p {
+            font-size: 1.25rem;
+            color: #ffdfa7;
+        }
+        .action-today {
+            display: flex;
+            align-items: center;
+            gap: 1.2rem;
+            background: rgba(0,0,0,0.3);
+            border-radius: 40px;
+            padding: 1.2rem 1.8rem;
+            border: 1px dashed #ad8f51;
+        }
+        .action-today i {
+            font-size: 2.1rem;
+            color: #f5c84e;
+        }
+        .action-today span {
+            font-size: 1.25rem;
+            color: #f2e1ba;
+        }
+
+        /* 抽牌按钮 */
+        .draw-zone {
+            text-align: center;
+            margin: 2.5rem 0 1.5rem;
+        }
+        .ritual-btn {
+            background: linear-gradient(145deg, #4a3a22, #2a1e12);
+            border: 2px solid #dbb45c;
+            color: #ffdfa7;
+            font-family: 'Cinzel', serif;
+            font-size: 1.7rem;
+            padding: 1.3rem 5rem;
+            border-radius: 60px;
+            cursor: pointer;
+            box-shadow: 0 0 30px #9e7f45;
+            transition: 0.3s;
+            letter-spacing: 4px;
+            outline: none;
+        }
+        .ritual-btn:hover {
+            background: #5e4b2e;
+            box-shadow: 0 0 50px #dbb45c;
+            transform: scale(1.03);
+        }
+
+        /* 粒子画布 */
+        #stardust {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 100;
+        }
+
+        /* 降临动画 */
+        @keyframes cosmicDescent {
+            0% { opacity: 0; transform: translateY(-80px) rotate(-10deg) scale(0.7); filter: blur(8px); }
+            50% { opacity: 0.9; transform: translateY(5px) rotate(2deg) scale(1.02); filter: blur(0); }
+            80% { transform: translateY(-3px) rotate(-1deg) scale(0.99); }
+            100% { opacity: 1; transform: translateY(0) rotate(0) scale(1); }
+        }
+        .position-item.glow::after {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 100%;
+            border-radius: 40px;
+            box-shadow: 0 0 30px rgba(212, 175, 55, 0.6);
+            opacity: 0;
+            animation: glowPulse 1.2s ease-out forwards;
+        }
+        @keyframes glowPulse {
+            0% { opacity: 0; transform: scale(0.8); }
+            40% { opacity: 0.8; transform: scale(1.1); }
+            100% { opacity: 0; transform: scale(1.2); }
+        }
+
+        /* 响应式 */
+        @media screen and (max-width: 900px) {
+            html { font-size: 16px; }
+            .spread-layout { flex-direction: column; }
+            .category-selector { flex-direction: column; align-items: stretch; }
+            .sanctum { padding: 2rem 1.5rem; }
+            .ritual-btn { font-size: 1.4rem; padding: 1rem 3rem; }
+        }
+        @media screen and (max-width: 500px) {
+            html { font-size: 14px; }
+            .sanctum-header h1 { letter-spacing: 4px; }
+            .spread-tag { padding: 0.5rem 1.2rem; font-size: 1rem; }
+        }
+    </style>
+</head>
+<body>
+    <div class="cosmic-bg">
+        <div class="nebula-1"></div>
+        <div class="nebula-2"></div>
+        <div class="stars"></div>
+    </div>
+    <canvas id="stardust"></canvas>
+
+    <div class="sanctum">
+        <!-- 与 Next 壳同源：/tarot 经 middleware 直达本页时仍可回星云 / 进 React 分层 -->
+        <div style="display:flex;flex-wrap:wrap;gap:12px;justify-content:center;align-items:center;margin-bottom:1.1rem;padding-bottom:0.85rem;border-bottom:1px solid rgba(212,175,55,0.22);font-size:0.82rem;">
+            <a href="/hub" style="color:#d4b68a;text-decoration:none;border:1px solid rgba(212,175,55,0.35);border-radius:999px;padding:0.35rem 0.85rem;background:rgba(0,0,0,0.35);">← 星云</a>
+            <a href="/tarot?lab=1" style="color:#cbaf7a;text-decoration:none;border:1px solid rgba(212,175,55,0.28);border-radius:999px;padding:0.35rem 0.85rem;background:rgba(0,0,0,0.28);">React 分层版</a>
+            <span style="color:#8a7a60;">大师 HTML 原版</span>
+        </div>
+        <!-- 标题 -->
+        <div class="sanctum-header">
+            <h1>圣域 · 78秘仪</h1>
+            <div class="sub">大阿卡那 + 四元素小牌</div>
+        </div>
+
+        <!-- 牌阵导航 -->
+        <div class="spread-nav" id="spreadNav">
+            <div class="spread-tag active" data-spread="single">单张牌</div>
+            <div class="spread-tag" data-spread="celtic">凯尔特十字</div>
+            <div class="spread-tag" data-spread="triangle">圣三角</div>
+            <div class="spread-tag" data-spread="choice">二择一</div>
+            <div class="spread-tag" data-spread="hexagram">六芒星</div>
+            <div class="spread-tag" data-spread="trinity">身心灵</div>
+            <div class="spread-tag" data-spread="venus">维纳斯</div>
+        </div>
+
+        <!-- 问题库 -->
+        <div class="question-sanctum">
+            <div class="category-selector">
+                <div class="category-tabs" id="categoryTabs" role="tablist" aria-label="议题大类">
+                    <button type="button" class="category-tab active" role="tab" data-value="love" aria-selected="true">感情婚姻</button>
+                    <button type="button" class="category-tab" role="tab" data-value="career" aria-selected="false">事业工作</button>
+                    <button type="button" class="category-tab" role="tab" data-value="money" aria-selected="false">财运投资</button>
+                    <button type="button" class="category-tab" role="tab" data-value="study" aria-selected="false">学业考试</button>
+                    <button type="button" class="category-tab" role="tab" data-value="health" aria-selected="false">身体健康</button>
+                    <button type="button" class="category-tab" role="tab" data-value="relation" aria-selected="false">人际关系</button>
+                    <button type="button" class="category-tab" role="tab" data-value="child" aria-selected="false">生育子女</button>
+                    <button type="button" class="category-tab" role="tab" data-value="choice" aria-selected="false">选择决策</button>
+                    <button type="button" class="category-tab" role="tab" data-value="pet" aria-selected="false">宠物</button>
+                    <button type="button" class="category-tab" role="tab" data-value="spirit" aria-selected="false">灵性成长</button>
+                </div>
+                <details class="category-questions-details" id="categoryQuestionsDetails">
+                    <summary id="categoryQuestionsSummary">点选上方议题大类，将展开并显示该类 20 条具体问题（可再点此栏收起）</summary>
+                    <div class="category-questions-body">
+                        <div class="question-grid" id="questionGrid" aria-label="本类 20 条具体问题"></div>
+                    </div>
+                </details>
+            </div>
+        </div>
+
+        <!-- 抽牌按钮 -->
+        <div class="draw-zone">
+            <button class="ritual-btn" id="drawBtn"><i class="fas fa-hand-sparkles"></i> 开启占卜仪式</button>
+        </div>
+
+        <!-- 牌阵容器：单张牌 -->
+        <div id="spreadSingle" class="spread-container">
+            <div class="spread-layout" data-spread="single">
+                <div class="position-panel">
+                    <h3>今日一牌</h3>
+                    <div class="position-list" id="singleList"></div>
+                </div>
+                <div class="reading-panel">
+                    <div class="reading-header"><i class="fas fa-crown"></i><h2>牌义 · 精解</h2></div>
+                    <div id="singleDetail" class="card-detail"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 牌阵容器：凯尔特十字 -->
+        <div id="spreadCeltic" class="spread-container">
+            <div class="spread-layout" data-spread="celtic">
+                <div class="position-panel">
+                    <h3>十方 · 位置</h3>
+                    <div class="position-list" id="celticList"></div>
+                </div>
+                <div class="reading-panel">
+                    <div class="reading-header"><i class="fas fa-crown"></i><h2>牌义 · 精解</h2></div>
+                    <div id="celticDetail" class="card-detail"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 牌阵容器：圣三角 -->
+        <div id="spreadTriangle" class="spread-container">
+            <div class="spread-layout" data-spread="triangle">
+                <div class="position-panel">
+                    <h3>时间之流</h3>
+                    <div class="position-list" id="triangleList"></div>
+                </div>
+                <div class="reading-panel">
+                    <div class="reading-header"><i class="fas fa-crown"></i><h2>牌义 · 精解</h2></div>
+                    <div id="triangleDetail" class="card-detail"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 牌阵容器：二择一（六张牌） -->
+        <div id="spreadChoice" class="spread-container">
+            <div class="spread-layout" data-spread="choice">
+                <div class="position-panel">
+                    <h3>二择一 · 抉择</h3>
+                    <div class="position-list" id="choiceList"></div>
+                </div>
+                <div class="reading-panel">
+                    <div class="reading-header"><i class="fas fa-crown"></i><h2>牌义 · 精解</h2></div>
+                    <div id="choiceDetail" class="card-detail"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 牌阵容器：六芒星（六张牌） -->
+        <div id="spreadHexagram" class="spread-container">
+            <div class="spread-layout" data-spread="hexagram">
+                <div class="position-panel">
+                    <h3>六芒星 · 洞见</h3>
+                    <div class="position-list" id="hexagramList"></div>
+                </div>
+                <div class="reading-panel">
+                    <div class="reading-header"><i class="fas fa-crown"></i><h2>牌义 · 精解</h2></div>
+                    <div id="hexagramDetail" class="card-detail"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 牌阵容器：身心灵（三张牌） -->
+        <div id="spreadTrinity" class="spread-container">
+            <div class="spread-layout" data-spread="trinity">
+                <div class="position-panel">
+                    <h3>身心灵 · 三位</h3>
+                    <div class="position-list" id="trinityList"></div>
+                </div>
+                <div class="reading-panel">
+                    <div class="reading-header"><i class="fas fa-crown"></i><h2>牌义 · 精解</h2></div>
+                    <div id="trinityDetail" class="card-detail"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 牌阵容器：维纳斯（七张牌） -->
+        <div id="spreadVenus" class="spread-container">
+            <div class="spread-layout" data-spread="venus">
+                <div class="position-panel">
+                    <h3>维纳斯 · 感情</h3>
+                    <div class="position-list" id="venusList"></div>
+                </div>
+                <div class="reading-panel">
+                    <div class="reading-header"><i class="fas fa-crown"></i><h2>牌义 · 精解</h2></div>
+                    <div id="venusDetail" class="card-detail"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 引入解读数据 -->
+    <script src="tarotData.js?v=2"></script>
+    <script src="tarotMasterReadings.js?v=2"></script>
+    <!-- 感情/事业/财运/学业/生活六大类 题库脚本合计数十 MB：勿在此同步 <script src>，否则 iframe 长时间白屏；见 </body> 前异步注入。生活类 v= 与 lib/tarot-life-six-public-script-url.ts 一致。 -->
+    <script>
+        (function() {
+            // ---------- 牌ID映射：tarotData → tarotMasterReadings ----------
+            const cardKeyMap = {
+                // 大牌映射
+                'fool': 'fool', 'magician': 'magician', 'priestess': 'highPriestess',
+                'empress': 'empress', 'emperor': 'emperor', 'hierophant': 'hierophant',
+                'lovers': 'lovers', 'chariot': 'chariot', 'strength': 'strength',
+                'hermit': 'hermit', 'wheel': 'wheelOfFortune', 'justice': 'justice',
+                'hanged': 'hangedMan', 'death': 'death', 'temperance': 'temperance',
+                'devil': 'devil', 'tower': 'tower', 'star': 'star',
+                'moon': 'moon', 'sun': 'sun', 'judgement': 'judgement', 'world': 'world',
+                // 权杖
+                'wands1': 'aceOfWands', 'wands2': 'twoOfWands', 'wands3': 'threeOfWands',
+                'wands4': 'fourOfWands', 'wands5': 'fiveOfWands', 'wands6': 'sixOfWands',
+                'wands7': 'sevenOfWands', 'wands8': 'eightOfWands', 'wands9': 'nineOfWands', 'wands10': 'tenOfWands',
+                'wands_page': 'pageOfWands', 'wands_knight': 'knightOfWands',
+                'wands_queen': 'queenOfWands', 'wands_king': 'kingOfWands',
+                // 圣杯
+                'cups1': 'aceOfCups', 'cups2': 'twoOfCups', 'cups3': 'threeOfCups',
+                'cups4': 'fourOfCups', 'cups5': 'fiveOfCups', 'cups6': 'sixOfCups',
+                'cups7': 'sevenOfCups', 'cups8': 'eightOfCups', 'cups9': 'nineOfCups', 'cups10': 'tenOfCups',
+                'cups_page': 'pageOfCups', 'cups_knight': 'knightOfCups',
+                'cups_queen': 'queenOfCups', 'cups_king': 'kingOfCups',
+                // 宝剑
+                'swords1': 'aceOfSwords', 'swords2': 'twoOfSwords', 'swords3': 'threeOfSwords',
+                'swords4': 'fourOfSwords', 'swords5': 'fiveOfSwords', 'swords6': 'sixOfSwords',
+                'swords7': 'sevenOfSwords', 'swords8': 'eightOfSwords', 'swords9': 'nineOfSwords', 'swords10': 'tenOfSwords',
+                'swords_page': 'pageOfSwords', 'swords_knight': 'knightOfSwords',
+                'swords_queen': 'queenOfSwords', 'swords_king': 'kingOfSwords',
+                // 星币
+                'pentacles1': 'aceOfPentacles', 'pentacles2': 'twoOfPentacles', 'pentacles3': 'threeOfPentacles',
+                'pentacles4': 'fourOfPentacles', 'pentacles5': 'fiveOfPentacles', 'pentacles6': 'sixOfPentacles',
+                'pentacles7': 'sevenOfPentacles', 'pentacles8': 'eightOfPentacles', 'pentacles9': 'nineOfPentacles', 'pentacles10': 'tenOfPentacles',
+                'pentacles_page': 'pageOfPentacles', 'pentacles_knight': 'knightOfPentacles',
+                'pentacles_queen': 'queenOfPentacles', 'pentacles_king': 'kingOfPentacles'
+            };
+
+            // 获取大师解读的函数
+            /** tarot-master 牌 baseId → Dmy 牌 id（与 tarotMasterQuestionContent 入库一致） */
+            function baseIdToDmyTarotId(baseId) {
+                const majors = {
+                    fool: 'major_0', magician: 'major_1', priestess: 'major_2', empress: 'major_3',
+                    emperor: 'major_4', hierophant: 'major_5', lovers: 'major_6', chariot: 'major_7',
+                    strength: 'major_8', hermit: 'major_9', wheel: 'major_10', justice: 'major_11',
+                    hanged: 'major_12', death: 'major_13', temperance: 'major_14', devil: 'major_15',
+                    tower: 'major_16', star: 'major_17', moon: 'major_18', sun: 'major_19',
+                    judgement: 'major_20', world: 'major_21',
+                };
+                if (majors[baseId]) return majors[baseId];
+                const suits = ['wands', 'cups', 'swords', 'pentacles'];
+                for (let i = 0; i < suits.length; i++) {
+                    const suit = suits[i];
+                    if (baseId.startsWith(suit)) {
+                        const tail = baseId.slice(suit.length);
+                        if (/^\d+$/.test(tail)) return suit + '_' + tail;
+                        if (tail === '_page') return suit + '_11';
+                        if (tail === '_knight') return suit + '_12';
+                        if (tail === '_queen') return suit + '_13';
+                        if (tail === '_king') return suit + '_14';
+                    }
+                }
+                return null;
+            }
+
+            function escapeHtmlReading(s) {
+                if (s == null || s === '') return '';
+                return String(s)
+                    .replace(/&/g, '&amp;')
+                    .replace(/</g, '&lt;')
+                    .replace(/>/g, '&gt;')
+                    .replace(/"/g, '&quot;');
+            }
+
+            function nlToBrEscaped(s) {
+                return escapeHtmlReading(s).replace(/\r\n/g, '\n').replace(/\n/g, '<br>');
+            }
+
+            /**
+             * 感情婚姻 + 已入库具体问题文案：五段式专属解读（命中则 true，否则 false 走原大师 love）
+             */
+            function renderLoveQuestionSpecificReading(detailDiv, cardId, questionText, getMasterReadingFn) {
+                const gm = window.TarotQuestionLove && window.TarotQuestionLove.getMasterQuestionContent;
+                if (!questionText || typeof gm !== 'function') return false;
+                const baseId = cardId.replace('_rev', '');
+                const dmyId = baseIdToDmyTarotId(baseId);
+                if (!dmyId) return false;
+                const upright = !cardId.endsWith('_rev');
+                const qc = gm('感情婚姻', questionText, dmyId, upright, { placeholder: false });
+                if (!qc || qc.isPlaceholder) return false;
+                const mr = getMasterReadingFn(cardId, 'love');
+                const cardTitle = mr ? mr.name : (window.tarotData && window.tarotData[cardId] && window.tarotData[cardId].name ? window.tarotData[cardId].name : cardId);
+                detailDiv.innerHTML = `
+                            <div class="card-detail love-question-specific">
+                                <div class="detail-cardname">${escapeHtmlReading(cardTitle)}</div>
+                                <div class="master-section" style="margin-top:0.6rem;">
+                                    <div class="section-title" style="color:#a48e62;font-weight:600;margin-bottom:0.5rem;">【你正在问】</div>
+                                    <div class="section-content">${escapeHtmlReading(questionText)}</div>
+                                </div>
+                                <div class="master-section" style="margin-top:1rem;">
+                                    <div class="section-content" style="color:#9a8b6e;font-size:0.92em;">解读维度：本题措辞 × 本牌正逆 · 专属五段式（与题库感情题及繁体同义句对齐）</div>
+                                </div>
+                                <div class="master-section" style="margin-top:1.1rem;">
+                                    <div class="section-title" style="color:#a48e62;font-weight:600;margin-bottom:0.5rem;">【牌在对你说话】</div>
+                                    <div class="section-content">${nlToBrEscaped(qc.cardSpeaking)}</div>
+                                </div>
+                                <div class="master-section" style="margin-top:1rem;">
+                                    <div class="section-title" style="color:#a48e62;font-weight:600;margin-bottom:0.5rem;">【心理层面】</div>
+                                    <div class="section-content">${nlToBrEscaped(qc.psychologyLayer)}</div>
+                                </div>
+                                <div class="master-section" style="margin-top:1rem;">
+                                    <div class="section-title" style="color:#a48e62;font-weight:600;margin-bottom:0.5rem;">【灵性层面】</div>
+                                    <div class="section-content">${nlToBrEscaped(qc.spiritLayer)}</div>
+                                </div>
+                                <div class="master-section" style="margin-top:1rem;">
+                                    <div class="section-title" style="color:#a48e62;font-weight:600;margin-bottom:0.5rem;">【行动路径】</div>
+                                    <div class="section-content">${nlToBrEscaped(qc.actionPath)}</div>
+                                </div>
+                                <div class="master-section" style="margin-top:1rem;">
+                                    <div class="section-title" style="color:#a48e62;font-weight:600;margin-bottom:0.5rem;">【大师总结 · 一句话送你】</div>
+                                    <div class="section-content">${nlToBrEscaped(qc.masterSummary)}</div>
+                                </div>
+                            </div>`;
+                return true;
+            }
+
+            /**
+             * 事业工作 + 已入库具体问题文案：五段式专属解读（命中则 true，否则 false 走原大师 career）
+             */
+            function renderCareerQuestionSpecificReading(detailDiv, cardId, questionText, getMasterReadingFn) {
+                const gm = window.TarotQuestionCareer && window.TarotQuestionCareer.getMasterQuestionContent;
+                if (!questionText || typeof gm !== 'function') return false;
+                const baseId = cardId.replace('_rev', '');
+                const dmyId = baseIdToDmyTarotId(baseId);
+                if (!dmyId) return false;
+                const upright = !cardId.endsWith('_rev');
+                const qc = gm('事业工作', questionText, dmyId, upright, { placeholder: false });
+                if (!qc || qc.isPlaceholder) return false;
+                const mr = getMasterReadingFn(cardId, 'career');
+                const cardTitle = mr ? mr.name : (window.tarotData && window.tarotData[cardId] && window.tarotData[cardId].name ? window.tarotData[cardId].name : cardId);
+                detailDiv.innerHTML = `
+                            <div class="card-detail career-question-specific">
+                                <div class="detail-cardname">${escapeHtmlReading(cardTitle)}</div>
+                                <div class="master-section" style="margin-top:0.6rem;">
+                                    <div class="section-title" style="color:#a48e62;font-weight:600;margin-bottom:0.5rem;">【你正在问】</div>
+                                    <div class="section-content">${escapeHtmlReading(questionText)}</div>
+                                </div>
+                                <div class="master-section" style="margin-top:1rem;">
+                                    <div class="section-content" style="color:#9a8b6e;font-size:0.92em;">解读维度：本题措辞 × 本牌正逆 · 事业向专属五段式（与快速选题 20 问文案对齐）</div>
+                                </div>
+                                <div class="master-section" style="margin-top:1.1rem;">
+                                    <div class="section-title" style="color:#a48e62;font-weight:600;margin-bottom:0.5rem;">【牌在对你说话】</div>
+                                    <div class="section-content">${nlToBrEscaped(qc.cardSpeaking)}</div>
+                                </div>
+                                <div class="master-section" style="margin-top:1rem;">
+                                    <div class="section-title" style="color:#a48e62;font-weight:600;margin-bottom:0.5rem;">【心理层面】</div>
+                                    <div class="section-content">${nlToBrEscaped(qc.psychologyLayer)}</div>
+                                </div>
+                                <div class="master-section" style="margin-top:1rem;">
+                                    <div class="section-title" style="color:#a48e62;font-weight:600;margin-bottom:0.5rem;">【灵性层面】</div>
+                                    <div class="section-content">${nlToBrEscaped(qc.spiritLayer)}</div>
+                                </div>
+                                <div class="master-section" style="margin-top:1rem;">
+                                    <div class="section-title" style="color:#a48e62;font-weight:600;margin-bottom:0.5rem;">【行动路径】</div>
+                                    <div class="section-content">${nlToBrEscaped(qc.actionPath)}</div>
+                                </div>
+                                <div class="master-section" style="margin-top:1rem;">
+                                    <div class="section-title" style="color:#a48e62;font-weight:600;margin-bottom:0.5rem;">【大师总结 · 一句话送你】</div>
+                                    <div class="section-content">${nlToBrEscaped(qc.masterSummary)}</div>
+                                </div>
+                            </div>`;
+                return true;
+            }
+
+            /**
+             * 财运投资 + 已入库具体问题 × 牌 × 正逆：五段式专属解读（与事业同源逻辑）
+             */
+            function renderMoneyQuestionSpecificReading(detailDiv, cardId, questionText, getMasterReadingFn) {
+                const gm = window.TarotQuestionMoney && window.TarotQuestionMoney.getMasterQuestionContent;
+                if (!questionText || typeof gm !== 'function') return false;
+                const baseId = cardId.replace('_rev', '');
+                const dmyId = baseIdToDmyTarotId(baseId);
+                if (!dmyId) return false;
+                const upright = !cardId.endsWith('_rev');
+                const qc = gm('财运投资', questionText, dmyId, upright, { placeholder: false });
+                if (!qc || qc.isPlaceholder) return false;
+                const mr = getMasterReadingFn(cardId, 'money');
+                const cardTitle = mr ? mr.name : (window.tarotData && window.tarotData[cardId] && window.tarotData[cardId].name ? window.tarotData[cardId].name : cardId);
+                detailDiv.innerHTML = `
+                            <div class="card-detail money-question-specific">
+                                <div class="detail-cardname">${escapeHtmlReading(cardTitle)}</div>
+                                <div class="master-section" style="margin-top:0.6rem;">
+                                    <div class="section-title" style="color:#a48e62;font-weight:600;margin-bottom:0.5rem;">【你正在问】</div>
+                                    <div class="section-content">${escapeHtmlReading(questionText)}</div>
+                                </div>
+                                <div class="master-section" style="margin-top:1rem;">
+                                    <div class="section-content" style="color:#9a8b6e;font-size:0.92em;">解读维度：本题措辞 × 本牌正逆 · 财运向专属五段式（与快速选题文案对齐）</div>
+                                </div>
+                                <div class="master-section" style="margin-top:1.1rem;">
+                                    <div class="section-title" style="color:#a48e62;font-weight:600;margin-bottom:0.5rem;">【牌在对你说话】</div>
+                                    <div class="section-content">${nlToBrEscaped(qc.cardSpeaking)}</div>
+                                </div>
+                                <div class="master-section" style="margin-top:1rem;">
+                                    <div class="section-title" style="color:#a48e62;font-weight:600;margin-bottom:0.5rem;">【心理层面】</div>
+                                    <div class="section-content">${nlToBrEscaped(qc.psychologyLayer)}</div>
+                                </div>
+                                <div class="master-section" style="margin-top:1rem;">
+                                    <div class="section-title" style="color:#a48e62;font-weight:600;margin-bottom:0.5rem;">【灵性层面】</div>
+                                    <div class="section-content">${nlToBrEscaped(qc.spiritLayer)}</div>
+                                </div>
+                                <div class="master-section" style="margin-top:1rem;">
+                                    <div class="section-title" style="color:#a48e62;font-weight:600;margin-bottom:0.5rem;">【行动路径】</div>
+                                    <div class="section-content">${nlToBrEscaped(qc.actionPath)}</div>
+                                </div>
+                                <div class="master-section" style="margin-top:1rem;">
+                                    <div class="section-title" style="color:#a48e62;font-weight:600;margin-bottom:0.5rem;">【大师总结 · 一句话送你】</div>
+                                    <div class="section-content">${nlToBrEscaped(qc.masterSummary)}</div>
+                                </div>
+                            </div>`;
+                return true;
+            }
+
+            /**
+             * 学业考试 + 已入库具体问题 × 牌 × 正逆：五段式专属解读
+             */
+            function renderStudyQuestionSpecificReading(detailDiv, cardId, questionText, getMasterReadingFn) {
+                const TQS = window.TarotQuestionStudy;
+                const gm = TQS && TQS.getMasterQuestionContent;
+                if (!questionText || typeof gm !== 'function') return false;
+                const baseId = cardId.replace('_rev', '');
+                const dmyId = baseIdToDmyTarotId(baseId);
+                if (!dmyId) return false;
+                const upright = !cardId.endsWith('_rev');
+                const qc = gm('学业考试', questionText, dmyId, upright, { placeholder: false });
+                if (!qc || qc.isPlaceholder) return false;
+                const mr = getMasterReadingFn(cardId, 'study');
+                const cardTitle = mr ? mr.name : (window.tarotData && window.tarotData[cardId] && window.tarotData[cardId].name ? window.tarotData[cardId].name : cardId);
+                const bandFn = TQS && TQS.studyQuestionBandForText;
+                const stripFn = TQS && TQS.stripStudyReadingBandPrefixes;
+                const band = typeof bandFn === 'function' ? bandFn(questionText) : '';
+                function studyStrip(s) {
+                    if (typeof stripFn !== 'function' || !band) return s;
+                    return stripFn(s, band);
+                }
+                detailDiv.innerHTML = `
+                            <div class="card-detail study-question-specific">
+                                <div class="detail-cardname">${escapeHtmlReading(cardTitle)}</div>
+                                <div class="master-section" style="margin-top:0.6rem;">
+                                    <div class="section-title" style="color:#a48e62;font-weight:600;margin-bottom:0.5rem;">【你正在问】</div>
+                                    <div class="section-content">${escapeHtmlReading(questionText)}</div>
+                                    <div class="section-content" style="margin-top:0.55rem;color:#c9b896;font-size:0.94em;line-height:1.55;">这条题落在「${escapeHtmlReading(band)}」上——我不替你选课，只把这张牌看见的说清；你听完仍要自己对答案负责。</div>
+                                </div>
+                                <div class="master-section" style="margin-top:1.15rem;">
+                                    <div class="section-title" style="color:#a48e62;font-weight:600;margin-bottom:0.5rem;">牌先说</div>
+                                    <div class="section-content">${nlToBrEscaped(studyStrip(qc.cardSpeaking))}</div>
+                                </div>
+                                <div class="master-section" style="margin-top:1rem;">
+                                    <div class="section-title" style="color:#a48e62;font-weight:600;margin-bottom:0.5rem;">你心里这层</div>
+                                    <div class="section-content">${nlToBrEscaped(studyStrip(qc.psychologyLayer))}</div>
+                                </div>
+                                <div class="master-section" style="margin-top:1rem;">
+                                    <div class="section-title" style="color:#a48e62;font-weight:600;margin-bottom:0.5rem;">收一收神</div>
+                                    <div class="section-content">${nlToBrEscaped(studyStrip(qc.spiritLayer))}</div>
+                                </div>
+                                <div class="master-section" style="margin-top:1rem;">
+                                    <div class="section-title" style="color:#a48e62;font-weight:600;margin-bottom:0.5rem;">今天这一格</div>
+                                    <div class="section-content">${nlToBrEscaped(studyStrip(qc.actionPath))}</div>
+                                </div>
+                                <div class="master-section" style="margin-top:1rem;">
+                                    <div class="section-title" style="color:#a48e62;font-weight:600;margin-bottom:0.5rem;">临走一句</div>
+                                    <div class="section-content">${nlToBrEscaped(studyStrip(qc.masterSummary))}</div>
+                                </div>
+                            </div>`;
+                return true;
+            }
+
+            /** 财运投资～灵性成长等：选中具体问题时展示题干向五段式（与题库文案对齐），并与本牌通用大师句并读 */
+            function renderLifeCategoryQuestionModulesReading(detailDiv, cardId, questionText, categoryTab, getMasterReadingFn) {
+                const SIX_TAB_TO_CAT = { health: '身体健康', relation: '人际关系', child: '生育子女', choice: '选择决策', pet: '宠物', spirit: '灵性成长' };
+                const lifeSixCatId = SIX_TAB_TO_CAT[categoryTab];
+                if (lifeSixCatId && questionText) {
+                    const gm6 = window.TarotQuestionLife && window.TarotQuestionLife.getMasterQuestionContentLifeSix;
+                    if (typeof gm6 === 'function') {
+                        const baseId = cardId.replace('_rev', '');
+                        const dmyId = baseIdToDmyTarotId(baseId);
+                        if (dmyId) {
+                            const upright = !cardId.endsWith('_rev');
+                            const qc = gm6(lifeSixCatId, questionText.trim(), dmyId, upright, { placeholder: false });
+                            if (qc && !qc.isPlaceholder) {
+                                const mr = getMasterReadingFn(cardId, categoryTab);
+                                const cardTitle = mr ? mr.name : (window.tarotData && window.tarotData[cardId] && window.tarotData[cardId].name ? window.tarotData[cardId].name : cardId);
+                                const tabLabel = { health: '身体健康', relation: '人际关系', child: '生育子女', choice: '选择决策', pet: '宠物', spirit: '灵性成长' }[categoryTab] || '此议题';
+                                detailDiv.innerHTML = `
+                            <div class="card-detail life-six-question-specific">
+                                <div class="detail-cardname">${escapeHtmlReading(cardTitle)}</div>
+                                <div class="master-section" style="margin-top:0.6rem;">
+                                    <div class="section-title" style="color:#a48e62;font-weight:600;margin-bottom:0.5rem;">【你正在问】</div>
+                                    <div class="section-content">${escapeHtmlReading(questionText.trim())}</div>
+                                </div>
+                                <div class="master-section" style="margin-top:1rem;">
+                                    <div class="section-content" style="color:#9a8b6e;font-size:0.92em;">解读维度：${escapeHtmlReading(tabLabel)} · 本题措辞 × 本牌正逆 · 大师向专属五段式（全 78 张含正逆）</div>
+                                </div>
+                                <div class="master-section" style="margin-top:1.1rem;">
+                                    <div class="section-title" style="color:#a48e62;font-weight:600;margin-bottom:0.5rem;">【牌在对你说话】</div>
+                                    <div class="section-content">${nlToBrEscaped(qc.cardSpeaking)}</div>
+                                </div>
+                                <div class="master-section" style="margin-top:1rem;">
+                                    <div class="section-title" style="color:#a48e62;font-weight:600;margin-bottom:0.5rem;">【心理层面】</div>
+                                    <div class="section-content">${nlToBrEscaped(qc.psychologyLayer)}</div>
+                                </div>
+                                <div class="master-section" style="margin-top:1rem;">
+                                    <div class="section-title" style="color:#a48e62;font-weight:600;margin-bottom:0.5rem;">【灵性层面】</div>
+                                    <div class="section-content">${nlToBrEscaped(qc.spiritLayer)}</div>
+                                </div>
+                                <div class="master-section" style="margin-top:1rem;">
+                                    <div class="section-title" style="color:#a48e62;font-weight:600;margin-bottom:0.5rem;">【行动路径】</div>
+                                    <div class="section-content">${nlToBrEscaped(qc.actionPath)}</div>
+                                </div>
+                                <div class="master-section" style="margin-top:1rem;">
+                                    <div class="section-title" style="color:#a48e62;font-weight:600;margin-bottom:0.5rem;">【大师总结 · 一句话送你】</div>
+                                    <div class="section-content">${nlToBrEscaped(qc.masterSummary)}</div>
+                                </div>
+                            </div>`;
+                                return true;
+                            }
+                        }
+                    }
+                }
+                const gl = window.TarotQuestionLife && window.TarotQuestionLife.getLifeQuestionFiveModulesForTab;
+                if (!questionText || typeof gl !== 'function') return false;
+                const mods = gl(categoryTab, questionText);
+                if (!mods) return false;
+                const mr = getMasterReadingFn(cardId, categoryTab);
+                const cardTitle = mr ? mr.name : (window.tarotData && window.tarotData[cardId] && window.tarotData[cardId].name ? window.tarotData[cardId].name : cardId);
+                const tabLabel = {
+                    money: '财运投资',
+                    study: '学业考试',
+                    health: '身体健康',
+                    relation: '人际关系',
+                    child: '生育子女',
+                    choice: '选择决策',
+                    pet: '宠物',
+                    spirit: '灵性成长',
+                }[categoryTab] || '此议题';
+                const bridge = mr && (mr.intro || mr.coreInsight)
+                    ? `\n\n【与本牌并读】${mr.intro ? mr.intro + ' ' : ''}${mr.coreInsight || ''}`.trim()
+                    : '';
+                detailDiv.innerHTML = `
+                            <div class="card-detail life-category-question-modules">
+                                <div class="detail-cardname">${escapeHtmlReading(cardTitle)}</div>
+                                <div class="master-section" style="margin-top:0.6rem;">
+                                    <div class="section-title" style="color:#a48e62;font-weight:600;margin-bottom:0.5rem;">【你正在问】</div>
+                                    <div class="section-content">${escapeHtmlReading(questionText)}</div>
+                                </div>
+                                <div class="master-section" style="margin-top:1rem;">
+                                    <div class="section-content" style="color:#9a8b6e;font-size:0.92em;">解读维度：${escapeHtmlReading(tabLabel)} · 本题定向五段式（与快速选题一致）· 画面与逆位语气请结合本牌通用大师解读。</div>
+                                </div>
+                                <div class="master-section" style="margin-top:1.1rem;">
+                                    <div class="section-title" style="color:#a48e62;font-weight:600;margin-bottom:0.5rem;">【牌在对你说话】</div>
+                                    <div class="section-content">${nlToBrEscaped(mods.cardSpeaking)}${bridge ? nlToBrEscaped(bridge) : ''}</div>
+                                </div>
+                                <div class="master-section" style="margin-top:1rem;">
+                                    <div class="section-title" style="color:#a48e62;font-weight:600;margin-bottom:0.5rem;">【心理层面】</div>
+                                    <div class="section-content">${nlToBrEscaped(mods.psychologyLayer)}</div>
+                                </div>
+                                <div class="master-section" style="margin-top:1rem;">
+                                    <div class="section-title" style="color:#a48e62;font-weight:600;margin-bottom:0.5rem;">【灵性层面】</div>
+                                    <div class="section-content">${nlToBrEscaped(mods.spiritLayer)}</div>
+                                </div>
+                                <div class="master-section" style="margin-top:1rem;">
+                                    <div class="section-title" style="color:#a48e62;font-weight:600;margin-bottom:0.5rem;">【行动路径】</div>
+                                    <div class="section-content">${nlToBrEscaped(mods.actionPath)}</div>
+                                </div>
+                                <div class="master-section" style="margin-top:1rem;">
+                                    <div class="section-title" style="color:#a48e62;font-weight:600;margin-bottom:0.5rem;">【大师总结 · 一句话送你】</div>
+                                    <div class="section-content">${nlToBrEscaped(mods.masterSummary)}</div>
+                                </div>
+                            </div>`;
+                return true;
+            }
+
+            function getMasterReading(cardId, category) {
+                const isReversed = cardId.endsWith('_rev');
+                const baseId = cardId.replace('_rev', '');
+                const masterKey = cardKeyMap[baseId];
+                
+                if (!masterKey) {
+                    return null;
+                }
+                if (!window.tarotMasterReadings) {
+                    return null;
+                }
+                
+                const card = window.tarotMasterReadings[masterKey];
+                if (!card) return null;
+                
+                const position = isReversed ? 'reversed' : 'upright';
+                const reading = card[position]?.[category];
+                if (!reading) return null;
+                
+                return {
+                    name: card.name + (isReversed ? ' · 逆位' : ' · 正位'),
+                    ...reading
+                };
+            }
+
+            // ---------- 牌阵位置定义 ----------
+            const spreadPositions = {
+                single: ['今日指引'],
+                celtic: ['现状', '阻碍', '潜意识', '过去', '未来', '自我', '环境', '希望/恐惧', '他人看法', '结果'],
+                triangle: ['过去', '现在', '未来'],
+                choice: ['A · 优势', 'A · 劣势', 'A · 结果', 'B · 优势', 'B · 劣势', 'B · 结果'],
+                hexagram: ['过去', '现在', '未来', '行动', '环境', '希望/恐惧'],
+                trinity: ['身', '心', '灵'],
+                venus: ['自己', '对方', '关系', '问题', '建议', '结果', '潜在影响']
+            };
+
+            // 78张牌ID列表（简化，实际需要完整）
+            const allCardIds = [
+                // 大牌
+                'fool','magician','priestess','empress','emperor','hierophant','lovers','chariot',
+                'strength','hermit','wheel','justice','hanged','death','temperance','devil',
+                'tower','star','moon','sun','judgement','world',
+                // 权杖
+                'wands1','wands2','wands3','wands4','wands5','wands6','wands7','wands8','wands9','wands10',
+                'wands_page','wands_knight','wands_queen','wands_king',
+                // 圣杯
+                'cups1','cups2','cups3','cups4','cups5','cups6','cups7','cups8','cups9','cups10',
+                'cups_page','cups_knight','cups_queen','cups_king',
+                // 宝剑
+                'swords1','swords2','swords3','swords4','swords5','swords6','swords7','swords8','swords9','swords10',
+                'swords_page','swords_knight','swords_queen','swords_king',
+                // 星币
+                'pentacles1','pentacles2','pentacles3','pentacles4','pentacles5','pentacles6','pentacles7','pentacles8','pentacles9','pentacles10',
+                'pentacles_page','pentacles_knight','pentacles_queen','pentacles_king'
+            ].flatMap(id => [id, id + '_rev']); // 每个牌正逆位
+
+            // 当前激活的牌阵
+            let activeSpread = 'single';
+            // 存储每个牌阵的当前牌ID
+            const currentDraws = {};
+
+            // ---------- 随机抽取函数 ----------
+            function drawCards(count) {
+                const shuffled = [...allCardIds];
+                for (let i = shuffled.length - 1; i > 0; i--) {
+                    const j = Math.floor(Math.random() * (i + 1));
+                    [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+                }
+                return shuffled.slice(0, count);
+            }
+
+            // ---------- 渲染指定牌阵 ----------
+            function renderSpread(spread) {
+                const count = spreadPositions[spread].length;
+                if (!currentDraws[spread]) {
+                    currentDraws[spread] = drawCards(count);
+                }
+                const cardIds = currentDraws[spread];
+                const positions = spreadPositions[spread];
+                const listId = spread + 'List';
+                const listContainer = document.getElementById(listId);
+                if (!listContainer) return;
+
+                listContainer.innerHTML = '';
+                cardIds.forEach((cardId, index) => {
+                    const item = document.createElement('div');
+                    item.className = 'position-item' + (index === 0 ? ' active' : '');
+                    item.dataset.id = cardId;
+                    item.dataset.spread = spread;
+                    // 从 tarotData 获取牌名，若无则显示ID
+                    const cardInfo = window.tarotData?.[cardId] || { name: cardId.replace('_rev', '逆位').replace(/_/g, ' ') };
+                    const displayName = cardInfo.name || cardId;
+                    item.innerHTML = `<span class="pos-name">${positions[index]}</span><span class="pos-card">${displayName}</span>`;
+                    listContainer.appendChild(item);
+                });
+
+                // 默认显示第一个解读
+                if (cardIds.length > 0) updateReading(spread, cardIds[0]);
+
+                // 绑定点击事件
+                document.querySelectorAll(`#${listId} .position-item`).forEach(item => {
+                    item.addEventListener('click', function() {
+                        document.querySelectorAll(`#${listId} .position-item`).forEach(i => i.classList.remove('active'));
+                        this.classList.add('active');
+                        updateReading(spread, this.dataset.id);
+                    });
+                });
+            }
+
+            // ---------- 更新右侧解读 ----------
+            function getCategoryValue() {
+                const el = document.querySelector('.category-tab.active');
+                return el?.dataset.value || 'love';
+            }
+
+            function updateReading(spread, cardId) {
+                const detailDiv = document.getElementById(spread + 'Detail');
+                const category = getCategoryValue();
+                // 當前選中的具體問題（若有）
+                const selectedQuestionEl = document.querySelector('.question-option.selected');
+                const questionText = selectedQuestionEl ? selectedQuestionEl.textContent.trim() : '';
+
+                if (category === 'love' && renderLoveQuestionSpecificReading(detailDiv, cardId, questionText, getMasterReading)) {
+                    return;
+                }
+                if (category === 'career' && renderCareerQuestionSpecificReading(detailDiv, cardId, questionText, getMasterReading)) {
+                    return;
+                }
+                if (category === 'money' && renderMoneyQuestionSpecificReading(detailDiv, cardId, questionText, getMasterReading)) {
+                    return;
+                }
+                if (category === 'study' && renderStudyQuestionSpecificReading(detailDiv, cardId, questionText, getMasterReading)) {
+                    return;
+                }
+                const lifeModuleTabs = ['money', 'health', 'relation', 'child', 'choice', 'pet', 'spirit'];
+                if (lifeModuleTabs.indexOf(category) >= 0 && renderLifeCategoryQuestionModulesReading(detailDiv, cardId, questionText, category, getMasterReading)) {
+                    return;
+                }
+
+                // 优先使用大师级解读
+                const masterReading = getMasterReading(cardId, category);
+                if (masterReading) {
+                    // 宠物：使用健康照护 / 行为情绪 / 关系连结 / 照护建议等专用结构
+                    if (category === 'pet') {
+                        detailDiv.innerHTML = `
+                            <div class="card-detail">
+                                <div class="detail-cardname">${masterReading.name}</div>
+                                <div class="detail-sub" style="color:#d4af37;font-style:italic;margin:0.8rem 0;">${masterReading.intro || ''}</div>
+                                <div class="detail-desc">${masterReading.coreQuestion || ''}</div>
+                                
+                                ${questionText ? `
+                                <div class="master-section" style="margin-top:1rem;">
+                                    <div class="section-title" style="color:#a48e62;font-weight:600;margin-bottom:0.5rem;">【你正在问】</div>
+                                    <div class="section-content">${questionText}</div>
+                                </div>` : ''}
+
+                                ${masterReading.healthCare ? `
+                                <div class="master-section" style="margin-top:1.2rem;">
+                                    <div class="section-title" style="color:#a48e62;font-weight:600;margin-bottom:0.5rem;">【健康照护】</div>
+                                    <div class="section-content">${masterReading.healthCare}</div>
+                                </div>` : ''}
+
+                                ${masterReading.behavior ? `
+                                <div class="master-section" style="margin-top:1rem;">
+                                    <div class="section-title" style="color:#a48e62;font-weight:600;margin-bottom:0.5rem;">【行为情绪】</div>
+                                    <div class="section-content">${masterReading.behavior}</div>
+                                </div>` : ''}
+
+                                ${masterReading.bond ? `
+                                <div class="master-section" style="margin-top:1rem;">
+                                    <div class="section-title" style="color:#a48e62;font-weight:600;margin-bottom:0.5rem;">【关系连结】</div>
+                                    <div class="section-content">${masterReading.bond}</div>
+                                </div>` : ''}
+
+                                ${masterReading.advice ? `
+                                <div class="master-section" style="margin-top:1rem;">
+                                    <div class="section-title" style="color:#a48e62;font-weight:600;margin-bottom:0.5rem;">【照护建议】</div>
+                                    <div class="section-content">${masterReading.advice}</div>
+                                </div>` : ''}
+
+                                ${masterReading.coreInsight ? `<div class="core-lesson"><p>⚜️ 核心启示 · ${masterReading.coreInsight}</p></div>` : ''}
+                                ${masterReading.dailyPractice ? `<div class="action-today"><i class="fas fa-feather-alt"></i><span>今日践行 · ${masterReading.dailyPractice}</span></div>` : ''}
+
+                                ${questionText ? `
+                                <div class="master-section" style="margin-top:1.4rem;">
+                                    <div class="section-title" style="color:#a48e62;font-weight:600;margin-bottom:0.5rem;">【大师总结】</div>
+                                    <div class="section-content">
+                                        <span style="color:#9a8b6e;font-size:0.9em;">解读维度：模式 + 78 张牌</span><br>
+                                        针对「${questionText}」，这张牌在宠物议题上的核心提醒是：${masterReading.coreInsight || '用一致、稳定的照护回应它的不安。'}
+                                        <br><br>
+                                        今天可以从一件最小的事开始：${masterReading.dailyPractice || masterReading.advice || masterReading.healthCare || ''} 
+                                    </div>
+                                </div>` : ''}
+                            </div>
+                        `;
+                    } else {
+                        // 其他大类：沿用關係/現狀/發展方向等結構
+                        const isLove = category === 'love';
+                        const statusKey = isLove ? 'status' : 'currentState';
+                        
+                        detailDiv.innerHTML = `
+                            <div class="card-detail">
+                                <div class="detail-cardname">${masterReading.name}</div>
+                                <div class="detail-sub" style="color:#d4af37;font-style:italic;margin:0.8rem 0;">${masterReading.intro || ''}</div>
+                                <div class="detail-desc">${masterReading.coreQuestion || ''}</div>
+                                
+                                ${questionText ? `
+                                <div class="master-section" style="margin-top:1rem;">
+                                    <div class="section-title" style="color:#a48e62;font-weight:600;margin-bottom:0.5rem;">【你正在问】</div>
+                                    <div class="section-content">${questionText}</div>
+                                </div>` : ''}
+                                
+                                <div class="master-section" style="margin-top:1.2rem;">
+                                    <div class="section-title" style="color:#a48e62;font-weight:600;margin-bottom:0.5rem;">
+                                        ${isLove ? '【关系现状】' : '【当前状态】'}
+                                    </div>
+                                    <div class="section-content">${masterReading[statusKey] || ''}</div>
+                                </div>
+                                
+                                <div class="master-section" style="margin-top:1rem;">
+                                    <div class="section-title" style="color:#a48e62;font-weight:600;margin-bottom:0.5rem;">
+                                        ${isLove ? '【关系走向】' : '【发展方向】'}
+                                    </div>
+                                    <div class="section-content">${masterReading.direction || ''}</div>
+                                </div>
+                                
+                                ${isLove ? `
+                                <div class="master-section" style="margin-top:1rem;">
+                                    <div class="section-title" style="color:#a48e62;font-weight:600;margin-bottom:0.5rem;">【复合与放手】</div>
+                                    <div class="section-content">${masterReading.reconciliation || ''}</div>
+                                </div>
+                                <div class="master-section" style="margin-top:1rem;">
+                                    <div class="section-title" style="color:#a48e62;font-weight:600;margin-bottom:0.5rem;">【择偶与新恋情】</div>
+                                    <div class="section-content">${masterReading.newLove || ''}</div>
+                                </div>
+                                <div class="master-section" style="margin-top:1rem;">
+                                    <div class="section-title" style="color:#a48e62;font-weight:600;margin-bottom:0.5rem;">【自我觉察】</div>
+                                    <div class="section-content">${masterReading.selfAwareness || ''}</div>
+                                </div>
+                                ` : `
+                                <div class="master-section" style="margin-top:1rem;">
+                                    <div class="section-title" style="color:#a48e62;font-weight:600;margin-bottom:0.5rem;">【行动建议】</div>
+                                    <div class="section-content">${masterReading.advice || ''}</div>
+                                </div>
+                                <div class="master-section" style="margin-top:1rem;">
+                                    <div class="section-title" style="color:#a48e62;font-weight:600;margin-bottom:0.5rem;">【潜在障碍】</div>
+                                    <div class="section-content">${masterReading.obstacle || ''}</div>
+                                </div>
+                                `}
+                                
+                                ${masterReading.coreInsight ? `<div class="core-lesson"><p>⚜️ 核心启示 · ${masterReading.coreInsight}</p></div>` : ''}
+                                ${masterReading.dailyPractice ? `<div class="action-today"><i class="fas fa-feather-alt"></i><span>今日践行 · ${masterReading.dailyPractice}</span></div>` : ''}
+
+                                ${questionText ? (function() {
+                                    var isQuestionLevel = ['love','career','money','spirit'].indexOf(category) >= 0;
+                                    var categoryLabel = { love:'感情婚姻', career:'事业工作', money:'财运投资', spirit:'灵性成长', study:'学业考试', health:'身体健康', relation:'人际关系', child:'生育子女', choice:'选择决策' }[category] || '此议题';
+                                    var dimHint = isQuestionLevel ? '解读维度：具体问题 + 78 张牌' : '解读维度：模式 + 78 张牌';
+                                    var core = masterReading.coreInsight || '看清当下，再用实际行动调整方向。';
+                                    var daily = masterReading.dailyPractice || masterReading.advice || masterReading.direction || '';
+                                    return '<div class="master-section" style="margin-top:1.4rem;"><div class="section-title" style="color:#a48e62;font-weight:600;margin-bottom:0.5rem;">【大师总结】</div><div class="section-content"><span style="color:#9a8b6e;font-size:0.9em;">' + dimHint + '</span><br>针对「' + questionText + '」，这张牌在' + categoryLabel + '上的综合指引是：' + core + '<br><br>今天可以先从一件具体的小事开始：' + daily + '</div></div>';
+                                })() : ''}
+                            </div>
+                        `;
+                    }
+                    return;
+                }
+                
+                // 回退到旧的通用解读
+                const data = window.tarotData?.[cardId];
+                if (!data) {
+                    detailDiv.innerHTML = `<div style="color:#a48e62;">暂无该牌解读</div>`;
+                    return;
+                }
+                const reading = data.general || data;
+                detailDiv.innerHTML = `
+                    <div class="card-detail">
+                        <div class="detail-cardname">${data.name}</div>
+                        <div class="detail-sub">${reading.sub || ''}</div>
+                        <div class="detail-desc">${reading.desc || ''}</div>
+                        ${reading.core ? `<div class="core-lesson"><p>⚜️ 核心启示 · ${reading.core}</p></div>` : ''}
+                        ${reading.action ? `<div class="action-today"><i class="fas fa-feather-alt"></i><span>今日践行 · ${reading.action}</span></div>` : ''}
+                    </div>
+                `;
+            }
+
+            // ---------- 切换牌阵 ----------
+            const navTags = document.querySelectorAll('.spread-tag');
+            navTags.forEach(tag => {
+                tag.addEventListener('click', function() {
+                    navTags.forEach(t => t.classList.remove('active'));
+                    this.classList.add('active');
+                    activeSpread = this.dataset.spread;
+
+                    // 切换牌阵时，隐藏所有结果区域，等待用户点击"开启"
+                    document.querySelectorAll('.spread-container').forEach(container => {
+                        container.classList.remove('active');
+                    });
+                });
+            });
+
+            // ---------- 抽牌按钮 ----------
+            document.getElementById('drawBtn').addEventListener('click', function() {
+                // 显示当前牌阵容器
+                document.querySelectorAll('.spread-container').forEach(c => c.classList.remove('active'));
+                const containerId = 'spread' + activeSpread.charAt(0).toUpperCase() + activeSpread.slice(1);
+                document.getElementById(containerId)?.classList.add('active');
+
+                // 重新抽取当前牌阵的牌
+                const count = spreadPositions[activeSpread].length;
+                currentDraws[activeSpread] = drawCards(count);
+                renderSpread(activeSpread);
+
+                // 触发动画
+                const items = document.querySelectorAll(`#${activeSpread}List .position-item`);
+                items.forEach((item, index) => {
+                    item.style.animation = 'none';
+                    item.offsetHeight;
+                    item.style.animation = `cosmicDescent 0.6s cubic-bezier(0.2, 0.9, 0.3, 1.2) forwards`;
+                    item.style.animationDelay = `${index * 0.08}s`;
+                    setTimeout(() => {
+                        item.classList.add('glow');
+                        setTimeout(() => item.classList.remove('glow'), 1200);
+                    }, index * 80 + 300);
+                });
+                spawnParticles(60);
+            });
+
+            // ---------- 粒子系统 ----------
+            const canvas = document.getElementById('stardust');
+            let ctx = canvas.getContext('2d');
+            let particles = [];
+            let animFrame;
+
+            function resizeCanvas() {
+                canvas.width = window.innerWidth;
+                canvas.height = window.innerHeight;
+            }
+            window.addEventListener('resize', resizeCanvas);
+            resizeCanvas();
+
+            window.spawnParticles = function(count) {
+                particles = [];
+                for (let i = 0; i < count; i++) {
+                    particles.push({
+                        x: Math.random() * canvas.width,
+                        y: Math.random() * canvas.height,
+                        size: Math.random() * 4 + 1,
+                        speedX: (Math.random() - 0.5) * 1.5,
+                        speedY: (Math.random() - 0.5) * 1.5,
+                        life: Math.random() * 0.8 + 0.2,
+                        color: `rgba(255, 215, 140, ${Math.random() * 0.7 + 0.3})`
+                    });
+                }
+                if (animFrame) cancelAnimationFrame(animFrame);
+                animateParticles();
+            };
+
+            function animateParticles() {
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+                let alive = false;
+                particles.forEach(p => {
+                    p.x += p.speedX;
+                    p.y += p.speedY;
+                    p.life -= 0.005;
+                    if (p.life <= 0) return;
+                    alive = true;
+                    ctx.beginPath();
+                    ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
+                    ctx.fillStyle = p.color;
+                    ctx.shadowBlur = 15;
+                    ctx.shadowColor = '#fabc2f';
+                    ctx.fill();
+                });
+                if (alive) {
+                    animFrame = requestAnimationFrame(animateParticles);
+                } else {
+                    ctx.clearRect(0, 0, canvas.width, canvas.height);
+                }
+            }
+
+            // 问题库：仅 WESTERN 十大类；每类固定预留 20 条，无其他大类、无多余条目（渲染时再 slice(0,20) 防误增）
+            const questionBank = {
+                love: [
+                    '这段关系的本质是什么？',
+                    '我们之间最大的阻碍是什么？',
+                    '这段关系想教会我什么？',
+                    '我们目前的关系能量走向如何？我可以做什么来影响它？',
+                    '未来 3～6 个月，我的感情能量会如何变化？我该做什么准备？',
+                    '这段感情目前最大的盲点／课题是什么？我该如何面对？',
+                    '我该从哪些面向着手，才能提高挽回的可能性？',
+                    '如果我想挽回，我目前最适合采取的步骤是？',
+                    '我该怎么表达，才能让他更愿意认真对待这段感情？',
+                    '关于复合，我需要知道什么？',
+                    '我该如何调整心态，才能更快走出这段感情？',
+                    '放手与挽回，分别意味着什么？我该如何选择？',
+                    '如何疗愈我的心？',
+                    '什么样的伴侣适合我？',
+                    '如何提升自己，让我更容易吸引到合适的对象？',
+                    '我该如何迎接新的爱情？',
+                    '他／她目前对我的真实感受／能量是什么？我该如何回应？',
+                    '对方目前展现的行为／能量，对我来说代表什么？我该如何判断？',
+                    '我在感情中的模式是什么？',
+                    '我为何总是吸引同类型的人？',
+                ],
+                career: [
+                    '我该不该换行从头来过？',
+                    '这家公司还值不值得我再干两年？',
+                    '我该争管理岗还是专心把专业做深？',
+                    '为下一份岗位，我现阶段最该补强哪一项可迁移能力？',
+                    '转向新赛道时，我该如何迈出第一步才更容易获得回应？',
+                    '这个培训和证书的钱我到底花不花？',
+                    '新项目又缺人又缺钱我还该不该接？',
+                    '跨部门都推不动我该继续扛还是放手？',
+                    '想创业该先副业试水还是辞职一把押上？',
+                    '合伙人答应好的条款落纸后又改还能不能一起干？',
+                    '这份录用上的现金与股权组合，值不值得我签字接受？',
+                    '没下家就裸辞医保断几个月我撑得住吗？',
+                    '经理甩给我绩效改进计划是不是赶人走？',
+                    '干一样的活我比同事少拿是不是该谈一次？',
+                    '年终面谈我提加薪升职会不会太冲？',
+                    '口头答应的股权奖金没写进纸里我还追不追？',
+                    '晋升名额只有一个，我与熟识同事应如何把握竞争分寸？',
+                    '协商裁员补偿时，哪些条款我必须在签字前逐条核实？',
+                    '业余时间接私活会不会把劳动合同踩违约了？',
+                    '领导甩锅邮件我要不要抄送人事备案？',
+                ],
+                money: [
+                    '几张卡倒来倒去月底还不上了要不要跟家里开口？',
+                    '花呗白条叠在一起我先还哪头能喘口气？',
+                    '基金股票全绿我是割肉还是躺平装看不见？',
+                    '听人推荐买的那只理财还要不要信第二次？',
+                    '房租又涨我是换远一点的房还是咬牙续租？',
+                    '爸妈催首付可我存款差一大截怎么交代？',
+                    '对象背着我借钱去投我要不要当场摊开说？',
+                    '借给同事那笔钱看样子要不回来我还闹不闹？',
+                    '老板口头说分红年底发到现在没影我还追不追？',
+                    '想搞副业又怕公司发现我到底干不干？',
+                    '这笔大钱花出去下个月生活费会不会断档？',
+                    '突然一笔医疗或修车账单来了先动存款还是先刷卡？',
+                    '退税比想的少好多要不要找会计问一句？',
+                    '群里喊跟单的币我还跟不跟？',
+                    '合伙开店说得热闹合同还没签我到底进不进？',
+                    '保险销售推新品我是续旧的还是换？',
+                    '听说公司要裁员我手里现金该多留几个月？',
+                    '年终奖缩水回家怎么跟伴侣或父母说？',
+                    '看中一样东西纠结买不买其实是怕买了后悔？',
+                    '钱总是不知不觉没了要不要记账一个月试试？',
+                ],
+                study: [
+                    '快期末了通宵还能不能把这门救回来？',
+                    '转专业要重修一堆课我还要不要转？',
+                    '考研二战还是找工作家里一直催我怎么回？',
+                    '四级考了三次没过出国梦还要不要坚持？',
+                    '论文导师不回邮件我是不是该换人？',
+                    '实习工资低得离谱还要不要干满三个月？',
+                    '室友半夜打游戏吵我睡要不要撕破脸？',
+                    '网课挂了重修费好贵要不要找老师求情？',
+                    '毕设拖稿了我是延毕还是硬熬出来？',
+                    '留学中介说保录取我能信几分？',
+                    '高考成绩出来复读一年值不值？',
+                    '专升本名额就一个我和室友争不争？',
+                    '考证班交了两万不想去了能退多少？',
+                    '面试导师嫌我本科一般我该怎么接话？',
+                    '签证材料有一页填错了重交还来得及吗？',
+                    '寒暑假先打工还是先搞竞赛哪个更实在？',
+                    '爸妈非让我考公我根本不想去怎么扛？',
+                    '小组作业有人划水署名还要不要带他？',
+                    '毕业典礼前一门挂了我还能按时拿证吗？',
+                    '先找工作再考研我是不是在骗自己？',
+                ],
+                health: [
+                    '胸口闷了一周是熬夜还是该去医院？',
+                    '两家医院说法不一样我到底信谁？',
+                    '体检说结节复查我要不要拖？',
+                    '牙疼脸肿了今晚要不要去急诊？',
+                    '褪黑素越吃越没用还吃不吃？',
+                    '胃药我自己停停吃吃行不行？',
+                    '医美说做一个项目就好我要不要信？',
+                    '疫苗拖了一年没打现在补晚不晚？',
+                    '腰疼贴膏药半个月还不好要不要拍片？',
+                    '一上班就心慌下班就好要看心理科吗？',
+                    '父母不肯体检我怎么劝才听？',
+                    '术后复健我偷懒两天有没有大事？',
+                    '孩子发烧要不要马上去医院还是先观察？',
+                    '过敏源检测和体感对不上信哪个？',
+                    '网上忌口清单太长我到底该不该照做？',
+                    '朋友推荐的减肥药我吃不吃？',
+                    '精神科号挂不上先去普通门诊行吗？',
+                    '换城市了慢性病药怎么续处方最省事？',
+                    '老人迷信保健品我要不要硬拦？',
+                    '感冒硬扛一周还不好该不该去输液？',
+                ],
+                relation: [
+                    '妈又翻我手机了我怎么说不伤人？',
+                    '爸喝多发酒疯我装没看见还是管？',
+                    '生日朋友忘了祝福我是不是想太多？',
+                    '合租室友带外人过夜我能不能赶？',
+                    '婆婆总插手带娃我怎么跟老公说？',
+                    '饭局被劝酒不喝怕得罪人怎么办？',
+                    '借出去的钱人家装没看见我还要不要问？',
+                    '前男友结婚请我去我去不去？',
+                    '公司小群里没人理我要不要辞职？',
+                    '亲戚打听工资我怎么糊弄过去？',
+                    '闺蜜跟我喜欢上同一个人让不让？',
+                    '领导私下吐槽同事我接不接话？',
+                    '婚房写谁名字两家吵翻了我怎么站？',
+                    '过年不想回老家编什么理由最不伤人？',
+                    '孩子被对方家长群里@骂我怎么回？',
+                    '离婚后共同朋友结婚请柬还去吗？',
+                    '家族群谣言长辈信了我怼不怼？',
+                    '同事总让我带咖啡不给钱怎么说？',
+                    '多年不联系的同学突然借钱回不回？',
+                    '话说重了要不要先发消息道歉？',
+                ],
+                child: [
+                    '备孕半年没动静要不要去医院查？',
+                    '双方父母催生电话怎么接才不吵架？',
+                    '产检一项偏高让复查我怕不怕？',
+                    '月嫂跟婆婆抢着抱孩子我站哪边？',
+                    '奶粉母乳两家人吵我压力大不大？',
+                    '孩子夜奶断不掉我快崩溃了怎么办？',
+                    '幼儿园虐童新闻看多了要不要换园？',
+                    '老师说孩子多动症要不要用药我听谁的？',
+                    '补习班报三门孩子厌学砍哪门？',
+                    '老公当甩手掌柜我怎么开口不伤感情？',
+                    '二胎是绝对不要还是有点动心？',
+                    '孩子玩手机说不动要不要没收？',
+                    '老人追着喂饭我说不听怎么办？',
+                    '离婚争抚养权我胜算大不大？',
+                    '单亲带娃迟到老板不理解怎么解释？',
+                    '孩子被叫家长我觉得冤枉要不要怼老师？',
+                    '学区房买不起普通校会不会害了孩子？',
+                    '试管花光积蓄还没成还要不要继续？',
+                    '生完孩子伴侣冷淡是不是我想多了？',
+                    '领养手续又慢又烦我还要不要等？',
+                ],
+                choice: [
+                    '两份 offer 差几千块去钱多的还是顺心的？',
+                    '家里让考公我想做博主听谁的？',
+                    '对象要去外地发展我跟不跟？',
+                    '要不要为一个人换城市？',
+                    '老板说明年就升职我再忍一年值不值？',
+                    '签了约又后悔违约金赔不赔得起？',
+                    '婚礼简办还是借钱大办？',
+                    '父母反对的婚事还要不要结？',
+                    '分手了还一聊一夜要不要彻底断？',
+                    '买房只写我名字对象会不会翻脸？',
+                    '要不要贷款买车月供扛得住吗？',
+                    '出国押金截止了钱还没凑齐怎么办？',
+                    '辞职信交了又后悔还能撤回吗？',
+                    '朋友让我担保签字我签不签？',
+                    '相亲条件合适没心动还要不要处？',
+                    '老板画的饼还要不要信？',
+                    '回老家安稳还是大城市熬着？',
+                    '孩子送寄宿我下不了狠心怎么办？',
+                    '送老人进养老院亲戚骂不孝怎么回？',
+                    '医生建议手术家里说先观察听谁的？',
+                ],
+                pet: [
+                    '猫狗吐了一地我现在送不送医院？',
+                    '宠物医院开一堆检查是不是在坑钱？',
+                    '疫苗本丢了还能补打吗？',
+                    '狗把家具咬烂了我打它还是训？',
+                    '出差三天它独自在家会不会出事？',
+                    '楼下投诉狗叫我要不要送走？',
+                    '绝育选最便宜的套餐安全吗？',
+                    '配种费用贵得离谱还要不要配？',
+                    '寄养回来不认我了正常吗？',
+                    '老年宠物走路发软是不是大问题？',
+                    '多宠抢食天天打要不要送走一只？',
+                    '网购粮吃了软便该不该退换？',
+                    '蜱虫咬了我能自己拔吗？',
+                    '保险理赔被拒了还要不要扯皮？',
+                    '春节带它回老家路上最该注意什么？',
+                    '鱼缸鱼接二连三死换水还是整缸换？',
+                    '想捡流浪猫回家家里人反对怎么办？',
+                    '鹦鹉啄毛啄秃了是病还是无聊？',
+                    '新猫和原住民天天打隔离要多久？',
+                    '医生说治不好了还要不要继续砸钱治？',
+                ],
+                spirit: [
+                    '日子过得浑浑噩噩到底卡在哪？',
+                    '我是不是太在乎别人怎么看自己？',
+                    '睡不好又刷手机到两点是不是上瘾了？',
+                    '总觉得比别人差这种自卑从哪来的？',
+                    '忙到没空陪家人这算不算我要的生活？',
+                    '想静心念经祷告却坐不住还要不要硬撑？',
+                    '想改变总三分钟热度怎么破？',
+                    '对家里人凶对外人客气我这是怎么了？',
+                    '失业不想出门见人正常吗？',
+                    '天天想辞职又不敢是不是太怂？',
+                    '起不来就骂自己是不是对自己太狠？',
+                    '看别人晒幸福就难受是不是嫉妒？',
+                    '很久没真正开心过正常吗？',
+                    '靠算命塔罗躲现实算不算逃避？',
+                    '温柔都给了外人回家只剩累是不是？',
+                    '退休了突然空了日子怎么填？',
+                    '想做副业怕丢脸第一条朋友圈发不发？',
+                    '亲人走了多年心结还在怎么放？',
+                    '群里从来不说话我是不是废了？',
+                    '想原谅一个人见面又火大怎么办？',
+                ],
+            };
+
+            const CATEGORY_LABEL_ZH = {
+                love: '感情婚姻',
+                career: '事业工作',
+                money: '财运投资',
+                study: '学业考试',
+                health: '身体健康',
+                relation: '人际关系',
+                child: '生育子女',
+                choice: '选择决策',
+                pet: '宠物',
+                spirit: '灵性成长',
+            };
+
+            const categoryTabs = document.getElementById('categoryTabs');
+            const questionGrid = document.getElementById('questionGrid');
+            const categoryQuestionsSummary = document.getElementById('categoryQuestionsSummary');
+            const categoryQuestionsDetails = document.getElementById('categoryQuestionsDetails');
+
+            function renderQuestions(category) {
+                const raw = questionBank[category] || questionBank.love;
+                const qs = raw.slice(0, 20);
+                let html = '';
+                qs.forEach((q) => {
+                    html += `<div class="question-option">${q}</div>`;
+                });
+                questionGrid.innerHTML = html;
+                const label = CATEGORY_LABEL_ZH[category] || category;
+                if (categoryQuestionsSummary) {
+                    categoryQuestionsSummary.textContent = `「${label}」· 本类 20 条具体问题（点此栏可收起）`;
+                }
+                document.querySelectorAll('.question-option').forEach((opt) => {
+                    opt.addEventListener('click', function () {
+                        document.querySelectorAll('.question-option').forEach((o) => o.classList.remove('selected'));
+                        this.classList.add('selected');
+                        const activeItem = document.querySelector(`#${activeSpread}List .position-item.active`);
+                        if (activeItem && activeItem.dataset.id) {
+                            updateReading(activeSpread, activeItem.dataset.id);
+                        }
+                    });
+                });
+            }
+
+            categoryTabs.querySelectorAll('.category-tab').forEach((tab) => {
+                tab.addEventListener('click', () => {
+                    categoryTabs.querySelectorAll('.category-tab').forEach((t) => {
+                        t.classList.remove('active');
+                        t.setAttribute('aria-selected', 'false');
+                    });
+                    tab.classList.add('active');
+                    tab.setAttribute('aria-selected', 'true');
+                    const val = tab.dataset.value;
+                    if (categoryQuestionsDetails) {
+                        categoryQuestionsDetails.open = true;
+                    }
+                    renderQuestions(val);
+                    const activeItem = document.querySelector(`#${activeSpread}List .position-item.active`);
+                    if (activeItem && activeItem.dataset.id) {
+                        updateReading(activeSpread, activeItem.dataset.id);
+                    }
+                });
+            });
+
+            categoryQuestionsDetails?.addEventListener('toggle', () => {
+                if (!categoryQuestionsDetails.open || !categoryQuestionsSummary) return;
+                const empty = !questionGrid || questionGrid.innerHTML.trim() === '';
+                if (empty) {
+                    renderQuestions(getCategoryValue());
+                }
+            });
+
+            // 初始不渲染，等用户点击抽牌按钮后再显示
+        })();
+    </script>
+    <script>
+        (function () {
+            var urls = [
+                'tarotQuestionLoveContent.js?v=1',
+                'tarotQuestionCareerContent.js?v=1',
+                'tarotQuestionMoneyContent.js?v=1',
+                'tarotQuestionStudyContent.js?v=1',
+                'tarotQuestionLifeCategoriesContent.js?v=7'
+            ];
+            for (var i = 0; i < urls.length; i++) {
+                var s = document.createElement('script');
+                s.src = urls[i];
+                s.async = true;
+                if (urls[i].indexOf('tarotQuestionLifeCategoriesContent') !== -1) {
+                    s.setAttribute('data-tarot-life-six-bundle', '1');
+                }
+                document.head.appendChild(s);
+            }
+        })();
+    </script>
+</body>
+</html>

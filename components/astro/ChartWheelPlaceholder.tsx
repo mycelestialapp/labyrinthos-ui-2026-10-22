@@ -1,8 +1,9 @@
 "use client";
 
 import React, { useCallback, useMemo, useRef, useState } from "react";
+import { aspectTypeLabelZh } from "@/lib/astro-aspect-type-label-zh";
 import type { AstroChartWheelData, AspectType, PlanetId } from "@/lib/astro-chart-wheel";
-import { PLANET_GLYPH } from "@/lib/astro-chart-wheel";
+import { PLANET_GLYPH, axisLabelZh, houseSystemLabelZh, isMajorAspectType } from "@/lib/astro-chart-wheel";
 import { ZODIAC_CN, ZODIAC_KEYS } from "@/lib/natal-chart";
 
 /** 与 ZODIAC_KEYS 顺序一致：外圈星座符标 */
@@ -69,6 +70,11 @@ function aspectLinePaint(
     case "trine":
     case "sextile":
       return { stroke: "rgba(88, 152, 198, 0.5)", opacity: 0.34 };
+    case "semisextile":
+    case "semisquare":
+    case "sesquiquadrate":
+    case "quincunx":
+      return { stroke: "rgba(130, 128, 150, 0.45)", opacity: 0.16 };
     default:
       return { stroke: "rgba(140, 135, 125, 0.45)", opacity: 0.32 };
   }
@@ -100,19 +106,14 @@ function hexPathPointyTop(R: number): string {
   return `${d} Z`;
 }
 
-function houseSystemLabelZh(v: string): string {
-  if (v === "Placidus") return "普拉西德";
-  if (v === "Whole Sign") return "整宫制";
-  return v;
-}
-
 const DEG2RAD = Math.PI / 180;
 const CX = 50;
 const CY = 50;
-const VB_X = -16;
-const VB_Y = -16;
-const VB_W = 132;
-const VB_H = 132;
+// 收紧 viewBox，让轮盘在同样容器里占比更大（减少“看起来偏小”的边距）
+const VB_X = -10;
+const VB_Y = -10;
+const VB_W = 120;
+const VB_H = 120;
 
 type Props = {
   highlightSkeleton?: boolean;
@@ -123,6 +124,10 @@ type Props = {
   showRadials?: boolean;
   /** minimal：仅 30°/5° 外刻度；full：每度密刻度（仪器模式） */
   tickDensity?: "minimal" | "full";
+  /** 盘上是否绘制次要相位弦（默认关，避免过密） */
+  showMinorAspectLines?: boolean;
+  /** 星体与上升/天顶的相位弦（与读数区一致；关时只保留星体间连线） */
+  showAngleAspectLines?: boolean;
   chartData?: AstroChartWheelData | null;
 };
 
@@ -271,6 +276,14 @@ function aspectStrokeDash(t: AspectType): string | undefined {
       return "2.8 1.4";
     case "opposition":
       return "4 2.2";
+    case "semisextile":
+      return "0.35 0.65";
+    case "semisquare":
+      return "0.3 0.5";
+    case "sesquiquadrate":
+      return "0.5 0.9";
+    case "quincunx":
+      return "1.6 1.1";
     default:
       return undefined;
   }
@@ -295,6 +308,8 @@ export default function ChartWheelPlaceholder({
   showOuterBodies = false,
   showRadials = true,
   tickDensity = "minimal",
+  showMinorAspectLines = false,
+  showAngleAspectLines = true,
   chartData = null,
 }: Props) {
   const svgRef = useRef<SVGSVGElement>(null);
@@ -804,47 +819,79 @@ export default function ChartWheelPlaceholder({
         </g>
       )}
 
-      {/* 相位弦：灰虚线/实线；悬停行星时相关线金亮，其余呼吸淡出 */}
+      {/* 相位弦：主相位；次要相位可选 */}
       {showAspectLines &&
         chartData &&
-        chartData.aspects.map((asp, idx) => {
-          const a = planetById.get(asp.a);
-          const b = planetById.get(asp.b);
-          if (!a || !b) return null;
-          const offA = planetLayout.get(asp.a)?.lonOff ?? 0;
-          const offB = planetLayout.get(asp.b)?.lonOff ?? 0;
-          const pa = pointFromLon(normDeg(a.lonDeg + offA), R_ASPECT);
-          const pb = pointFromLon(normDeg(b.lonDeg + offB), R_ASPECT);
-          const involved =
-            hoveredPlanetId !== null && (asp.a === hoveredPlanetId || asp.b === hoveredPlanetId);
+        [...chartData.aspects.filter((x) => isMajorAspectType(x.type)), ...(showMinorAspectLines ? (chartData.minorAspects ?? []) : [])].map(
+          (asp, idx) => {
+            const a = planetById.get(asp.a);
+            const b = planetById.get(asp.b);
+            if (!a || !b) return null;
+            const offA = planetLayout.get(asp.a)?.lonOff ?? 0;
+            const offB = planetLayout.get(asp.b)?.lonOff ?? 0;
+            const pa = pointFromLon(normDeg(a.lonDeg + offA), R_ASPECT);
+            const pb = pointFromLon(normDeg(b.lonDeg + offB), R_ASPECT);
+            const involved =
+              hoveredPlanetId !== null && (asp.a === hoveredPlanetId || asp.b === hoveredPlanetId);
+            const dimOthers = hoveredPlanetId !== null && !involved;
+            const dash = aspectStrokeDash(asp.type);
+            const paint = aspectLinePaint(asp.type, involved, dimOthers);
+            const t = aspectTypeLabelZh(asp.type);
+            return (
+              <line
+                key={`asp-${asp.a}-${asp.b}-${asp.type}-${idx}`}
+                x1={pa.x}
+                y1={pa.y}
+                x2={pb.x}
+                y2={pb.y}
+                stroke={paint.stroke}
+                strokeWidth={LINE}
+                strokeOpacity={paint.opacity}
+                strokeDasharray={dash}
+                strokeLinecap="round"
+                {...LINE_SHARP}
+              >
+                <title>{`${t}：${a.labelZh}—${b.labelZh}`}</title>
+              </line>
+            );
+          },
+        )}
+
+      {/* 轴点相位：行星黄经 ↔ ASC/MC（黄道上的点，取 R_ASPECT 与星体间相位一致） */}
+      {showAspectLines &&
+        showAngleAspectLines &&
+        chartData &&
+        [
+          ...(chartData.angleAspectsMajor ?? []).filter((x) => isMajorAspectType(x.type)),
+          ...(showMinorAspectLines ? (chartData.angleAspectsMinor ?? []) : []),
+        ].map((asp, idx) => {
+          const p = planetById.get(asp.planet);
+          if (!p) return null;
+          const off = planetLayout.get(asp.planet)?.lonOff ?? 0;
+          const pa = pointFromLon(normDeg(p.lonDeg + off), R_ASPECT);
+          const axisLon = asp.axis === "asc" ? chartData.ascLonDeg : chartData.mcLonDeg;
+          const pb = pointFromLon(normDeg(axisLon), R_ASPECT);
+          const involved = hoveredPlanetId !== null && asp.planet === hoveredPlanetId;
           const dimOthers = hoveredPlanetId !== null && !involved;
           const dash = aspectStrokeDash(asp.type);
           const paint = aspectLinePaint(asp.type, involved, dimOthers);
-          const t =
-            asp.type === "conjunction"
-              ? "合相"
-              : asp.type === "sextile"
-                ? "六合"
-                : asp.type === "trine"
-                  ? "三合"
-                  : asp.type === "square"
-                    ? "四分"
-                    : "对冲";
+          const t = aspectTypeLabelZh(asp.type);
+          const axisZh = axisLabelZh(asp.axis);
           return (
             <line
-              key={`asp-${idx}`}
+              key={`ang-${asp.planet}-${asp.axis}-${asp.type}-${idx}`}
               x1={pa.x}
               y1={pa.y}
               x2={pb.x}
               y2={pb.y}
               stroke={paint.stroke}
               strokeWidth={LINE}
-              strokeOpacity={paint.opacity}
+              strokeOpacity={paint.opacity * 0.92}
               strokeDasharray={dash}
               strokeLinecap="round"
               {...LINE_SHARP}
             >
-              <title>{`${t}：${a.labelZh}—${b.labelZh}`}</title>
+              <title>{`${t}：${p.labelZh} → ${axisZh}`}</title>
             </line>
           );
         })}
@@ -1015,8 +1062,17 @@ export default function ChartWheelPlaceholder({
                     "url(#glyph-matte-gold) drop-shadow(0 0 1.4px rgba(232, 213, 172, 0.5)) drop-shadow(0 0 2.8px rgba(201, 167, 108, 0.2))",
                 }}
               >
-                <title>{`${glyph} ${p.labelZh} · ${ZODIAC_CN[p.zodiac]} ${inSignDeg}°${inSignMin}′ · ${formatLon(p.lonDeg)}`}</title>
-                {glyph}
+                <title>{`${glyph} ${p.labelZh}${p.retrograde ? " · 逆行" : ""} · ${ZODIAC_CN[p.zodiac]} ${inSignDeg}°${inSignMin}′ · ${formatLon(p.lonDeg)}`}</title>
+                <tspan>{glyph}</tspan>
+                {p.retrograde ? (
+                  <tspan
+                    dx={0.35}
+                    dy={-1.45}
+                    style={{ fontSize: "2.35px", fontWeight: 700, fontFamily: "var(--font-geist-sans, system-ui), sans-serif" }}
+                  >
+                    R
+                  </tspan>
+                ) : null}
               </text>
             </g>
           );
