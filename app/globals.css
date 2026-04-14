@@ -54,3 +54,162 @@ body {
 .axis-verdict-enter {
   animation: axis-verdict-in 0.35s ease-out both;
 }
+
+/* 数秘 · 坛城数轨：寰宇粒子微动 */
+@keyframes numerology-dust {
+  from {
+    opacity: 0.12;
+    transform: translate(0, 0);
+  }
+  to {
+    opacity: 0.5;
+    transform: translate(4px, -6px);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  [data-numerology-particle] {
+    animation: none !important;
+  }
+
+  .numerology-mandala-enter,
+  .numerology-badge-pulse {
+    animation: none !important;
+  }
+
+  .numerology-mandala-active,
+  .numerology-mandala-orbit-spin {
+    animation: none !important;
+  }
+
+  .numerology-mandala-svg {
+    transition: none !important;
+  }
+
+}
+
+/* 数秘 · 坛城：主数入场与顶栏徽章 */
+@keyframes numerology-mandala-in {
+  from {
+    opacity: 0;
+    transform: scale(0.92);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+.numerology-mandala-enter {
+  animation: numerology-mandala-in 0.85s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+.numerology-mandala-svg {
+  transform-origin: center center;
+  transition: transform 0.45s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .numerology-mandala-disc:hover .numerology-mandala-svg {
+    transform: scale(1.03);
+  }
+}
+
+@keyframes numerology-mandala-active-pulse {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.86;
+  }
+}
+
+.numerology-mandala-active {
+  animation: numerology-mandala-active-pulse 4s ease-in-out infinite;
+}
+
+@keyframes numerology-mandala-orbit-rot {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.numerology-mandala-orbit-spin {
+  transform-origin: 100px 100px;
+  transform-box: fill-box;
+  animation: numerology-mandala-orbit-rot 96s linear infinite;
+}
+
+@keyframes numerology-badge-pulse {
+  0%,
+  100% {
+    opacity: 0.88;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 1;
+    transform: scale(1.04);
+  }
+}
+
+.numerology-badge-pulse {
+  animation: numerology-badge-pulse 5.5s ease-in-out infinite;
+}
+
+/* 数秘 · 顶光呼吸（非寰宇默认也轻微可见） */
+@keyframes numerology-aurora-breathe {
+  0%,
+  100% {
+    opacity: 0.62;
+  }
+  50% {
+    opacity: 0.82;
+  }
+}
+
+.numerology-void-aurora {
+  animation: numerology-aurora-breathe 16s ease-in-out infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .numerology-void-aurora {
+    animation: none !important;
+    opacity: 0.68 !important;
+  }
+}
+
+/* 数秘 · 键盘用户「跳到主内容」（不依赖 tailwind sr-only 变体在各版本是否齐全） */
+a.numerology-skip-main {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  padding: 0;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+a.numerology-skip-main:focus {
+  position: fixed;
+  left: 1rem;
+  top: 1rem;
+  z-index: 200;
+  width: auto;
+  height: auto;
+  margin: 0;
+  padding: 0.5rem 0.75rem;
+  overflow: visible;
+  clip: auto;
+  white-space: normal;
+  border-radius: 0.5rem;
+  border: 1px solid rgba(168, 188, 208, 0.45);
+  background: rgba(24, 30, 38, 0.96);
+  color: #f1f5f9;
+  font-size: 0.75rem;
+  outline: none;
+}

@@ -785,6 +785,34 @@
                 return escapeHtmlReading(s).replace(/\r\n/g, '\n').replace(/\n/g, '<br>');
             }
 
+            /** 各大类【你正在问】下：优雅说明「只解牌、不代你决策」的边界（学业可带题库分带名 studyBand） */
+            function readingScopeDisclaimerHtml(categoryKey, studyBand) {
+                const wrap = (inner) =>
+                    `<div class="section-content" style="margin-top:0.55rem;color:#c9b896;font-size:0.94em;line-height:1.55;">${inner}</div>`;
+                if (categoryKey === 'study') {
+                    const t = studyBand != null && String(studyBand).trim() ? escapeHtmlReading(String(studyBand).trim()) : '';
+                    const lead = t ? `本题落在「${t}」这一条目下——` : '本题落在学业与应试的语境里——';
+                    return wrap(
+                        lead +
+                            '我不替你选课或押分，只据这张牌把当下该守住的专注与卡点说清楚；复习、上场与后果，仍由你自担。'
+                    );
+                }
+                const ZH = {
+                    love: '本题落在亲密与边界的语境里——我不替你做「在一起或分开」的判决，只据这张牌把此刻的心意与拉扯说清楚；路怎么走，仍请你对自己诚实、负责。',
+                    career: '本题落在职场与去向的语境里——我不替你去留或谈判代笔，只据这张牌把眼前的压力与可走的一步说清楚；最终怎么选，仍在你手上。',
+                    money: '本题落在收支与风险的语境里——我不替你裁定买借投退，只据这张牌把节奏与底线提醒说清楚；数字与契约，请你亲自核对。',
+                    health: '本题落在身心节律的语境里——我不做医学诊断，也不建议擅自停药换药，只借这张牌把照护与生活习惯可用的提醒说清楚；不适请务必寻求正规医疗。',
+                    relation: '本题落在相处与边界的语境里——我不替你说圆或说断，只据这张牌把关系里的张力与可开的口说清楚；话怎么说、事怎么办，仍由你承担。',
+                    child: '本题落在亲职与期待的语境里——我不替你裁定生育或教养方案，只据这张牌把情绪与界限可用的提醒说清楚；家庭重大事项，请与可信任的人共商。',
+                    choice: '本题落在抉择的语境里——我不替你选 A 或 B，只据这张牌把两条路各自要你付出的代价说清楚；选哪一边、承受什么，始终在你。',
+                    pet: '本题落在陪伴与照护的语境里——我不替牠诊断开方，只据这张牌把状态与你的角色说清楚；诊疗与用药，请以兽医与规范医疗为准。',
+                    spirit: '本题落在内在整合的语境里——我不替你定信仰或修行路径，只据这张牌把此刻心灵要面对的主题说清楚；如何走，仍是你个人的路。',
+                };
+                const line = ZH[categoryKey];
+                if (!line) return '';
+                return wrap(escapeHtmlReading(line));
+            }
+
             /**
              * 感情婚姻 + 已入库具体问题文案：五段式专属解读（命中则 true，否则 false 走原大师 love）
              */
@@ -805,9 +833,7 @@
                                 <div class="master-section" style="margin-top:0.6rem;">
                                     <div class="section-title" style="color:#a48e62;font-weight:600;margin-bottom:0.5rem;">【你正在问】</div>
                                     <div class="section-content">${escapeHtmlReading(questionText)}</div>
-                                </div>
-                                <div class="master-section" style="margin-top:1rem;">
-                                    <div class="section-content" style="color:#9a8b6e;font-size:0.92em;">解读维度：本题措辞 × 本牌正逆 · 专属五段式（与题库感情题及繁体同义句对齐）</div>
+                                    ${readingScopeDisclaimerHtml('love')}
                                 </div>
                                 <div class="master-section" style="margin-top:1.1rem;">
                                     <div class="section-title" style="color:#a48e62;font-weight:600;margin-bottom:0.5rem;">【牌在对你说话】</div>
@@ -853,9 +879,7 @@
                                 <div class="master-section" style="margin-top:0.6rem;">
                                     <div class="section-title" style="color:#a48e62;font-weight:600;margin-bottom:0.5rem;">【你正在问】</div>
                                     <div class="section-content">${escapeHtmlReading(questionText)}</div>
-                                </div>
-                                <div class="master-section" style="margin-top:1rem;">
-                                    <div class="section-content" style="color:#9a8b6e;font-size:0.92em;">解读维度：本题措辞 × 本牌正逆 · 事业向专属五段式（与快速选题 20 问文案对齐）</div>
+                                    ${readingScopeDisclaimerHtml('career')}
                                 </div>
                                 <div class="master-section" style="margin-top:1.1rem;">
                                     <div class="section-title" style="color:#a48e62;font-weight:600;margin-bottom:0.5rem;">【牌在对你说话】</div>
@@ -901,9 +925,7 @@
                                 <div class="master-section" style="margin-top:0.6rem;">
                                     <div class="section-title" style="color:#a48e62;font-weight:600;margin-bottom:0.5rem;">【你正在问】</div>
                                     <div class="section-content">${escapeHtmlReading(questionText)}</div>
-                                </div>
-                                <div class="master-section" style="margin-top:1rem;">
-                                    <div class="section-content" style="color:#9a8b6e;font-size:0.92em;">解读维度：本题措辞 × 本牌正逆 · 财运向专属五段式（与快速选题文案对齐）</div>
+                                    ${readingScopeDisclaimerHtml('money')}
                                 </div>
                                 <div class="master-section" style="margin-top:1.1rem;">
                                     <div class="section-title" style="color:#a48e62;font-weight:600;margin-bottom:0.5rem;">【牌在对你说话】</div>
@@ -957,7 +979,7 @@
                                 <div class="master-section" style="margin-top:0.6rem;">
                                     <div class="section-title" style="color:#a48e62;font-weight:600;margin-bottom:0.5rem;">【你正在问】</div>
                                     <div class="section-content">${escapeHtmlReading(questionText)}</div>
-                                    <div class="section-content" style="margin-top:0.55rem;color:#c9b896;font-size:0.94em;line-height:1.55;">这条题落在「${escapeHtmlReading(band)}」上——我不替你选课，只把这张牌看见的说清；你听完仍要自己对答案负责。</div>
+                                    ${readingScopeDisclaimerHtml('study', band)}
                                 </div>
                                 <div class="master-section" style="margin-top:1.15rem;">
                                     <div class="section-title" style="color:#a48e62;font-weight:600;margin-bottom:0.5rem;">牌先说</div>
@@ -998,16 +1020,13 @@
                             if (qc && !qc.isPlaceholder) {
                                 const mr = getMasterReadingFn(cardId, categoryTab);
                                 const cardTitle = mr ? mr.name : (window.tarotData && window.tarotData[cardId] && window.tarotData[cardId].name ? window.tarotData[cardId].name : cardId);
-                                const tabLabel = { health: '身体健康', relation: '人际关系', child: '生育子女', choice: '选择决策', pet: '宠物', spirit: '灵性成长' }[categoryTab] || '此议题';
                                 detailDiv.innerHTML = `
                             <div class="card-detail life-six-question-specific">
                                 <div class="detail-cardname">${escapeHtmlReading(cardTitle)}</div>
                                 <div class="master-section" style="margin-top:0.6rem;">
                                     <div class="section-title" style="color:#a48e62;font-weight:600;margin-bottom:0.5rem;">【你正在问】</div>
                                     <div class="section-content">${escapeHtmlReading(questionText.trim())}</div>
-                                </div>
-                                <div class="master-section" style="margin-top:1rem;">
-                                    <div class="section-content" style="color:#9a8b6e;font-size:0.92em;">解读维度：${escapeHtmlReading(tabLabel)} · 本题措辞 × 本牌正逆 · 大师向专属五段式（全 78 张含正逆）</div>
+                                    ${readingScopeDisclaimerHtml(categoryTab)}
                                 </div>
                                 <div class="master-section" style="margin-top:1.1rem;">
                                     <div class="section-title" style="color:#a48e62;font-weight:600;margin-bottom:0.5rem;">【牌在对你说话】</div>
@@ -1041,16 +1060,6 @@
                 if (!mods) return false;
                 const mr = getMasterReadingFn(cardId, categoryTab);
                 const cardTitle = mr ? mr.name : (window.tarotData && window.tarotData[cardId] && window.tarotData[cardId].name ? window.tarotData[cardId].name : cardId);
-                const tabLabel = {
-                    money: '财运投资',
-                    study: '学业考试',
-                    health: '身体健康',
-                    relation: '人际关系',
-                    child: '生育子女',
-                    choice: '选择决策',
-                    pet: '宠物',
-                    spirit: '灵性成长',
-                }[categoryTab] || '此议题';
                 const bridge = mr && (mr.intro || mr.coreInsight)
                     ? `\n\n【与本牌并读】${mr.intro ? mr.intro + ' ' : ''}${mr.coreInsight || ''}`.trim()
                     : '';
@@ -1060,9 +1069,7 @@
                                 <div class="master-section" style="margin-top:0.6rem;">
                                     <div class="section-title" style="color:#a48e62;font-weight:600;margin-bottom:0.5rem;">【你正在问】</div>
                                     <div class="section-content">${escapeHtmlReading(questionText)}</div>
-                                </div>
-                                <div class="master-section" style="margin-top:1rem;">
-                                    <div class="section-content" style="color:#9a8b6e;font-size:0.92em;">解读维度：${escapeHtmlReading(tabLabel)} · 本题定向五段式（与快速选题一致）· 画面与逆位语气请结合本牌通用大师解读。</div>
+                                    ${readingScopeDisclaimerHtml(categoryTab)}
                                 </div>
                                 <div class="master-section" style="margin-top:1.1rem;">
                                     <div class="section-title" style="color:#a48e62;font-weight:600;margin-bottom:0.5rem;">【牌在对你说话】</div>
@@ -1242,6 +1249,7 @@
                                 <div class="master-section" style="margin-top:1rem;">
                                     <div class="section-title" style="color:#a48e62;font-weight:600;margin-bottom:0.5rem;">【你正在问】</div>
                                     <div class="section-content">${questionText}</div>
+                                    ${readingScopeDisclaimerHtml('pet')}
                                 </div>` : ''}
 
                                 ${masterReading.healthCare ? `
@@ -1275,7 +1283,6 @@
                                 <div class="master-section" style="margin-top:1.4rem;">
                                     <div class="section-title" style="color:#a48e62;font-weight:600;margin-bottom:0.5rem;">【大师总结】</div>
                                     <div class="section-content">
-                                        <span style="color:#9a8b6e;font-size:0.9em;">解读维度：模式 + 78 张牌</span><br>
                                         针对「${questionText}」，这张牌在宠物议题上的核心提醒是：${masterReading.coreInsight || '用一致、稳定的照护回应它的不安。'}
                                         <br><br>
                                         今天可以从一件最小的事开始：${masterReading.dailyPractice || masterReading.advice || masterReading.healthCare || ''} 
@@ -1298,6 +1305,7 @@
                                 <div class="master-section" style="margin-top:1rem;">
                                     <div class="section-title" style="color:#a48e62;font-weight:600;margin-bottom:0.5rem;">【你正在问】</div>
                                     <div class="section-content">${questionText}</div>
+                                    ${readingScopeDisclaimerHtml(category)}
                                 </div>` : ''}
                                 
                                 <div class="master-section" style="margin-top:1.2rem;">
@@ -1342,12 +1350,10 @@
                                 ${masterReading.dailyPractice ? `<div class="action-today"><i class="fas fa-feather-alt"></i><span>今日践行 · ${masterReading.dailyPractice}</span></div>` : ''}
 
                                 ${questionText ? (function() {
-                                    var isQuestionLevel = ['love','career','money','spirit'].indexOf(category) >= 0;
                                     var categoryLabel = { love:'感情婚姻', career:'事业工作', money:'财运投资', spirit:'灵性成长', study:'学业考试', health:'身体健康', relation:'人际关系', child:'生育子女', choice:'选择决策' }[category] || '此议题';
-                                    var dimHint = isQuestionLevel ? '解读维度：具体问题 + 78 张牌' : '解读维度：模式 + 78 张牌';
                                     var core = masterReading.coreInsight || '看清当下，再用实际行动调整方向。';
                                     var daily = masterReading.dailyPractice || masterReading.advice || masterReading.direction || '';
-                                    return '<div class="master-section" style="margin-top:1.4rem;"><div class="section-title" style="color:#a48e62;font-weight:600;margin-bottom:0.5rem;">【大师总结】</div><div class="section-content"><span style="color:#9a8b6e;font-size:0.9em;">' + dimHint + '</span><br>针对「' + questionText + '」，这张牌在' + categoryLabel + '上的综合指引是：' + core + '<br><br>今天可以先从一件具体的小事开始：' + daily + '</div></div>';
+                                    return '<div class="master-section" style="margin-top:1.4rem;"><div class="section-title" style="color:#a48e62;font-weight:600;margin-bottom:0.5rem;">【大师总结】</div><div class="section-content">针对「' + questionText + '」，这张牌在' + categoryLabel + '上的综合指引是：' + core + '<br><br>今天可以先从一件具体的小事开始：' + daily + '</div></div>';
                                 })() : ''}
                             </div>
                         `;
@@ -1769,7 +1775,7 @@
         (function () {
             var urls = [
                 'tarotQuestionLoveContent.js?v=1',
-                'tarotQuestionCareerContent.js?v=1',
+                'tarotQuestionCareerContent.js?v=2',
                 'tarotQuestionMoneyContent.js?v=1',
                 'tarotQuestionStudyContent.js?v=1',
                 'tarotQuestionLifeCategoriesContent.js?v=7'

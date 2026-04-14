@@ -48,6 +48,7 @@ next-env.d.ts
 
 # tarot:money:freeze 临时 bundle
 /scripts/.freeze-money-registers.cjs
+/scripts/.freeze-career-registers.cjs
 # tarot:study:freeze 临时 bundle
 /scripts/.freeze-study-registers.cjs
 /scripts/.emit-life-six-layers.cjs
@@ -55,5 +56,6 @@ next-env.d.ts
 /scripts/.emit-life-six-master-handbook.cjs
 /scripts/.lint-life-six-health-rubric.cjs
 /scripts/.lint-life-six-b-rubric.cjs
+/scripts/.verify-numerology.cjs
 
 .vercel

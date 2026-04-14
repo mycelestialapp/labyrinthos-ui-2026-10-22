@@ -19,7 +19,9 @@ export default function BottomNav() {
   if (pathname === "/compass" || pathname?.startsWith("/compass/")) {
     return null;
   }
-
+  if (pathname === "/numerology" || pathname?.startsWith("/numerology/")) {
+    return null;
+  }
   const handleNavClick = (href: string, active: boolean) => {
     if (typeof window === "undefined") return;
     if (active) {

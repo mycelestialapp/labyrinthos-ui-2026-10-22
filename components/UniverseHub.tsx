@@ -94,6 +94,7 @@ const CARDS: HubCard[] = [
     plan:
       "生命路径、周期年与个人年并列；标明天赋带来的顺手与摩擦，以及关系、协作中的互补与冲突。用数字回答：何时宜收束步调，何时可以外放一步。",
     Icon: Pentagon,
+    href: "/numerology",
   },
   {
     title: "神谕卡",
@@ -381,28 +382,28 @@ function DeepObservation({
   ] as const;
 
   return (
-    <section className="mx-auto mt-20 w-full max-w-3xl">
+    <section className="mx-auto mt-24 w-full max-w-4xl">
       <motion.h3
         initial={{ opacity: 0, y: 18, filter: "blur(8px)" }}
         whileInView={{ opacity: 0.9, y: 0, filter: "blur(0px)" }}
         viewport={{ once: true, amount: 0.35 }}
         transition={{ duration: 0.6, ease: [0.23, 1, 0.32, 1] }}
-        className={`text-center text-[18px] text-[#D2D2D8] ${deepMono.className}`}
+        className={`text-center text-[21px] text-[#D2D2D8] ${deepMono.className}`}
         style={{ letterSpacing: "0.2em" }}
       >
         [ 第二层：解读态 // THE DEEP OBSERVATION ]
       </motion.h3>
 
-      <div className="mt-10 space-y-8">
+      <div className="mt-12 space-y-10">
         <motion.div
           initial={{ opacity: 0, y: 10, filter: "blur(8px)" }}
           whileInView={{ opacity: 0.82, y: 0, filter: "blur(0px)" }}
           viewport={{ once: true, amount: 0.35 }}
           transition={{ duration: 0.55, ease: [0.23, 1, 0.32, 1] }}
-          className="border-t border-[rgba(197,160,89,0.18)] pt-5"
+          className="border-t border-[rgba(197,160,89,0.18)] pt-6"
         >
           <p
-            className={`text-[15px] text-[#BFC0C8] ${deepMono.className}`}
+            className={`text-[17px] text-[#BFC0C8] ${deepMono.className}`}
             style={{ letterSpacing: "0.2em" }}
           >
             {copy.collisionMeta}
@@ -416,13 +417,13 @@ function DeepObservation({
             whileInView={{ opacity: 0.94, y: 0, filter: "blur(0px)" }}
             viewport={{ once: true, amount: 0.35 }}
             transition={{ duration: 0.72, delay: idx * 0.08, ease: [0.23, 1, 0.32, 1] }}
-            className="border-l border-[0.3px] border-[rgba(197,160,89,0.26)] pl-4 md:pl-5"
+            className="border-l border-[0.3px] border-[rgba(197,160,89,0.26)] pl-5 md:pl-6"
             whileHover={{
               filter: "drop-shadow(0 0 20px rgba(232,196,120,0.52))",
             }}
           >
             <p
-              className={`text-[20px] leading-[1.92] text-[#D6D6DB] ${deepInter.className}`}
+              className={`text-[23px] leading-[1.92] text-[#D6D6DB] ${deepInter.className}`}
               style={{
                 letterSpacing: "0.2em",
                 textShadow:
@@ -440,7 +441,7 @@ function DeepObservation({
         whileInView={{ opacity: 0.92, y: 0, filter: "blur(0px)" }}
         viewport={{ once: true, amount: 0.4 }}
         transition={{ duration: 0.65, ease: [0.23, 1, 0.32, 1] }}
-        className={`mt-10 text-center text-[16px] text-[#B8B8BE] ${deepMono.className}`}
+        className={`mt-12 text-center text-[18px] text-[#B8B8BE] ${deepMono.className}`}
         style={{ letterSpacing: "0.2em" }}
       >
         今日参数闭环 // [ LOCKED ]：{data.hex} / {data.anchor.toFixed(4)} / {data.axiom.scene}
@@ -557,9 +558,9 @@ function PsychicMonitor({ state, data, onRequestManifest }: PsychicMonitorProps)
   };
 
   const etchedClass =
-    "text-[20px] font-medium leading-[1.5] text-[#F2D596] [letter-spacing:0.2em]";
+    "text-[23px] font-medium leading-[1.5] text-[#F2D596] [letter-spacing:0.2em]";
   const paramClass =
-    "text-[14px] font-medium text-[#CACAD1] [letter-spacing:0.2em]";
+    "text-[16px] font-medium text-[#CACAD1] [letter-spacing:0.2em]";
 
   const showDailyInk = state === "DAILY_MANIFEST" && dailySeq === "ink";
   const showDailyJudge = state === "DAILY_MANIFEST" && dailySeq === "judge";
@@ -567,7 +568,7 @@ function PsychicMonitor({ state, data, onRequestManifest }: PsychicMonitorProps)
   const showManifestNoise = state === "DAILY_MANIFEST" && dailySeq !== "pluck";
 
   return (
-    <div className="relative mx-auto mt-6 w-full max-w-3xl min-h-[220px]">
+    <div className="relative mx-auto mt-8 w-full max-w-4xl min-h-[260px]">
       {burstPhase !== "idle" && (
         <div className="pointer-events-none absolute inset-0 z-[4] flex items-center justify-center" aria-hidden>
           <motion.div
@@ -618,8 +619,8 @@ function PsychicMonitor({ state, data, onRequestManifest }: PsychicMonitorProps)
           />
         </div>
       )}
-      <div className="relative z-[1] mx-auto flex max-w-2xl flex-col items-center justify-center gap-5 text-center min-h-[220px]">
-        <div className="relative flex w-full max-w-[560px] items-center justify-between">
+      <div className="relative z-[1] mx-auto flex max-w-3xl flex-col items-center justify-center gap-6 text-center min-h-[260px]">
+        <div className="relative flex w-full max-w-[640px] items-center justify-between">
           <motion.span
             className={`${paramClass} text-left`}
             initial={false}
@@ -635,7 +636,7 @@ function PsychicMonitor({ state, data, onRequestManifest }: PsychicMonitorProps)
           >
             {data.hex}
           </motion.span>
-          <div className="absolute left-1/2 top-1/2 flex -translate-x-1/2 -translate-y-1/2 flex-col items-center gap-4">
+          <div className="absolute left-1/2 top-1/2 flex -translate-x-1/2 -translate-y-1/2 flex-col items-center gap-5">
             {(showDailyJudge || showDailyInk) && (
               <motion.div
                 key="daily-axiom"
@@ -660,7 +661,7 @@ function PsychicMonitor({ state, data, onRequestManifest }: PsychicMonitorProps)
             {state === "IDLE" && (
               <motion.button
                 type="button"
-                className="relative flex h-[136px] w-[136px] cursor-pointer items-center justify-center rounded-full border border-[rgba(197,160,89,0.52)] bg-[rgba(10,10,12,0.32)]"
+                className="relative flex h-[152px] w-[152px] cursor-pointer items-center justify-center rounded-full border border-[rgba(197,160,89,0.52)] bg-[rgba(10,10,12,0.32)]"
                 role="button"
                 tabIndex={0}
                 aria-label="触发符文以显影今日节律"
@@ -711,7 +712,7 @@ function PsychicMonitor({ state, data, onRequestManifest }: PsychicMonitorProps)
                   aria-hidden
                 />
                 <motion.div
-                  className="pointer-events-none absolute h-[2px] w-[170px]"
+                  className="pointer-events-none absolute h-[2px] w-[196px]"
                   style={{
                     background:
                       "linear-gradient(90deg, transparent, rgba(232,196,120,0.92), transparent)",
@@ -726,7 +727,7 @@ function PsychicMonitor({ state, data, onRequestManifest }: PsychicMonitorProps)
                   aria-hidden
                 />
                 <motion.span
-                  className="text-[34px] text-[#F1CF87]"
+                  className="text-[40px] text-[#F1CF87]"
                   style={{
                     fontFamily:
                       '"JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, monospace',
@@ -758,7 +759,7 @@ function PsychicMonitor({ state, data, onRequestManifest }: PsychicMonitorProps)
             )}
             {state === "DAILY_MANIFEST" && (
               <motion.div
-                className="relative flex h-[72px] w-[72px] items-center justify-center rounded-full border border-[rgba(197,160,89,0.24)]"
+                className="relative flex h-[84px] w-[84px] items-center justify-center rounded-full border border-[rgba(197,160,89,0.24)]"
                 style={{
                   boxShadow:
                     "0 0 20px rgba(197,160,89,0.32), inset 0 0 22px rgba(197,160,89,0.15)",
@@ -778,7 +779,7 @@ function PsychicMonitor({ state, data, onRequestManifest }: PsychicMonitorProps)
                 }}
               >
                 <span
-                  className="text-[18px] text-[#C5A059]"
+                  className="text-[21px] text-[#C5A059]"
                   style={{
                     fontFamily:
                       '"JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, monospace',
@@ -810,7 +811,7 @@ function PsychicMonitor({ state, data, onRequestManifest }: PsychicMonitorProps)
 
       {showManifestNoise && (
         <motion.div
-          className="pointer-events-none absolute inset-x-0 bottom-0 top-0 z-[3] mx-auto max-w-2xl mix-blend-soft-light opacity-[0.06]"
+          className="pointer-events-none absolute inset-x-0 bottom-0 top-0 z-[3] mx-auto max-w-3xl mix-blend-soft-light opacity-[0.06]"
           style={{
             backgroundImage: `url("data:image/svg+xml,${FILM_GRAIN_SVG}")`,
             backgroundSize: "112px 112px",
@@ -1132,7 +1133,7 @@ export default function UniverseHub() {
       </div>
 
       <div
-        className={`relative z-10 mx-auto flex w-full max-w-5xl flex-col px-5 pb-10 pt-10 antialiased md:px-12 md:pt-[4.5rem] ${hubSerif.className}`}
+        className={`relative z-10 mx-auto flex w-full max-w-6xl flex-col px-6 pb-12 pt-12 antialiased md:px-14 md:pt-[5rem] ${hubSerif.className}`}
       >
         <motion.h1
           initial={{ opacity: 0, y: 14 }}
@@ -1140,8 +1141,8 @@ export default function UniverseHub() {
           transition={{ delay: 0.1, duration: 0.65, ease: [0.23, 1, 0.32, 1] }}
           className={
             room === "temple"
-              ? "mx-auto mt-4 max-w-[22rem] text-center text-[1.65rem] font-medium leading-[1.45] tracking-[0.6em] text-[#C5A059] md:mt-6 md:max-w-none md:text-[2.15rem]"
-              : "mx-auto mt-4 max-w-[22rem] text-center text-[1.65rem] font-medium leading-[1.45] tracking-[0.28em] text-[#C5A059] md:mt-6 md:max-w-none md:text-[2.15rem] md:tracking-[0.32em]"
+              ? "mx-auto mt-4 max-w-[24rem] text-center text-[1.9rem] font-medium leading-[1.45] tracking-[0.6em] text-[#C5A059] md:mt-6 md:max-w-none md:text-[2.45rem]"
+              : "mx-auto mt-4 max-w-[24rem] text-center text-[1.9rem] font-medium leading-[1.45] tracking-[0.28em] text-[#C5A059] md:mt-6 md:max-w-none md:text-[2.45rem] md:tracking-[0.32em]"
           }
           style={{
             fontFeatureSettings: '"kern" 1',
@@ -1156,17 +1157,17 @@ export default function UniverseHub() {
 
         {room === "temple" && (
           <motion.div
-            className="mx-auto mt-10 text-center md:mt-12"
+            className="mx-auto mt-11 text-center md:mt-14"
             style={{ y: monitorY, opacity: monitorOpacity }}
           >
             <h2
-              className="text-[15px] font-medium tracking-[0.48em] text-[#C5A059] md:text-[16px] md:tracking-[0.52em]"
+              className="text-[17px] font-medium tracking-[0.48em] text-[#C5A059] md:text-[19px] md:tracking-[0.52em]"
               style={{ textShadow: "0 0 18px rgba(197,160,89,0.28)" }}
             >
               今日节律
             </h2>
             <p
-              className="mt-3 text-[10px] text-[#888]"
+              className="mt-3.5 text-[12px] text-[#888] md:text-[13px]"
               style={{
                 fontFamily:
                   '"JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, monospace',
@@ -1195,8 +1196,8 @@ export default function UniverseHub() {
         )}
 
         <h2
-          className={`mx-auto text-center text-[15px] font-medium tracking-[0.48em] text-[#C5A059] md:text-[16px] md:tracking-[0.52em] ${
-            room === "temple" ? "mt-14 md:mt-16" : "mt-12 md:mt-14"
+          className={`mx-auto text-center text-[17px] font-medium tracking-[0.48em] text-[#C5A059] md:text-[19px] md:tracking-[0.52em] ${
+            room === "temple" ? "mt-16 md:mt-[4.5rem]" : "mt-14 md:mt-16"
           }`}
           style={{ textShadow: "0 0 18px rgba(197,160,89,0.28)" }}
         >
@@ -1224,13 +1225,13 @@ export default function UniverseHub() {
           variants={container}
           initial="hidden"
           animate="show"
-          className="mt-14 grid grid-cols-1 gap-6 md:mt-20 md:grid-cols-3 md:gap-7"
+          className="mt-16 grid grid-cols-1 gap-8 md:mt-24 md:grid-cols-3 md:gap-10"
         >
           {CARDS.map((c, idx) => {
             const panelChildren = (
               <>
                 <span
-                  className={`pointer-events-none absolute left-4 top-4 h-3 w-3 border-l border-t ${
+                  className={`pointer-events-none absolute left-5 top-5 h-3.5 w-3.5 border-l border-t ${
                     room === "temple"
                       ? "border-[rgba(197,160,89,0.12)]"
                       : "border-[rgba(197,160,89,0.2)]"
@@ -1238,7 +1239,7 @@ export default function UniverseHub() {
                   aria-hidden
                 />
                 <span
-                  className={`pointer-events-none absolute right-4 top-4 h-3 w-3 border-r border-t ${
+                  className={`pointer-events-none absolute right-5 top-5 h-3.5 w-3.5 border-r border-t ${
                     room === "temple"
                       ? "border-[rgba(197,160,89,0.12)]"
                       : "border-[rgba(197,160,89,0.2)]"
@@ -1246,22 +1247,22 @@ export default function UniverseHub() {
                   aria-hidden
                 />
                 <span
-                  className="pointer-events-none absolute right-5 top-5 text-[10px] font-light tabular-nums tracking-[0.2em] text-[rgba(197,160,89,0.18)]"
+                  className="pointer-events-none absolute right-6 top-6 text-[11px] font-light tabular-nums tracking-[0.2em] text-[rgba(197,160,89,0.18)] md:text-[12px]"
                   aria-hidden
                 >
                   {String(idx + 1).padStart(2, "0")}
                 </span>
                 <span
-                  className="pointer-events-none absolute inset-x-8 top-0 h-px bg-gradient-to-r from-transparent via-[rgba(197,160,89,0.2)] to-transparent"
+                  className="pointer-events-none absolute inset-x-9 top-0 h-px bg-gradient-to-r from-transparent via-[rgba(197,160,89,0.2)] to-transparent"
                   aria-hidden
                 />
 
-                <div className="relative mb-6 mt-1 flex justify-center">
+                <div className="relative mb-7 mt-1 flex justify-center md:mb-8">
                   <c.Icon
                     className={
                       room === "temple"
-                        ? "h-10 w-10 text-[#C5A059] transition-all duration-300 ease-out group-hover:scale-[1.03]"
-                        : "h-10 w-10 text-[#d4b76a] transition-all duration-500 ease-out group-hover:scale-105 group-hover:text-[#f0dfa0]"
+                        ? "h-12 w-12 text-[#C5A059] transition-all duration-300 ease-out group-hover:scale-[1.03] md:h-14 md:w-14"
+                        : "h-12 w-12 text-[#d4b76a] transition-all duration-500 ease-out group-hover:scale-105 group-hover:text-[#f0dfa0] md:h-14 md:w-14"
                     }
                     style={{
                       filter:
@@ -1274,14 +1275,14 @@ export default function UniverseHub() {
                   />
                 </div>
                 <h3
-                  className={`text-center text-[16px] font-medium tracking-[0.22em] ${
+                  className={`text-center text-[18px] font-medium tracking-[0.22em] md:text-[20px] ${
                     room === "temple" ? "text-[#C5A059]" : "text-[#e0c88a]"
                   }`}
                 >
                   {c.title}
                 </h3>
                 <p
-                  className={`mt-4 text-center text-[12.5px] font-light leading-[1.85] tracking-[0.04em] ${
+                  className={`mt-5 text-center text-[14px] font-light leading-[1.85] tracking-[0.04em] md:text-[15px] ${
                     room === "temple"
                       ? "text-[#C5A059]/[0.55]"
                       : "text-[#9ea3c0]"
@@ -1290,7 +1291,7 @@ export default function UniverseHub() {
                   {c.description}
                 </p>
                 <p
-                  className={`mt-5 text-left text-[12px] font-light leading-[1.9] tracking-[0.06em] ${
+                  className={`mt-6 text-left text-[13.5px] font-light leading-[1.9] tracking-[0.06em] md:text-[14.5px] ${
                     room === "temple" ? "text-[#9a9ca0]" : "text-[#8b90a8]"
                   }`}
                 >
@@ -1311,10 +1312,11 @@ export default function UniverseHub() {
                   c.href ? (
                     <Link
                       href={c.href}
-                      className="block h-full rounded-[28px] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[rgba(197,160,89,0.45)] focus-visible:ring-offset-2 focus-visible:ring-offset-[#060508]"
+                      className="block h-full rounded-[32px] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[rgba(197,160,89,0.45)] focus-visible:ring-offset-2 focus-visible:ring-offset-[#060508]"
                       onClick={() => {
                         if (c.href === "/astro") trackHubEvent("hub_card_astro_open");
                         if (c.href === "/tarot") trackHubEvent("hub_card_tarot_open");
+                        if (c.href?.startsWith("/numerology")) trackHubEvent("hub_card_numerology_open");
                       }}
                     >
                       <div
@@ -1322,7 +1324,7 @@ export default function UniverseHub() {
                         aria-label={`${c.title}：${c.description}`}
                         onMouseEnter={() => setVoidHoveredCard(idx)}
                         onMouseLeave={() => setVoidHoveredCard(null)}
-                        className="group relative flex h-full cursor-pointer flex-col overflow-hidden rounded-[28px] border-[0.5px] border-[rgba(197,160,89,0.22)] px-6 pb-8 pt-7 backdrop-blur-[20px] transition-[border-color] duration-300 hover:border-[rgba(197,160,89,0.38)]"
+                        className="group relative flex h-full cursor-pointer flex-col overflow-hidden rounded-[32px] border-[0.5px] border-[rgba(197,160,89,0.22)] px-8 pb-10 pt-9 backdrop-blur-[20px] transition-[border-color] duration-300 hover:border-[rgba(197,160,89,0.38)]"
                         style={{
                           background:
                             "linear-gradient(135deg, rgba(125, 107, 125, 0.4) 0%, rgba(26, 11, 46, 0.78) 100%)",
@@ -1337,7 +1339,7 @@ export default function UniverseHub() {
                       aria-label={`${c.title}：${c.description}`}
                       onMouseEnter={() => setVoidHoveredCard(idx)}
                       onMouseLeave={() => setVoidHoveredCard(null)}
-                      className="group relative flex h-full flex-col overflow-hidden rounded-[28px] border-[0.5px] border-[rgba(197,160,89,0.22)] px-6 pb-8 pt-7 backdrop-blur-[20px] transition-[border-color] duration-300 hover:border-[rgba(197,160,89,0.38)]"
+                      className="group relative flex h-full flex-col overflow-hidden rounded-[32px] border-[0.5px] border-[rgba(197,160,89,0.22)] px-8 pb-10 pt-9 backdrop-blur-[20px] transition-[border-color] duration-300 hover:border-[rgba(197,160,89,0.38)]"
                       style={{
                         background:
                           "linear-gradient(135deg, rgba(125, 107, 125, 0.4) 0%, rgba(26, 11, 46, 0.78) 100%)",
@@ -1349,14 +1351,15 @@ export default function UniverseHub() {
                 ) : c.href ? (
                   <Link
                     href={c.href}
-                    className="block h-full rounded-[14px] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[rgba(197,160,89,0.45)] focus-visible:ring-offset-2 focus-visible:ring-offset-[#0a0c14]"
+                    className="block h-full rounded-[18px] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[rgba(197,160,89,0.45)] focus-visible:ring-offset-2 focus-visible:ring-offset-[#0a0c14]"
                     onClick={() => {
                       if (c.href === "/astro") trackHubEvent("hub_card_astro_open");
                       if (c.href === "/tarot") trackHubEvent("hub_card_tarot_open");
+                      if (c.href?.startsWith("/numerology")) trackHubEvent("hub_card_numerology_open");
                     }}
                   >
                     <div
-                      className="group relative rounded-[14px] p-px transition-[filter,box-shadow] duration-500 ease-out hover:shadow-[0_24px_64px_rgba(0,0,0,0.65),0_0_40px_rgba(197,160,89,0.12)]"
+                      className="group relative rounded-[18px] p-px transition-[filter,box-shadow] duration-500 ease-out hover:shadow-[0_24px_64px_rgba(0,0,0,0.65),0_0_40px_rgba(197,160,89,0.12)]"
                       style={{
                         background:
                           "linear-gradient(145deg, rgba(220,190,120,0.55) 0%, rgba(197,160,89,0.15) 38%, rgba(130,90,180,0.28) 100%)",
@@ -1365,7 +1368,7 @@ export default function UniverseHub() {
                       <div
                         role="article"
                         aria-label={`${c.title}：${c.description}`}
-                        className="relative flex h-full cursor-pointer flex-col overflow-hidden rounded-[13px] bg-gradient-to-b from-[rgba(36,40,56,0.96)] to-[rgba(18,20,32,0.98)] px-6 pb-8 pt-7 shadow-[inset_0_1px_0_rgba(230,238,255,0.08),inset_0_0_0_1px_rgba(255,255,255,0.06)] backdrop-blur-2xl transition-[background-color,box-shadow] duration-500 hover:from-[rgba(42,46,62,0.98)] hover:to-[rgba(22,24,38,0.99)] hover:shadow-[inset_0_1px_0_rgba(230,238,255,0.11)]"
+                        className="relative flex h-full cursor-pointer flex-col overflow-hidden rounded-[17px] bg-gradient-to-b from-[rgba(36,40,56,0.96)] to-[rgba(18,20,32,0.98)] px-8 pb-10 pt-9 shadow-[inset_0_1px_0_rgba(230,238,255,0.08),inset_0_0_0_1px_rgba(255,255,255,0.06)] backdrop-blur-2xl transition-[background-color,box-shadow] duration-500 hover:from-[rgba(42,46,62,0.98)] hover:to-[rgba(22,24,38,0.99)] hover:shadow-[inset_0_1px_0_rgba(230,238,255,0.11)]"
                       >
                         {panelChildren}
                       </div>
@@ -1373,7 +1376,7 @@ export default function UniverseHub() {
                   </Link>
                 ) : (
                   <div
-                    className="group relative rounded-[14px] p-px transition-[filter,box-shadow] duration-500 ease-out hover:shadow-[0_24px_64px_rgba(0,0,0,0.65),0_0_40px_rgba(197,160,89,0.12)]"
+                    className="group relative rounded-[18px] p-px transition-[filter,box-shadow] duration-500 ease-out hover:shadow-[0_24px_64px_rgba(0,0,0,0.65),0_0_40px_rgba(197,160,89,0.12)]"
                     style={{
                       background:
                         "linear-gradient(145deg, rgba(220,190,120,0.55) 0%, rgba(197,160,89,0.15) 38%, rgba(130,90,180,0.28) 100%)",
@@ -1382,7 +1385,7 @@ export default function UniverseHub() {
                     <div
                       role="article"
                       aria-label={`${c.title}：${c.description}`}
-                      className="relative flex h-full flex-col overflow-hidden rounded-[13px] bg-gradient-to-b from-[rgba(36,40,56,0.96)] to-[rgba(18,20,32,0.98)] px-6 pb-8 pt-7 shadow-[inset_0_1px_0_rgba(230,238,255,0.08),inset_0_0_0_1px_rgba(255,255,255,0.06)] backdrop-blur-2xl transition-[background-color,box-shadow] duration-500 hover:from-[rgba(42,46,62,0.98)] hover:to-[rgba(22,24,38,0.99)] hover:shadow-[inset_0_1px_0_rgba(230,238,255,0.11)]"
+                      className="relative flex h-full flex-col overflow-hidden rounded-[17px] bg-gradient-to-b from-[rgba(36,40,56,0.96)] to-[rgba(18,20,32,0.98)] px-8 pb-10 pt-9 shadow-[inset_0_1px_0_rgba(230,238,255,0.08),inset_0_0_0_1px_rgba(255,255,255,0.06)] backdrop-blur-2xl transition-[background-color,box-shadow] duration-500 hover:from-[rgba(42,46,62,0.98)] hover:to-[rgba(22,24,38,0.99)] hover:shadow-[inset_0_1px_0_rgba(230,238,255,0.11)]"
                     >
                       {panelChildren}
                     </div>
