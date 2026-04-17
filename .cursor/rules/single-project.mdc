@@ -7,5 +7,13 @@ alwaysApply: true
 
 - **唯一前端工程**：`D:\labyrinthos-ui`（八种月相、CelestialDashboard、首页三屏）。
 - **不要**在回答或脚本里假设还存在 `D:\liuyao` 或其它重复副本；用户已删除副本以减少跑错项目。
-- **开发/预览**：`npm run dev` → **http://localhost:3088**（端口写死在 `package.json`）；默认 **Webpack**（`next dev` 默认监听 `0.0.0.0`，一般 **`localhost` 与 `127.0.0.1` 均可**）。若本机 `localhost` 异常可试 **`http://127.0.0.1:3088`**，或 `npm run dev:ipv4` / `npm run dev:ipv6`。连通性探测：**`/healthz`** 应返回纯文本 `ok`。若 3088 已卡死（大量 CLOSE_WAIT），先结束占用端口的 `node` 再重启 `npm run dev`。
+- **开发/预览**：`npm run dev` → **http://localhost:3088**（端口写死在 `package.json`）；默认 **Turbopack**（`next dev` 监听 `0.0.0.0`，一般 **`localhost` 与 `127.0.0.1` 均可**）。若需与旧行为一致可用 **`npm run dev:webpack`**。若本机 `localhost` 异常可试 **`http://127.0.0.1:3088`**，或 `npm run dev:ipv4` / `npm run dev:ipv6`。连通性探测：**`/healthz`** 应返回纯文本 `ok`。若 3088 已卡死（大量 CLOSE_WAIT），先结束占用端口的 `node` 再重启 `npm run dev`。
 - 若用户问「开哪个网址」，只指向 **3088** 与本仓库路径，除非用户明确要求改端口。
+
+## 布局与多屏（全站）
+
+- **不要**在窄屏下依赖「刚好一行」：横排时间轴、工具条等一律 `overflow-x-auto` + `overscroll-x-contain`，子项 `shrink-0` + 合理 `min-w-*`，避免格子被压扁或叠字。
+- **容器链**：页面/卡片根上 `w-full min-w-0`（或等价），否则 `flex`/`grid` 子项里的长文容易把整页撑出横向滚动条。
+- **长中文与无空格串**：正文块用 `break-words`（必要时 `text-pretty`），`flex` 内可换行的一列加 `min-w-0`；勿让单行标题 `whitespace-nowrap` 无退路。
+- **`details`/`summary`**：摘要行要能在小屏换行，左侧 `min-w-0 flex-1`，箭头或图标 `shrink-0`。
+- 改完涉及排版的组件后，至少在 **~320 / 375 / 768 / 1024** 宽度下检查：无意外横向溢出、无重叠、可点区域不被裁切。

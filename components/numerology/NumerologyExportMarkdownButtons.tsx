@@ -44,19 +44,19 @@ export function NumerologyExportMarkdownButtons({ source }: { source: Numerology
         <button
           type="button"
           onClick={() => void copy()}
-          className="rounded-lg border-[0.5px] border-[rgba(168,188,208,0.35)] px-3 py-2 text-[10px] tracking-[0.12em] text-[#9eb4c8] transition-colors hover:border-[rgba(168,188,208,0.55)] hover:text-[#f1f5f9]"
+          className="rounded-lg border-[0.5px] border-[rgba(168,188,208,0.35)] px-3 py-2 text-[11px] tracking-[0.12em] text-[#9eb4c8] transition-colors hover:border-[rgba(168,188,208,0.55)] hover:text-[#f1f5f9]"
         >
           复制 Markdown
         </button>
         <button
           type="button"
           onClick={download}
-          className="rounded-lg border-[0.5px] border-[rgba(168,188,208,0.35)] px-3 py-2 text-[10px] tracking-[0.12em] text-[#9eb4c8] transition-colors hover:border-[rgba(168,188,208,0.55)] hover:text-[#f1f5f9]"
+          className="rounded-lg border-[0.5px] border-[rgba(168,188,208,0.35)] px-3 py-2 text-[11px] tracking-[0.12em] text-[#9eb4c8] transition-colors hover:border-[rgba(168,188,208,0.55)] hover:text-[#f1f5f9]"
         >
           下载 .md
         </button>
       </div>
-      {hint ? <p className="text-[10px] text-[#94a3b8]">{hint}</p> : null}
+      {hint ? <p className="text-[11px] text-[#94a3b8]">{hint}</p> : null}
     </div>
   );
 }

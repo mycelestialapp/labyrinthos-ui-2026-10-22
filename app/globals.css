@@ -55,6 +55,12 @@ body {
   animation: axis-verdict-in 0.35s ease-out both;
 }
 
+/* 数秘工作台：原生 select 下接选项在系统浅色弹层上可读（避免浅字 + 白底） */
+[data-numerology-shell] select option {
+  color: #0f172a;
+  background-color: #f1f5f9;
+}
+
 /* 数秘 · 坛城数轨：寰宇粒子微动 */
 @keyframes numerology-dust {
   from {
@@ -105,8 +111,21 @@ body {
 }
 
 .numerology-mandala-svg {
+  display: block;
   transform-origin: center center;
   transition: transform 0.45s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+/* 坛城外容器：尖顶六角 clip，与 SVG 内六角同向 */
+.numerology-mandala-hex-shell {
+  clip-path: polygon(
+    50% 0.75%,
+    99.25% 25.2%,
+    99.25% 74.8%,
+    50% 99.25%,
+    0.75% 74.8%,
+    0.75% 25.2%
+  );
 }
 
 @media (hover: hover) and (pointer: fine) {
@@ -139,7 +158,7 @@ body {
 }
 
 .numerology-mandala-orbit-spin {
-  transform-origin: 100px 100px;
+  transform-origin: 0 0;
   transform-box: fill-box;
   animation: numerology-mandala-orbit-rot 96s linear infinite;
 }

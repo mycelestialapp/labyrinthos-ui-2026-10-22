@@ -1,6 +1,8 @@
 import { NextResponse } from "next/server";
 import { NUMEROLOGY_WORKSPACE_MODULES } from "@/lib/numerology-workspace-modules";
 
+export const runtime = "edge";
+
 /** 工作台模块清单 + 演算端点说明（供前台或其它客户端 discover） */
 export async function GET() {
   return NextResponse.json({

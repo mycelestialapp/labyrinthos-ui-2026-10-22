@@ -41,7 +41,7 @@ export function NumerologyLabView() {
       <NumerologyGlassCard>
         <p className="text-[10px] uppercase tracking-[0.38em] text-[#9eb4c8]/55">炼金工具</p>
         <p className={`mt-3 text-[13px] leading-relaxed text-[#cbd5e1] ${zhSerif.className}`}>
-          输入任意非负整数（可含分隔符），查看数位和链与「化约至 1–9 或保留 11/22/33」的结果；用于核对手稿演算。
+          输入任意非负整数（可含分隔符），查看数位和链与化约终值（1–9 或保留 11/22/33）；用于核对手稿，并与之门第二段备忘表的演算链互证。
         </p>
         <label className="mt-4 block">
           <span className="text-[9px] text-[#94a3b8]">数字串</span>

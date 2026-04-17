@@ -1,6 +1,8 @@
 import { NextResponse } from "next/server";
 import { computeNumerologyProfile, parseNumerologyProfileBody } from "@/lib/numerology-profile";
 
+export const runtime = "edge";
+
 /**
  * 坛城数轨 · 毕达哥拉斯数秘演算（服务端与 lib 同源）。
  * POST JSON：{ month, day, year, nameLatin?, calendarYear? }

@@ -1,23 +1,16 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
-  async headers() {
-    return [
-      {
-        source: "/numerology",
-        headers: [{ key: "Cache-Control", value: "no-store, max-age=0, must-revalidate" }],
-      },
-      {
-        source: "/numerology/:path*",
-        headers: [{ key: "Cache-Control", value: "no-store, max-age=0, must-revalidate" }],
-      },
-    ];
+  /** 按需转译大包的 barrel export，减轻 dev 编译与路由首 chunk 体积 */
+  experimental: {
+    optimizePackageImports: ["lucide-react", "@react-three/fiber", "@react-three/drei"],
   },
   async redirects() {
     return [
       { source: "/xingyun", destination: "/hub", permanent: false },
       { source: "/nebula", destination: "/hub", permanent: false },
       { source: "/luopan", destination: "/compass", permanent: false },
+      { source: "/numerology/archive", destination: "/numerology", permanent: false },
     ];
   },
 };

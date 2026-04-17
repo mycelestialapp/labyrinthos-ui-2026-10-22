@@ -9,8 +9,26 @@ import {
   personalYear,
   soulUrgeNumber,
 } from "@/lib/numerology-pythagorean";
+import {
+  numerologyGateExecMemoBulletsZh,
+  numerologyGateRawLayerHandbookZh,
+  numerologyGateRawLayerIntroZh,
+} from "@/lib/numerology-gate-ui-copy-zh";
 import { lifePathLayerCopyZh } from "@/lib/numerology-life-path-copy-zh";
+import {
+  numerologyReadingVoiceClosingLineZh,
+  numerologyReadingVoiceLogicPreambleZh,
+  numerologyUnifiedDeepReadingZh,
+} from "@/lib/numerology-unified-deep-reading-zh";
+import {
+  birthdayNumberLayerCopyZh,
+  expressionLayerCopyZh,
+  personalityLayerCopyZh,
+  soulUrgeLayerCopyZh,
+} from "@/lib/numerology-numeral-master-zh";
 import type { NumerologyWorkspaceSnapshot } from "@/lib/numerology-workspace-snapshot";
+import { numerologyMatrixHandbookBodyZh } from "@/lib/numerology-matrix-handbook-zh";
+import { numerologyMatrixLitRootsZh } from "@/lib/numerology-matrix-readout-zh";
 
 export type NumerologyMarkdownInput = {
   y: number;
@@ -33,6 +51,37 @@ export function buildNumerologyWorkspaceMarkdown(i: NumerologyMarkdownInput): st
   const date = `${i.y}-${String(i.m).padStart(2, "0")}-${String(i.d).padStart(2, "0")}`;
   const nameLine = i.nameLatin.trim() ? `姓名（拉丁全拼）：${i.nameLatin.trim()}` : "姓名（拉丁全拼）：未填";
 
+  const bdL = birthdayNumberLayerCopyZh(i.birthdayNum);
+  const exL = i.expression != null ? expressionLayerCopyZh(i.expression) : null;
+  const suL = i.soulUrge != null ? soulUrgeLayerCopyZh(i.soulUrge) : null;
+  const peL = i.personality != null ? personalityLayerCopyZh(i.personality) : null;
+
+  const matrixLitRoots = numerologyMatrixLitRootsZh({
+    lifePath: i.lifePath,
+    birthdayNum: i.birthdayNum,
+    personalYearNum: i.personalYearNum,
+    expression: i.expression,
+    soulUrge: i.soulUrge,
+    personality: i.personality,
+  });
+  const matrixHandbookMd = numerologyMatrixHandbookBodyZh(matrixLitRoots);
+
+  const unifiedSnapshot = numerologyUnifiedDeepReadingZh({
+    lifePath: i.lifePath,
+    y: i.y,
+    m: i.m,
+    d: i.d,
+    calendarYear: i.calendarYear,
+    birthdayNum: i.birthdayNum,
+    personalYearNum: i.personalYearNum,
+    nameLatin: i.nameLatin,
+    expression: i.expression,
+    soulUrge: i.soulUrge,
+    personality: i.personality,
+    breakdown: i.breakdown,
+    layers: i.layers,
+  });
+
   return [
     `# 坛城数轨 · 数秘读数`,
     ``,
@@ -40,13 +89,30 @@ export function buildNumerologyWorkspaceMarkdown(i: NumerologyMarkdownInput): st
     nameLine,
     `个人年（${i.calendarYear}）：${i.personalYearNum}`,
     ``,
-    `## 核心快照`,
-    i.layers.snapshot,
+    `## 先听完这一段（高光 + 手册）`,
+    unifiedSnapshot,
     ``,
-    `## 逻辑推演`,
+    `## 慢慢拆开（推演）`,
+    numerologyReadingVoiceLogicPreambleZh(),
+    ``,
     i.layers.logic,
     ``,
-    `## 原始读数`,
+    `### 日柱推演 · ${i.birthdayNum}`,
+    bdL.logic,
+    ...(exL ? [``, `### 表现数推演 · ${i.expression}`, exL.logic] : []),
+    ...(suL ? [``, `### 灵魂数推演 · ${i.soulUrge}`, suL.logic] : []),
+    ...(peL ? [``, `### 人格数推演 · ${i.personality}`, peL.logic] : []),
+    ``,
+    `## 对一眼数（备忘表）`,
+    numerologyGateRawLayerIntroZh,
+    ``,
+    numerologyGateRawLayerHandbookZh({
+      calendarYear: i.calendarYear,
+      lifePath: i.lifePath,
+      personalYear: i.personalYearNum,
+      breakdown: i.breakdown,
+    }),
+    ``,
     `- 月柱化约：${i.breakdown.monthReduced}`,
     `- 日柱化约：${i.breakdown.dayReduced}`,
     `- 年柱化约：${i.breakdown.yearReduced}`,
@@ -56,12 +122,17 @@ export function buildNumerologyWorkspaceMarkdown(i: NumerologyMarkdownInput): st
     `- 灵魂数：${i.soulUrge ?? "—"}`,
     `- 人格数：${i.personality ?? "—"}`,
     ``,
-    `## 执行备忘`,
-    `- 把本周一件与「主路径 ${i.lifePath}」一致的小事写进日历，并设验收标准。`,
-    `- 对照个人年 ${i.personalYearNum}：收束年与外放年动作不同，只选当下可做的一条。`,
-    `- 七日内复盘一次：睡眠、日程与情绪是否同向，再决定是否调整承诺。`,
+    `## 能量矩阵 · 格数手册`,
     ``,
-    `命数为镜，照见节律与接口；不替代专业医疗、法律与财务判断。`,
+    `亮格 ${matrixLitRoots.length ? matrixLitRoots.join("、") : "—"}：乃主路径、生日数、个人年与姓名数化约至 1–9 后去重，与站内「能量矩阵」同源。下附格数手册全文；先取与今岁、今心相合者读，其余留作备忘即可。`,
+    ``,
+    matrixHandbookMd,
+    ``,
+    `## 带走几句（能做的事）`,
+    ``,
+    numerologyGateExecMemoBulletsZh(i.lifePath, i.personalYearNum).join("\n\n"),
+    ``,
+    numerologyReadingVoiceClosingLineZh(),
     ``,
   ].join("\n");
 }

@@ -1,0 +1,50 @@
+---
+description: 命数「能量矩阵 / 时序轮盘」用户可见文案大师向口径（与塔罗 pre 大师级同旨）
+globs: lib/numerology-matrix-*.ts,components/numerology/modules/NumerologyMatrixView.tsx,components/numerology/modules/NumerologyWheelView.tsx,lib/numerology-workspace-modules.ts,lib/numerology-export-markdown.ts
+alwaysApply: false
+---
+
+# 命数矩阵 / 轮盘 · 大师向文案
+
+与 `.cursor/rules/tarot-minor-pre-master-voice-zh.mdc` 同旨：**沉稳、指点、有分寸**；忌网络轻浮、卖萌、强绑单一生活场景套进所有用户。
+
+## 结构（建议顺序）
+
+1. **先写清**：这一页算什么、输入是什么（之门已填项）、与「寰宇之门」是否**同源演算**。
+2. **再叠一层**：判读分寸——九宫是**收束**、岁盘是**外圈扫视**；**亮格是提醒，不是判决书**；长文、戒线、行法仍以**之门镜鉴「展开」、年度侧写**为纲。
+3. **收束句**：允许「念到哪段算哪段」「笔仍在你手里」类分寸，避免替用户下死判。
+
+## 与「主流短句版」的关系
+
+可保留首段**可扫读**的算法句；**不要**整页只剩说明书而无判读感，也**不要**整页堆砌隐喻而无落点。
+
+## 用户可见忌词（与星盘 L1 同向）
+
+慎用运维/套语感：`载荷`、`熔断`、`协议`、`带宽`、`注入`、`稳态输出` 等；命数矩阵伴读、轮盘说明、模块 `description` 均遵守。
+
+## 句库真源（改文案优先打开）
+
+| 区块 | 文件 |
+|------|------|
+| 矩阵顶栏 + 伴读 + 主题 hint + `numerologyMatrixLitRootsZh` 注释 | `lib/numerology-matrix-readout-zh.ts` |
+| 格数手册开篇 `HANDBOOK_INTRO_ZH`、空状态、折叠与正文拼装 | `lib/numerology-matrix-handbook-zh.ts` |
+| 矩阵页卡标题下灰字、`aria-label` | `components/numerology/modules/NumerologyMatrixView.tsx` |
+| 时序轮盘页说明 | `components/numerology/modules/NumerologyWheelView.tsx` |
+| 侧栏模块简介 | `lib/numerology-workspace-modules.ts`（`matrix` / `wheel` 等） |
+| 导出 Markdown 矩阵段 | `lib/numerology-export-markdown.ts` |
+
+## 范例句式（可化用，勿照抄到死）
+
+- **同源**：「与之门……同源」「数以本页与之门演算为真」「算法与……一项同源」。
+- **分寸**：「亮格是提醒，不是判决书」「此页惟……收束，不叫你在格里硬编故事」「不当场下判词」。
+- **收束**：「念到哪段算哪段」「落笔仍在东家」「长文不必一夜吞尽」「其余作注脚可也」。
+
+## 忌写句
+
+- 轻浮网语、卖萌、强绑单一生活场景（室友/群聊等套进所有用户）。
+- 星盘 L1 类运维套语：`载荷`、`熔断`、`协议`、`带宽`、`注入`、`稳态输出` 等。
+- 把卫星页写成「唯一真源」——须反复点明**之门镜鉴、年度侧写**为长文与戒线之纲。
+
+## 改后建议
+
+涉及矩阵算法或导出口径时：`npm run verify:numerology`；全量：`npm run build`。

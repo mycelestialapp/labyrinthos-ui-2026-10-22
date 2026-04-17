@@ -1,3 +1,4 @@
+import { daysInMonth, isValidGregorianDate } from "@/lib/numerology-gregorian";
 import { numerologyEnergyThemeForLifePath, type NumerologyEnergyTheme } from "@/lib/numerology-energy-theme";
 import { lifePathLayerCopyZh, type LifePathLayerCopy } from "@/lib/numerology-life-path-copy-zh";
 import {
@@ -53,12 +54,6 @@ export type NumerologyProfileParseError =
   | "name_too_long"
   | "calendar_year_out_of_range";
 
-function isValidGregorianDate(y: number, m: number, d: number): boolean {
-  if (m < 1 || m > 12 || d < 1 || d > 31) return false;
-  const dt = new Date(y, m - 1, d);
-  return dt.getFullYear() === y && dt.getMonth() === m - 1 && dt.getDate() === d;
-}
-
 function asInt(n: unknown): number | null {
   if (typeof n === "number" && Number.isFinite(n) && Number.isInteger(n)) return n;
   if (typeof n === "string" && /^-?\d+$/.test(n.trim())) return parseInt(n.trim(), 10);
@@ -88,16 +83,21 @@ export function parseNumerologyProfileBody(body: unknown): ParseNumerologyProfil
     return { ok: false, error: "invalid_json_shape", message: "month、day、year 须为整数" };
   }
   if (month < 1 || month > 12) {
-    return { ok: false, error: "month_out_of_range", message: "month 须在 1–12" };
+    return { ok: false, error: "month_out_of_range", message: "月份须在 1–12 之间。" };
   }
   if (day < 1 || day > 31) {
-    return { ok: false, error: "day_out_of_range", message: "day 须在 1–31" };
+    return { ok: false, error: "day_out_of_range", message: "日期须在 1–31 之间（具体上限随月份与闰年而定）。" };
   }
   if (year < YEAR_MIN || year > YEAR_MAX) {
-    return { ok: false, error: "year_out_of_range", message: `year 须在 ${YEAR_MIN}–${YEAR_MAX}` };
+    return { ok: false, error: "year_out_of_range", message: `年份须在 ${YEAR_MIN}–${YEAR_MAX} 之间。` };
   }
   if (!isValidGregorianDate(year, month, day)) {
-    return { ok: false, error: "invalid_date", message: "公历日期不存在" };
+    const max = daysInMonth(year, month);
+    return {
+      ok: false,
+      error: "invalid_date",
+      message: `此公历无法成立：${year} 年 ${month} 月没有 ${day} 日。该月仅有 1—${max} 日，请将「日」调至合法范围后再试（闰年 2 月至多 29 日）。`,
+    };
   }
 
   let nameLatin: string | null = null;
