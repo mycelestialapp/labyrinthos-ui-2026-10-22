@@ -10,7 +10,7 @@ import { NumerologyEnergyNavPanel } from "@/components/numerology/numerology-ene
 import { NumerologyExportMarkdownButtons } from "@/components/numerology/NumerologyExportMarkdownButtons";
 import { NumerologyGregorianDateField } from "@/components/numerology/NumerologyGregorianDateField";
 import { NumerologyGateMetricStrip } from "@/components/numerology/NumerologyGateMetricStrip";
-import { NumerologyMandala2D } from "@/components/numerology/NumerologyMandala2D";
+import { NumerologyMandala3DCore } from "@/components/numerology/NumerologyMandala3DCore";
 import { useNumerologyWorkspace } from "@/components/numerology/NumerologyWorkspaceProvider";
 import {
   NumerologyGlassCard,
@@ -414,24 +414,8 @@ export function NumerologyGateView() {
                   rotateY: reducedMotion ? 0 : heroSpringTiltY,
                 }}
               >
-                <div className="absolute inset-0 flex items-center justify-center p-[3px] text-[#9eb4c8]">
-                  <NumerologyMandala2D
-                    lifePath={lp}
-                    stroke={theme.mandalaStroke}
-                    accentRgb={theme.accentRgb}
-                    className="h-full w-full max-h-full max-w-full"
-                  />
-                </div>
-                <div className="numerology-mandala-enter pointer-events-none absolute inset-0 z-10 flex items-center justify-center">
-                  <span
-                    className="numerology-lp-metal leading-none tabular-nums"
-                    style={{
-                      fontFamily: displaySerif.style.fontFamily,
-                      fontSize: "clamp(5.25rem, 14vw, 8.5rem)",
-                    }}
-                  >
-                    {lp}
-                  </span>
+                <div className="absolute inset-0 flex items-center justify-center p-[3px]">
+                  <NumerologyMandala3DCore lifePath={lp} accentRgb={theme.accentRgb} className="h-full w-full max-h-full max-w-full" />
                 </div>
               </motion.div>
               </div>
