@@ -97,10 +97,10 @@ export function NumerologyGateView() {
   const reducedMotion = useReducedMotion() ?? false;
   const heroPointerX = useMotionValue(0.5);
   const heroPointerY = useMotionValue(0.5);
-  const heroTiltX = useTransform(heroPointerY, [0, 1], [-3.2, 3.2]);
-  const heroTiltY = useTransform(heroPointerX, [0, 1], [3.2, -3.2]);
-  const heroSpringTiltX = useSpring(heroTiltX, { stiffness: 280, damping: 28, mass: 0.42 });
-  const heroSpringTiltY = useSpring(heroTiltY, { stiffness: 280, damping: 28, mass: 0.42 });
+  const heroTiltX = useTransform(heroPointerY, [0, 1], [-1.6, 1.6]);
+  const heroTiltY = useTransform(heroPointerX, [0, 1], [1.6, -1.6]);
+  const heroSpringTiltX = useSpring(heroTiltX, { stiffness: 320, damping: 30, mass: 0.4 });
+  const heroSpringTiltY = useSpring(heroTiltY, { stiffness: 320, damping: 30, mass: 0.4 });
 
   const onHeroPointerMove = useCallback(
     (e: React.PointerEvent<HTMLDivElement>) => {
@@ -187,11 +187,11 @@ export function NumerologyGateView() {
     const snap = numerologyGateInstantSnapshotPartsZh(lp, py, theme.key);
     return (
       <div
-        className={`numerology-depth-mirror relative isolate min-w-0 border-t border-[rgba(168,188,208,0.14)] pt-5 [grid-area:mir] lg:pt-4 ${zhSerif.className}`}
+        className={`numerology-depth-mirror relative isolate min-w-0 border-t border-[rgba(168,188,208,0.14)] pt-5 [grid-area:mir] antialiased [text-rendering:optimizeLegibility] lg:pt-4 ${zhSerif.className}`}
       >
-        <div className="space-y-2 rounded-xl border border-[rgba(168,188,208,0.14)] bg-[rgba(168,188,208,0.06)] px-3 py-2.5">
-          <p className="text-[12px] leading-relaxed text-[#cbd5e1]">{snap.lead}</p>
-          <p className="text-[11px] leading-relaxed text-[#8b9cb0]">{snap.cluster}</p>
+        <div className="space-y-2 rounded-xl border border-[rgba(168,188,208,0.16)] bg-[rgba(10,16,24,0.72)] px-3 py-2.5">
+          <p className="text-[12px] leading-relaxed text-[#e2e8f0]">{snap.lead}</p>
+          <p className="text-[11px] leading-relaxed text-[#9eb4c8]">{snap.cluster}</p>
         </div>
         <p className="mt-3 text-[11px] uppercase tracking-[0.35em] text-[#9eb4c8]/65">{numerologyGateMirrorEyebrowZh}</p>
         <div className="mt-2 flex snap-x snap-mandatory flex-row gap-3 overflow-x-auto pb-1 [-webkit-overflow-scrolling:touch] lg:mt-2 lg:grid lg:w-full lg:snap-none lg:grid-cols-4 lg:gap-3 lg:overflow-visible lg:pb-0">
@@ -390,17 +390,12 @@ export function NumerologyGateView() {
       {/* 首屏单卡：lg 三列等宽（导航｜曼陀罗｜生辰），镜鉴通栏占第二行；透视 + 微视差 + Z 分层 */}
       <div className="w-full min-w-0">
         <NumerologyGlassCard className="numerology-hero-depth-card min-h-0 min-w-0">
-          <div className="numerology-depth-stage min-w-0">
-            <motion.div
-              className="numerology-depth-root grid min-w-0 grid-cols-1 gap-6 [grid-template-areas:'nav'_'m'_'mir'_'b'] sm:gap-7 lg:grid-cols-3 lg:gap-x-6 lg:gap-y-5 lg:[grid-template-areas:'nav_m_b'_'mir_mir_mir'] xl:gap-x-7"
-              style={{
-                transformStyle: "preserve-3d",
-                rotateX: reducedMotion ? 0 : heroSpringTiltX,
-                rotateY: reducedMotion ? 0 : heroSpringTiltY,
-              }}
-              onPointerMove={onHeroPointerMove}
-              onPointerLeave={onHeroPointerLeave}
-            >
+          <div
+            className="numerology-depth-stage min-w-0"
+            onPointerMove={onHeroPointerMove}
+            onPointerLeave={onHeroPointerLeave}
+          >
+            <div className="numerology-depth-root grid min-w-0 grid-cols-1 gap-6 [grid-template-areas:'nav'_'m'_'mir'_'b'] sm:gap-7 lg:grid-cols-3 lg:gap-x-6 lg:gap-y-5 lg:[grid-template-areas:'nav_m_b'_'mir_mir_mir'] xl:gap-x-7">
             <div className="numerology-depth-nav [grid-area:nav] min-w-0 w-full self-start lg:sticky lg:top-1">
               <NumerologyEnergyNavPanel
                 embedded
@@ -410,6 +405,15 @@ export function NumerologyGateView() {
               />
             </div>
             <div className="numerology-depth-mandala [grid-area:m] numerology-mandala-disc numerology-mandala-hex-shell numerology-mandala-rim relative mx-auto aspect-square w-full max-w-[min(100%,400px)] min-w-0 shrink-0 justify-self-center overflow-visible border border-white/[0.08] bg-[radial-gradient(ellipse_68%_68%_at_50%_50%,rgba(255,255,255,0.09),transparent_58%)] sm:max-w-[min(100%,380px)] lg:mx-0 lg:max-w-full lg:justify-self-center">
+              {/* 视差只作用在曼陀罗层：避免整块 grid 旋转导致镜鉴长文亚像素发糊 */}
+              <motion.div
+                className="absolute inset-0"
+                style={{
+                  transformStyle: "preserve-3d",
+                  rotateX: reducedMotion ? 0 : heroSpringTiltX,
+                  rotateY: reducedMotion ? 0 : heroSpringTiltY,
+                }}
+              >
                 <div className="absolute inset-0 flex items-center justify-center p-[3px] text-[#9eb4c8]">
                   <NumerologyMandala2D
                     lifePath={lp}
@@ -429,6 +433,7 @@ export function NumerologyGateView() {
                     {lp}
                   </span>
                 </div>
+              </motion.div>
               </div>
 
               {gateMirrorBand}
@@ -475,7 +480,7 @@ export function NumerologyGateView() {
                   </label>
                 </div>
               </div>
-            </motion.div>
+            </div>
           </div>
         </NumerologyGlassCard>
       </div>

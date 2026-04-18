@@ -176,7 +176,6 @@ body {
 
 [data-numerology-shell] .numerology-depth-root {
   transform-style: preserve-3d;
-  will-change: transform;
 }
 
 [data-numerology-shell] .numerology-depth-mandala {
@@ -185,6 +184,8 @@ body {
 
 [data-numerology-shell] .numerology-depth-mirror {
   transform: translateZ(10px);
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
 }
 
 [data-numerology-shell] .numerology-depth-form {
@@ -195,26 +196,26 @@ body {
   transform: translateZ(-16px);
 }
 
-/* 首屏英雄卡：更高磨砂、古铜金丝边 + 外晕（假 bloom） */
+/* 首屏英雄卡：磨砂略克制，避免大面 blur 让前景字发虚 */
 [data-numerology-shell] .numerology-hero-depth-card {
-  border-color: rgba(196, 170, 120, 0.4) !important;
-  backdrop-filter: blur(48px) saturate(118%) !important;
-  -webkit-backdrop-filter: blur(48px) saturate(118%) !important;
+  border-color: rgba(196, 170, 120, 0.36) !important;
+  backdrop-filter: blur(22px) saturate(112%) !important;
+  -webkit-backdrop-filter: blur(22px) saturate(112%) !important;
   box-shadow:
-    inset 0 0 0 0.5px rgba(255, 245, 220, 0.14),
-    inset 0 0 72px rgba(10, 14, 22, 0.5),
-    0 0 0 0.5px rgba(184, 154, 106, 0.22),
-    0 0 32px rgba(184, 154, 106, 0.12),
-    0 28px 64px rgba(6, 8, 14, 0.48) !important;
+    inset 0 0 0 0.5px rgba(255, 245, 220, 0.12),
+    inset 0 0 56px rgba(10, 14, 22, 0.42),
+    0 0 0 0.5px rgba(184, 154, 106, 0.18),
+    0 0 18px rgba(184, 154, 106, 0.08),
+    0 22px 52px rgba(6, 8, 14, 0.42) !important;
 }
 
-/* 曼陀罗六角外框：金丝 + 内光 */
+/* 曼陀罗六角外框：金丝 + 内光（外晕收一档，少染周围正文） */
 [data-numerology-shell] .numerology-mandala-rim {
-  border-color: rgba(200, 175, 128, 0.42) !important;
+  border-color: rgba(200, 175, 128, 0.38) !important;
   box-shadow:
-    0 0 0 0.5px rgba(232, 210, 170, 0.2),
-    0 0 28px rgba(184, 154, 106, 0.14),
-    inset 0 0 48px rgba(255, 255, 255, 0.05);
+    0 0 0 0.5px rgba(232, 210, 170, 0.16),
+    0 0 14px rgba(184, 154, 106, 0.09),
+    inset 0 0 40px rgba(255, 255, 255, 0.04);
 }
 
 /* 主路径大数：金属刻字感（勿与纯白扁平混） */
@@ -231,7 +232,8 @@ body {
   background-clip: text;
   color: transparent;
   -webkit-text-fill-color: transparent;
-  filter: drop-shadow(0 2px 2px rgba(0, 0, 0, 0.55)) drop-shadow(0 0 18px rgba(200, 188, 150, 0.28));
+  /* 单层阴影：双 drop-shadow 易让笔画发糊 */
+  filter: drop-shadow(0 1px 1px rgba(0, 0, 0, 0.65));
 }
 
 /* 子路由：侧栏略退、主区略前（仅 lg） */
@@ -250,10 +252,6 @@ body {
 }
 
 @media (prefers-reduced-motion: reduce) {
-  [data-numerology-shell] .numerology-depth-root {
-    transform: none !important;
-  }
-
   [data-numerology-shell] .numerology-depth-mandala,
   [data-numerology-shell] .numerology-depth-mirror,
   [data-numerology-shell] .numerology-depth-form,
