@@ -25,15 +25,12 @@ export function NumerologyEnergyNavPanel({
   className = "",
   embedded = false,
   currentPath,
-  onNavigate,
 }: {
   className?: string;
   /** 嵌入寰宇之门主卡时略收紧内边距 */
   embedded?: boolean;
-  /** 可选：工作台即时路由模式下，用传入路径覆盖 usePathname */
+  /** 可选：若 pathname 与真实路由短暂不同步，可传入覆盖（一般不必） */
   currentPath?: string;
-  /** 可选：即时切换回调（不走 Next 路由切页） */
-  onNavigate?: (path: string) => void;
 }) {
   const router = useRouter();
   const pathname = usePathname();
@@ -41,7 +38,6 @@ export function NumerologyEnergyNavPanel({
   const norm = (currentPath ?? pathname ?? "/").replace(/\/$/, "") || "/";
   const [pendingPath, setPendingPath] = useState<string | null>(null);
   const pendingTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
-  const instantMode = typeof onNavigate === "function";
 
   useEffect(() => {
     return () => {
@@ -60,7 +56,9 @@ export function NumerologyEnergyNavPanel({
       >
         <NumerologyGlassCard
           className={
-            embedded ? "!p-3 sm:!p-3.5 lg:!px-4 lg:!pb-6 lg:!pt-6" : "!p-3"
+            embedded
+              ? "!p-3 !backdrop-blur-sm sm:!p-3.5 lg:!px-4 lg:!pb-6 lg:!pt-6"
+              : "!p-3"
           }
         >
           <p
@@ -69,7 +67,7 @@ export function NumerologyEnergyNavPanel({
             能量导航
           </p>
           <nav
-            className={`grid w-full grid-cols-3 gap-1.5 sm:grid-cols-4 lg:flex lg:flex-col ${embedded ? "lg:gap-3" : "lg:gap-1"}`}
+            className={`subpixel-antialiased grid w-full grid-cols-3 gap-1.5 sm:grid-cols-4 lg:flex lg:flex-col ${embedded ? "lg:gap-3" : "lg:gap-1"}`}
             aria-label="坛城数轨模块"
           >
             {NAV_ICONS.map((item) => {
@@ -89,27 +87,17 @@ export function NumerologyEnergyNavPanel({
                     }
                   }}
                   onClick={(e) => {
-                    if (activeByPath) return;
-                    e.preventDefault();
+                    if (activeByPath) {
+                      e.preventDefault();
+                      return;
+                    }
                     setPendingPath(item.path);
                     if (pendingTimerRef.current) clearTimeout(pendingTimerRef.current);
                     pendingTimerRef.current = setTimeout(() => {
                       setPendingPath(null);
                       pendingTimerRef.current = null;
                     }, 1200);
-                    if (instantMode) {
-                      onNavigate?.(item.path);
-                      return;
-                    }
-                    const canInstant =
-                      typeof window !== "undefined" &&
-                      norm.startsWith("/numerology") &&
-                      item.path.startsWith("/numerology");
-                  if (canInstant) {
-                    void router.push(item.path, { scroll: false });
-                    return;
-                  }
-                  router.push(item.path, { scroll: false });
+                    /* 勿全局 preventDefault：交给 Next Link 客户端导航（与 scroll={false}），避免与 App Router 抢事件导致点不进去 */
                   }}
                   className={`flex min-h-[2.75rem] min-w-0 cursor-pointer flex-col items-center justify-center gap-0.5 rounded-xl px-1.5 py-2 text-center text-[11px] leading-snug tracking-[0.04em] transition-colors sm:min-h-[3rem] sm:px-2 sm:text-[11px] lg:min-h-0 lg:flex-row lg:justify-start lg:gap-2 lg:px-2.5 lg:py-2.5 lg:text-left lg:tracking-[0.06em] ${
                     embedded ? "lg:gap-3 lg:px-3 lg:py-4 lg:text-[13px]" : "lg:gap-2 lg:text-[12px]"

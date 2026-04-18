@@ -5,12 +5,12 @@ import { ChevronDown } from "lucide-react";
 import { motion, useMotionValue, useReducedMotion, useSpring, useTransform } from "framer-motion";
 import { useCallback, useLayoutEffect, useMemo, type ReactNode } from "react";
 import { NumerologyMirrorChapterCard, NumerologyMirrorHandbook } from "@/components/numerology/NumerologyMirrorHandbook";
-import { useNumerologyInstantNav } from "@/components/numerology/NumerologyInstantNavContext";
 import { NumerologyEnergyNavPanel } from "@/components/numerology/numerology-energy-nav";
 import { NumerologyExportMarkdownButtons } from "@/components/numerology/NumerologyExportMarkdownButtons";
 import { NumerologyGregorianDateField } from "@/components/numerology/NumerologyGregorianDateField";
 import { NumerologyGateMetricStrip } from "@/components/numerology/NumerologyGateMetricStrip";
-import { NumerologyMandala3DCore } from "@/components/numerology/NumerologyMandala3DCore";
+import { NumerologyMandala2D } from "@/components/numerology/NumerologyMandala2D";
+import { NumerologyMasterHeroHeader } from "@/components/numerology/NumerologyMasterHeroHeader";
 import { useNumerologyWorkspace } from "@/components/numerology/NumerologyWorkspaceProvider";
 import {
   NumerologyGlassCard,
@@ -31,6 +31,9 @@ import {
   numerologyGateInstantSnapshotPartsZh,
   numerologyGateKpiHeaderZh,
   numerologyGateKpiTitleZh,
+  numerologyGateMasterHeroStepZh,
+  numerologyGateMasterHeroSubtitleZh,
+  numerologyGateMasterHeroTitleZh,
   numerologyGateMetricRowsMetaZh,
   numerologyGateMirrorEyebrowZh,
   numerologyGateMirrorLinesZh,
@@ -91,8 +94,6 @@ export function NumerologyGateView() {
     theme,
     layers,
   } = useNumerologyWorkspace();
-
-  const instantNav = useNumerologyInstantNav();
 
   const reducedMotion = useReducedMotion() ?? false;
   const heroPointerX = useMotionValue(0.5);
@@ -258,7 +259,7 @@ export function NumerologyGateView() {
     const highlightBody = `text-[13px] leading-[1.72] tracking-[0.02em] text-[#dce6ef] ${zhSerif.className}`;
     const listenModuleTitleClass = `text-[11px] font-medium tracking-[0.14em] text-[#94a3b8] ${zhSerif.className}`;
     const listenModuleShellClass =
-      "space-y-3 rounded-2xl border border-[rgba(168,188,208,0.12)] bg-[rgba(6,12,18,0.42)] p-4 sm:p-5";
+      "space-y-3 rounded-2xl border border-[rgba(197,160,89,0.1)] bg-[rgba(10,8,18,0.48)] p-4 sm:p-5";
     return [
       {
         step: "1",
@@ -390,32 +391,52 @@ export function NumerologyGateView() {
       {/* 首屏单卡：lg 三列等宽（导航｜曼陀罗｜生辰），镜鉴通栏占第二行；透视 + 微视差 + Z 分层 */}
       <div className="w-full min-w-0">
         <NumerologyGlassCard className="numerology-hero-depth-card min-h-0 min-w-0">
-          <div
-            className="numerology-depth-stage min-w-0"
-            onPointerMove={onHeroPointerMove}
-            onPointerLeave={onHeroPointerLeave}
-          >
+          <div className="min-w-0">
+            <NumerologyMasterHeroHeader
+              stepIndex={numerologyGateMasterHeroStepZh}
+              title={numerologyGateMasterHeroTitleZh}
+              subtitle={numerologyGateMasterHeroSubtitleZh}
+              titleSerifClassName={zhSerif.className}
+              subtitleSerifClassName={zhSerif.className}
+              displaySerifClassName={displaySerif.className}
+            />
+            <div className="numerology-depth-stage min-w-0">
             <div className="numerology-depth-root grid min-w-0 grid-cols-1 gap-6 [grid-template-areas:'nav'_'m'_'mir'_'b'] sm:gap-7 lg:grid-cols-3 lg:gap-x-6 lg:gap-y-5 lg:[grid-template-areas:'nav_m_b'_'mir_mir_mir'] xl:gap-x-7">
-            <div className="numerology-depth-nav [grid-area:nav] min-w-0 w-full self-start lg:sticky lg:top-1">
-              <NumerologyEnergyNavPanel
-                embedded
-                className="min-w-0 w-full"
-                currentPath={instantNav?.instantPath}
-                onNavigate={instantNav?.navigate}
-              />
+            <div className="numerology-depth-nav relative z-20 isolate [grid-area:nav] min-w-0 w-full self-start lg:sticky lg:top-1">
+              <NumerologyEnergyNavPanel embedded className="min-w-0 w-full" />
             </div>
-            <div className="numerology-depth-mandala [grid-area:m] numerology-mandala-disc numerology-mandala-hex-shell numerology-mandala-rim relative mx-auto aspect-square w-full max-w-[min(100%,400px)] min-w-0 shrink-0 justify-self-center overflow-visible border border-white/[0.08] bg-[radial-gradient(ellipse_68%_68%_at_50%_50%,rgba(255,255,255,0.09),transparent_58%)] sm:max-w-[min(100%,380px)] lg:mx-0 lg:max-w-full lg:justify-self-center">
+            <div
+              className="numerology-depth-mandala [grid-area:m] numerology-mandala-disc numerology-mandala-hex-shell numerology-mandala-rim relative mx-auto aspect-square w-full max-w-[min(100%,400px)] min-w-0 shrink-0 justify-self-center overflow-visible border border-white/[0.08] bg-[radial-gradient(ellipse_68%_68%_at_50%_50%,rgba(255,255,255,0.09),transparent_58%)] sm:max-w-[min(100%,380px)] lg:mx-0 lg:max-w-full lg:justify-self-center"
+              onPointerMove={onHeroPointerMove}
+              onPointerLeave={onHeroPointerLeave}
+            >
               {/* 视差只作用在曼陀罗层：避免整块 grid 旋转导致镜鉴长文亚像素发糊 */}
               <motion.div
-                className="absolute inset-0"
+                className="pointer-events-none absolute inset-0"
                 style={{
                   transformStyle: "preserve-3d",
                   rotateX: reducedMotion ? 0 : heroSpringTiltX,
                   rotateY: reducedMotion ? 0 : heroSpringTiltY,
                 }}
               >
-                <div className="absolute inset-0 flex items-center justify-center p-[3px]">
-                  <NumerologyMandala3DCore lifePath={lp} accentRgb={theme.accentRgb} className="h-full w-full max-h-full max-w-full" />
+                <div className="absolute inset-0 flex items-center justify-center p-[3px] text-[#9eb4c8]">
+                  <NumerologyMandala2D
+                    lifePath={lp}
+                    stroke={theme.mandalaStroke}
+                    accentRgb={theme.accentRgb}
+                    className="h-full w-full max-h-full max-w-full"
+                  />
+                </div>
+                <div className="numerology-mandala-enter pointer-events-none absolute inset-0 z-10 flex items-center justify-center">
+                  <span
+                    className="numerology-lp-metal leading-none tabular-nums"
+                    style={{
+                      fontFamily: displaySerif.style.fontFamily,
+                      fontSize: "clamp(5.25rem, 14vw, 8.5rem)",
+                    }}
+                  >
+                    {lp}
+                  </span>
                 </div>
               </motion.div>
               </div>
@@ -465,13 +486,14 @@ export function NumerologyGateView() {
                 </div>
               </div>
             </div>
+            </div>
           </div>
         </NumerologyGlassCard>
       </div>
 
       {/* 单卡 KPI 栅格：类似分析产品顶栏指标带，避免五张空卡「漏风」 */}
       <NumerologyGlassCard id={NUMEROLOGY_GATE_ANCHOR.kpi} className="scroll-mt-24 !overflow-hidden !p-0">
-        <header className="border-b border-[rgba(168,188,208,0.1)] px-4 py-3 sm:px-5 md:px-6 md:py-3.5">
+        <header className="border-b border-[rgba(197,160,89,0.12)] px-4 py-3 sm:px-5 md:px-6 md:py-3.5">
           <p className={`text-[10px] uppercase tracking-[0.26em] text-[#94a3b8] ${zhSerif.className}`}>{numerologyGateKpiTitleZh}</p>
           <div className="mt-2 grid gap-4 lg:grid-cols-2 lg:gap-x-8 lg:gap-y-0">
             <div className="min-w-0 space-y-3">
@@ -507,9 +529,11 @@ export function NumerologyGateView() {
       </NumerologyGlassCard>
 
       <NumerologyGlassCard id={NUMEROLOGY_GATE_ANCHOR.readout} className="scroll-mt-24">
-        <div className="flex flex-col gap-2 border-b border-[rgba(168,188,208,0.1)] pb-4 sm:flex-row sm:items-end sm:justify-between sm:gap-4">
+        <div className="flex flex-col gap-2 border-b border-[rgba(197,160,89,0.12)] pb-4 sm:flex-row sm:items-end sm:justify-between sm:gap-4">
           <div className="min-w-0 max-w-[48rem]">
-            <h2 className={`text-lg font-semibold tracking-[0.12em] text-[#f1f5f9] sm:text-xl ${zhSerif.className}`}>{numerologyGateReadoutTitleZh}</h2>
+            <h2 className={`numerology-master-readout-heading text-lg font-semibold sm:text-xl ${zhSerif.className}`}>
+              {numerologyGateReadoutTitleZh}
+            </h2>
             <p className={`mt-1.5 text-[13px] leading-[1.65] text-[#94a3b8] sm:text-[14px] sm:leading-[1.68] ${zhSerif.className}`}>
               <span className="text-[#cbd5e1]">{numerologyGateReadoutStatusLeadZh}</span>
               {numerologyGateReadoutStatusBodyZh}
@@ -517,27 +541,25 @@ export function NumerologyGateView() {
           </div>
         </div>
 
-        <div className="mt-4 space-y-3 sm:mt-6 sm:space-y-3.5">
+        <div className="mt-4 space-y-4 sm:mt-6 sm:space-y-4">
           {layerBlocks.map((block) => (
             <article
               key={block.anchorId}
               id={block.anchorId}
-              className="scroll-mt-24 rounded-2xl border border-[rgba(168,188,208,0.1)] bg-[rgba(10,14,20,0.35)] p-3.5 sm:p-4 md:p-5"
+              className="numerology-master-phase scroll-mt-24 rounded-2xl border border-[rgba(168,188,208,0.1)] bg-[rgba(14,10,22,0.5)] p-4 sm:p-5"
             >
-              <div className="flex gap-3 sm:gap-3.5">
+              <div className="flex min-w-0 items-start justify-between gap-3">
+                <h3 className={`min-w-0 flex-1 text-[12px] font-medium tracking-[0.12em] text-[#c9a86a]/88 sm:text-[13px] sm:tracking-[0.14em] ${zhSerif.className}`}>
+                  {block.title}
+                </h3>
                 <span
-                  className="mt-0.5 flex h-8 w-8 shrink-0 items-center justify-center rounded-full border border-[rgba(168,188,208,0.2)] bg-[rgba(168,188,208,0.08)] text-[12px] font-semibold tabular-nums text-[#cbd5e1]"
+                  className={`numerology-master-phase-index shrink-0 tabular-nums text-[13px] tracking-[0.14em] text-[#c9a86a]/75 sm:text-[14px] ${displaySerif.className}`}
                   aria-hidden
                 >
-                  {block.step}
+                  {block.step.padStart(2, "0")}
                 </span>
-                <div className="min-w-0 flex-1">
-                  <h3 className="sr-only" style={{ fontFamily: zhSerif.style.fontFamily }}>
-                    第{block.step}段 {block.title}
-                  </h3>
-                  <div>{block.body}</div>
-                </div>
               </div>
+              <div className="mt-3 min-w-0">{block.body}</div>
             </article>
           ))}
         </div>

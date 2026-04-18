@@ -11,6 +11,11 @@ import { numerologyReadingVoiceClosingLineZh } from "@/lib/numerology-unified-de
 
 export const numerologyGateMirrorEyebrowZh = "镜鉴断语";
 
+/** 首屏大师板：主标题 / 副题 / 角标序号（与神谕卡式顶栏同源，仅之门首卡使用） */
+export const numerologyGateMasterHeroTitleZh = "寰宇之门";
+export const numerologyGateMasterHeroSubtitleZh = "生辰入坛，主路径为轴；镜鉴与读数分层对照，收束为可执行备忘。";
+export const numerologyGateMasterHeroStepZh = "01";
+
 export type NumerologyMirrorLinesZh = {
   dingpan: string;
   zhankai: string;

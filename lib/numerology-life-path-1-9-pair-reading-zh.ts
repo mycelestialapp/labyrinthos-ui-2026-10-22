@@ -68,6 +68,8 @@ export const PAIR19_USER_APPROVED_WS1: readonly LifePath19PairReadingSectionZh[]
 ];
 
 /** 主路径 1 与 9 各一时恒返回上述合议模板。 */
-export function lifePathPair19ReadingSectionsZh(_lpA: number, _lpB: number): readonly LifePath19PairReadingSectionZh[] {
+export function lifePathPair19ReadingSectionsZh(lpA: number, lpB: number): readonly LifePath19PairReadingSectionZh[] {
+  void lpA;
+  void lpB;
   return PAIR19_USER_APPROVED_WS1;
 }

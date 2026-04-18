@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { ChevronLeft } from "lucide-react";
-import { useCallback, useEffect, useMemo } from "react";
+import { useEffect, useMemo } from "react";
 import { NumerologyEnergyNavPanel } from "@/components/numerology/numerology-energy-nav";
 import { NUMEROLOGY_WORKSPACE_MODULES } from "@/lib/numerology-workspace-modules";
 import {
@@ -12,7 +12,6 @@ import {
   useNumerologyVoidDepthStyle,
 } from "@/components/numerology/numerology-shared-ui";
 import { useNumerologyWorkspace } from "@/components/numerology/NumerologyWorkspaceProvider";
-import { NumerologyInstantNavProvider } from "@/components/numerology/NumerologyInstantNavContext";
 
 function normalizePath(input: string | null | undefined): string {
   return (input ?? "/").replace(/\/$/, "") || "/";
@@ -35,13 +34,6 @@ export function NumerologyWorkspaceShell({ children }: { children: React.ReactNo
   const isGateHome = norm === "/numerology";
   const { serverSync, dismissServerSync } = useNumerologyWorkspace();
   const voidDepthStyle = useNumerologyVoidDepthStyle();
-
-  const onInstantNavigate = useCallback(
-    (path: string) => {
-      void router.push(path, { scroll: false });
-    },
-    [router],
-  );
 
   /**
    * 预取子路由：useEffect 延后执行，避免连打 prefetch 拖住首帧/水合。
@@ -85,9 +77,8 @@ export function NumerologyWorkspaceShell({ children }: { children: React.ReactNo
   }, [router]);
 
   return (
-    <NumerologyInstantNavProvider instantPath={norm} navigate={onInstantNavigate}>
     <div
-      className="relative min-h-[100dvh] overflow-x-hidden bg-[#0b0f14] font-sans text-[#cbd5e1]"
+      className="numerology-master-shell-root relative min-h-[100dvh] overflow-x-hidden bg-[#0e0814] font-sans text-[#d8d2e4]"
       data-numerology-shell
     >
       <a href="#numerology-main" className="numerology-skip-main">
@@ -97,7 +88,7 @@ export function NumerologyWorkspaceShell({ children }: { children: React.ReactNo
       <div
         className="numerology-void-aurora pointer-events-none fixed inset-0 z-0"
         style={{
-          background: `radial-gradient(ellipse 56% 50% at 18% 14%, rgba(200,214,228,0.18) 0%, transparent 54%)`,
+          background: `radial-gradient(ellipse 56% 50% at 18% 14%, rgba(210,190,235,0.14) 0%, transparent 54%)`,
         }}
         aria-hidden
       />
@@ -138,7 +129,7 @@ export function NumerologyWorkspaceShell({ children }: { children: React.ReactNo
         aria-hidden
       />
       <div
-        className="pointer-events-none fixed inset-0 z-0 opacity-[0.035] mix-blend-multiply"
+        className="pointer-events-none fixed inset-0 z-0 opacity-[0.055] mix-blend-multiply"
         style={{
           backgroundImage: `url("data:image/svg+xml,${NUMEROLOGY_NOISE}")`,
           backgroundSize: "180px 180px",
@@ -148,7 +139,7 @@ export function NumerologyWorkspaceShell({ children }: { children: React.ReactNo
 
       <header
         role="banner"
-        className="sticky top-0 z-50 border-b-[0.5px] border-[rgba(168,188,208,0.22)] bg-[rgba(36,44,54,0.55)] px-4 py-3 backdrop-blur-md md:px-8"
+        className="sticky top-0 z-50 border-b-[0.5px] border-[rgba(197,160,89,0.2)] bg-[rgba(32,22,42,0.58)] px-4 py-3 backdrop-blur-md md:px-8"
       >
         <div className="mx-auto flex max-w-[100rem] flex-wrap items-center justify-between gap-x-3 gap-y-2">
           <div className="flex min-w-0 flex-1 items-center gap-3 sm:max-w-[min(100%,36rem)] sm:flex-none">
@@ -194,7 +185,7 @@ export function NumerologyWorkspaceShell({ children }: { children: React.ReactNo
       {/*
         布局规则：
         - 窄于 lg：单栏；子页先侧栏后主区。
-        - lg：子页为侧栏 12.5rem + 主区；寰宇之门仅主区（导航在 NumerologyGateView 首卡内）。模块切换走 router.push，与 children 同源避免双导航。
+        - lg：子页为侧栏 12.5rem + 主区；寰宇之门仅主区（导航在 NumerologyGateView 首卡内）。模块切换走 Next Link，与 children 同源避免双导航。
       */}
       <div
         className={`relative isolate z-10 mx-auto grid w-full max-w-[100rem] grid-cols-1 gap-5 px-4 pb-16 pt-5 sm:gap-6 sm:px-6 md:px-8 lg:pt-6 ${
@@ -205,7 +196,7 @@ export function NumerologyWorkspaceShell({ children }: { children: React.ReactNo
       >
         {!isGateHome ? (
           <aside className="numerology-shell-depth-aside relative z-20 min-w-0 w-full lg:sticky lg:top-[4.5rem] lg:self-start lg:max-w-[12.5rem]">
-            <NumerologyEnergyNavPanel currentPath={norm} onNavigate={onInstantNavigate} />
+            <NumerologyEnergyNavPanel />
           </aside>
         ) : null}
 
@@ -225,6 +216,5 @@ export function NumerologyWorkspaceShell({ children }: { children: React.ReactNo
         </p>
       ) : null}
     </div>
-    </NumerologyInstantNavProvider>
   );
 }

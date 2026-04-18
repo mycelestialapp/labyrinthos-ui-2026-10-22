@@ -102,6 +102,8 @@ const CARDS: HubCard[] = [
     plan:
       "支持单卡或多卡主题串联；给出关键词、情绪向度与可执行的小事建议。语气克制，可与当日宜忌对照阅读，仅作参照，不当唯一答案。",
     Icon: Hexagon,
+    /** 独立路径，避免用户看到 `/tarot` 误以为进了经典牌阵；与 `?oracle=1` 同源祭坛场（经典双栏见 `?oracle=1&classic=1`） */
+    href: "/oracle",
   },
   {
     title: "雷诺曼",
@@ -1316,6 +1318,7 @@ export default function UniverseHub() {
                       onClick={() => {
                         if (c.href === "/astro") trackHubEvent("hub_card_astro_open");
                         if (c.href === "/tarot") trackHubEvent("hub_card_tarot_open");
+                        if (c.href === "/oracle") trackHubEvent("hub_card_oracle_open");
                         if (c.href?.startsWith("/numerology")) trackHubEvent("hub_card_numerology_open");
                       }}
                     >
@@ -1355,6 +1358,7 @@ export default function UniverseHub() {
                     onClick={() => {
                       if (c.href === "/astro") trackHubEvent("hub_card_astro_open");
                       if (c.href === "/tarot") trackHubEvent("hub_card_tarot_open");
+                      if (c.href === "/oracle") trackHubEvent("hub_card_oracle_open");
                       if (c.href?.startsWith("/numerology")) trackHubEvent("hub_card_numerology_open");
                     }}
                   >

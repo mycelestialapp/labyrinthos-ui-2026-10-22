@@ -6,8 +6,6 @@
 import type { PairMatrixManualBodyZh } from "@/lib/numerology-life-path-pair-matrix-types";
 import { aboutOtherVoiceParagraphsZh, aboutYouVoiceParagraphsZh } from "@/lib/numerology-life-path-pair-voice-about-zh";
 
-const MASTER = new Set([11, 22, 33]);
-
 type Band = "twin" | "near" | "ease" | "grind" | "pole";
 
 const BAND_DISPLAY: Record<Exclude<Band, "twin">, string> = {

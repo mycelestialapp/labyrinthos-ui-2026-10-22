@@ -14,6 +14,7 @@ import {
 import { getTarotAllowReversed } from "@/lib/tarot-sacred-settings";
 import { addTarotSacredReading } from "@/lib/tarot-sacred-history";
 import "./tarot-oracle.css";
+import "./oracle-workspace.css";
 
 const SUIT_ICONS: Record<string, string> = {
   major: "✦",
@@ -76,7 +77,7 @@ function getCardMeaning(card: TarotCardEntry, isReversed: boolean): string {
   return `${sz} · ${card.nameZh} 代表 ${isReversed ? "阻碍 / 内在反思" : "进展 / 机遇"}`;
 }
 
-export default function TarotOracleLayout() {
+export default function TarotOracleLayout({ hideDuplicateTitle = false }: { hideDuplicateTitle?: boolean }) {
   const [spreadType, setSpreadType] = useState<SpreadKind>("daily");
   const [step, setStep] = useState<"choose" | "shuffling" | "draw">("choose");
   const [drawn, setDrawn] = useState<{ card: TarotCardEntry; upright: boolean }[] | null>(null);
@@ -100,7 +101,7 @@ export default function TarotOracleLayout() {
       addTarotSacredReading({
         tool: "tarot",
         question,
-        summary: `塔罗 · ${summary}`,
+        summary: `神谕卡 · ${summary}`,
         detail: { variant: "oracle", cards: cards.map((c) => ({ name: c.card.nameZh, upright: c.upright })) },
       });
     }, 1500);
@@ -138,8 +139,12 @@ export default function TarotOracleLayout() {
 
   return (
     <div
-      className="tarot-oracle-root"
-      style={{ fontFamily: "'Cormorant Garamond', serif", color: "#f3e6d2" }}
+      className={`tarot-oracle-root ${hideDuplicateTitle ? "oracle-workspace-skin" : ""}`}
+      style={
+        hideDuplicateTitle
+          ? { color: "#f3e6d2" }
+          : { fontFamily: "'Cormorant Garamond', serif", color: "#f3e6d2" }
+      }
     >
       <div className="tarot-cosmic-bg" aria-hidden>
         <div className="tarot-nebula-1" />
@@ -150,10 +155,27 @@ export default function TarotOracleLayout() {
       <div className="particle-container" ref={particleContainerRef} />
 
       <div className="oracle-chamber">
-        <div className="title-domain">
-          <div className="arcane-line">完整塔罗 · 78 张</div>
-          <div className="arcane-sub">大阿卡纳 + 四元素小牌</div>
-        </div>
+        {!hideDuplicateTitle ? (
+          <div className="title-domain">
+            <div className="arcane-line">神谕卡</div>
+            <div className="arcane-sub">每日一句，轻量参照</div>
+          </div>
+        ) : (
+          <div className="oracle-workspace-rail mb-3 flex flex-wrap items-center justify-center gap-x-2 gap-y-1 border-b border-[rgba(197,160,89,0.14)] pb-3 text-center text-[10px] leading-relaxed tracking-[0.12em] text-[#b8a078]/95 sm:text-[11px] sm:tracking-[0.14em]">
+            <span className="tabular-nums">①</span>
+            <span>择张数</span>
+            <span className="text-[#7a6a58]/80" aria-hidden>
+              →
+            </span>
+            <span className="tabular-nums">②</span>
+            <span>启封</span>
+            <span className="text-[#7a6a58]/80" aria-hidden>
+              →
+            </span>
+            <span className="tabular-nums">③</span>
+            <span>读整合与摘录</span>
+          </div>
+        )}
 
         {step === "choose" && (
           <div className="control-panel">
@@ -189,7 +211,7 @@ export default function TarotOracleLayout() {
             </div>
             <button type="button" className="draw-btn" onClick={handleDraw}>
               <Sparkles size={20} aria-hidden />
-              抽牌 · 占卜
+              启封 · 请一张
             </button>
           </div>
         )}
@@ -197,7 +219,7 @@ export default function TarotOracleLayout() {
         {step === "shuffling" && (
           <div className="control-panel">
             <p style={{ color: "#f2e1ba", fontSize: "1.2rem", letterSpacing: "4px" }}>
-              洗牌中，请专注你的问题…
+              理牌中，留一行空白给今天…
             </p>
           </div>
         )}
@@ -209,7 +231,7 @@ export default function TarotOracleLayout() {
                 <div className="slot-label">{label}</div>
                 <div className="slot-card" style={{ opacity: 0.5, cursor: "default" }}>
                   <div className="slot-card-icon">?</div>
-                  <div className="slot-card-name">等待抽牌</div>
+                  <div className="slot-card-name">等待启封</div>
                 </div>
               </div>
             ))}
@@ -252,17 +274,19 @@ export default function TarotOracleLayout() {
           <div className="spread-interpretation">
             <div className="section-title">
               <span aria-hidden>🔮</span>
-              牌阵解读
+              读数整合
             </div>
 
-            {step === "choose" && <div className="spread-summary">点击抽牌，开始占卜</div>}
+            {step === "choose" && (
+              <div className="spread-summary">点「启封 · 请一张」，收一句今日意象与可执行小事；语气克制，仅作参照。</div>
+            )}
 
             {step === "draw" && drawn && (
               <>
                 <div className="spread-summary">
                   {spreadType === "daily"
-                    ? `单张牌揭示今日核心意象：${drawn[0]!.card.nameZh}${drawn[0]!.upright ? "正位" : "逆位"}。`
-                    : `三张牌串联时间流：过去—${drawn[0]!.card.nameZh}，现在—${drawn[1]?.card.nameZh}，未来—${drawn[2]?.card.nameZh}。`}
+                    ? `今日这一句落在：${drawn[0]!.card.nameZh}${drawn[0]!.upright ? "正位" : "逆位"}。`
+                    : `三张连成一线：过去—${drawn[0]!.card.nameZh}，现在—${drawn[1]?.card.nameZh}，未来—${drawn[2]?.card.nameZh}。`}
                 </div>
 
                 <div className="card-meanings">
@@ -285,7 +309,7 @@ export default function TarotOracleLayout() {
                 </div>
 
                 <button type="button" className="draw-btn" style={{ marginTop: "1.5rem", width: "100%", justifyContent: "center" }} onClick={handleReset}>
-                  再抽一次
+                  再请一张
                 </button>
               </>
             )}
@@ -294,7 +318,7 @@ export default function TarotOracleLayout() {
           <div className="card-detail-panel">
             <div className="section-title">
               <span aria-hidden>⭐</span>
-              单牌详解
+              单牌摘录
             </div>
 
             {selectedCardIndex !== null && drawn && drawn[selectedCardIndex] ? (
@@ -314,7 +338,7 @@ export default function TarotOracleLayout() {
                 </div>
               </div>
             ) : (
-              <div style={{ color: "#d3c7b0" }}>点击任意牌查看摘录</div>
+              <div style={{ color: "#d3c7b0" }}>点选左侧任意一张，读此栏关键词与情绪向度</div>
             )}
           </div>
         </div>

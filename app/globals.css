@@ -168,45 +168,87 @@ body {
   }
 }
 
-/* 数秘 · 3D 分层（透视 + translateZ；视差由 Gate motion 驱动） */
+/* 数秘 · 首屏视差：仅舞台保留 perspective；子栅格不用 preserve-3d + translateZ，避免透视下整列文字发糊、又与曼陀罗抢命中（曼陀罗 motion 已 pointer-events-none） */
 [data-numerology-shell] .numerology-depth-stage {
   perspective: 2000px;
   perspective-origin: 50% 42%;
 }
 
-[data-numerology-shell] .numerology-depth-root {
-  transform-style: preserve-3d;
-}
-
-[data-numerology-shell] .numerology-depth-mandala {
-  transform: translateZ(34px);
-}
-
 [data-numerology-shell] .numerology-depth-mirror {
-  transform: translateZ(10px);
   -webkit-font-smoothing: antialiased;
   text-rendering: optimizeLegibility;
 }
 
-[data-numerology-shell] .numerology-depth-form {
-  transform: translateZ(-6px);
+/* 数秘 · 大师板玻璃：紫底 + 金丝边 + 略低 blur，正文叠在半实色上更易读 */
+[data-numerology-shell] .numerology-glass-surface {
+  border-color: rgba(200, 172, 118, 0.3) !important;
+  background: linear-gradient(
+    168deg,
+    rgba(52, 36, 64, 0.52) 0%,
+    rgba(32, 22, 44, 0.68) 42%,
+    rgba(22, 14, 34, 0.74) 100%
+  ) !important;
+  backdrop-filter: blur(18px) saturate(118%) !important;
+  -webkit-backdrop-filter: blur(18px) saturate(118%) !important;
+  box-shadow:
+    inset 0 0 0 0.5px rgba(255, 245, 220, 0.09),
+    inset 0 0 52px rgba(18, 10, 28, 0.38),
+    0 0 0 0.5px rgba(184, 154, 106, 0.16),
+    0 0 20px rgba(120, 80, 160, 0.06),
+    0 22px 52px rgba(4, 2, 12, 0.48) !important;
 }
 
-[data-numerology-shell] .numerology-depth-nav {
-  transform: translateZ(-16px);
-}
-
-/* 首屏英雄卡：磨砂略克制，避免大面 blur 让前景字发虚 */
+/* 首屏英雄卡：在大师玻璃上再抬一档金边与内晕 */
 [data-numerology-shell] .numerology-hero-depth-card {
-  border-color: rgba(196, 170, 120, 0.36) !important;
-  backdrop-filter: blur(22px) saturate(112%) !important;
-  -webkit-backdrop-filter: blur(22px) saturate(112%) !important;
+  border-color: rgba(212, 184, 128, 0.38) !important;
+  backdrop-filter: blur(20px) saturate(120%) !important;
+  -webkit-backdrop-filter: blur(20px) saturate(120%) !important;
   box-shadow:
     inset 0 0 0 0.5px rgba(255, 245, 220, 0.12),
-    inset 0 0 56px rgba(10, 14, 22, 0.42),
-    0 0 0 0.5px rgba(184, 154, 106, 0.18),
-    0 0 18px rgba(184, 154, 106, 0.08),
-    0 22px 52px rgba(6, 8, 14, 0.42) !important;
+    inset 0 0 56px rgba(14, 8, 22, 0.48),
+    0 0 0 0.5px rgba(196, 170, 120, 0.22),
+    0 0 22px rgba(196, 170, 120, 0.1),
+    0 24px 56px rgba(4, 2, 10, 0.5) !important;
+}
+
+[data-numerology-shell] .numerology-master-corner {
+  position: absolute;
+  width: 1.25rem;
+  height: 1.25rem;
+  pointer-events: none;
+}
+
+[data-numerology-shell] .numerology-master-corner--tl {
+  left: 0.2rem;
+  top: 0.35rem;
+  border-left: 1px solid rgba(197, 160, 89, 0.48);
+  border-top: 1px solid rgba(197, 160, 89, 0.48);
+}
+
+[data-numerology-shell] .numerology-master-corner--br {
+  right: 0.2rem;
+  bottom: 0.25rem;
+  border-right: 1px solid rgba(197, 160, 89, 0.32);
+  border-bottom: 1px solid rgba(197, 160, 89, 0.32);
+}
+
+[data-numerology-shell] .numerology-master-plate-title {
+  text-shadow: 0 0 28px rgba(212, 184, 120, 0.22), 0 1px 2px rgba(0, 0, 0, 0.45);
+}
+
+[data-numerology-shell] .numerology-master-readout-heading {
+  color: #e8dcc8;
+  letter-spacing: 0.14em;
+  text-shadow: 0 0 20px rgba(200, 170, 110, 0.15);
+}
+
+[data-numerology-shell] .numerology-master-phase {
+  border-color: rgba(197, 160, 89, 0.16) !important;
+  box-shadow: inset 0 1px 0 rgba(255, 250, 235, 0.04);
+}
+
+[data-numerology-shell] .numerology-master-phase-index {
+  text-shadow: 0 0 18px rgba(200, 170, 110, 0.2);
 }
 
 /* 曼陀罗六角外框：金丝 + 内光（外晕收一档，少染周围正文） */
@@ -258,18 +300,18 @@ body {
   text-shadow: 0 1px 1px rgba(0, 0, 0, 0.32);
 }
 
-/* 子路由：侧栏略退、主区略前（仅 lg） */
+/* 子路由 lg：不再对侧栏/主区做 translateZ（透视下小字易糊；命中用平面栅格即可） */
 @media (min-width: 1024px) {
   [data-numerology-shell] .numerology-shell-route-depth {
-    transform-style: preserve-3d;
+    transform-style: flat;
   }
 
   [data-numerology-shell] .numerology-shell-depth-aside {
-    transform: translateZ(-14px);
+    transform: none;
   }
 
   [data-numerology-shell] .numerology-shell-depth-main {
-    transform: translateZ(8px);
+    transform: none;
   }
 }
 

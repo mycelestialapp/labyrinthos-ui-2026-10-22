@@ -1,0 +1,800 @@
+/**
+ * 「降维·时空投影」：/oracle 专用祭坛场（无矩形容器）
+ * 作用域：.oda-root
+ */
+
+.oda-root {
+  --oda-bronze: #b8860b;
+  --oda-bronze-dim: rgba(184, 134, 11, 0.38);
+  --oda-ink: #0a060e;
+  --oda-mist: rgba(232, 220, 200, 0.82);
+  --oda-mist-soft: rgba(210, 198, 178, 0.55);
+  /* 竖题 / 行法阴影微脉动：由 JS 写入 0–1 */
+  --oda-breathe: 1;
+  --oda-px: 0;
+  --oda-py: 0;
+  position: relative;
+  isolation: isolate;
+  width: 100%;
+  min-width: 0;
+  min-height: min(920px, calc(100dvh - 5.75rem));
+  overflow: hidden;
+  overflow-x: clip;
+  overscroll-behavior: contain;
+  touch-action: pan-y;
+  color: var(--oda-mist);
+  text-rendering: geometricPrecision;
+  -webkit-font-smoothing: antialiased;
+  background: #14102a;
+}
+
+.oda-field-wrap {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  min-height: 100%;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+.oda-field-fallback {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  background: #14102a;
+  pointer-events: none;
+}
+
+.oda-amber-oil {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  width: 100%;
+  height: 100%;
+  min-height: 100%;
+  pointer-events: none;
+}
+
+.oda-mast {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: clamp(2.75rem, 7.5dvh, 4.25rem);
+  z-index: 8;
+  margin: 0;
+  text-align: center;
+  font-size: 0.62rem;
+  font-weight: 300;
+  letter-spacing: 0.38em;
+  color: rgba(218, 198, 168, 0.88);
+  text-shadow:
+    0 0 1px rgba(0, 0, 0, 0.88),
+    0 1px 3px rgba(0, 0, 0, 0.72);
+  pointer-events: none;
+}
+
+.oda-mast-k {
+  white-space: nowrap;
+}
+
+.oda-mast-dot {
+  margin: 0 0.35em;
+  color: rgba(120, 108, 92, 0.45);
+}
+
+.oda-whisper {
+  position: absolute;
+  right: max(0.65rem, env(safe-area-inset-right));
+  top: 24%;
+  z-index: 11;
+  max-width: min(7.5rem, 28vw);
+  margin: 0;
+  text-align: right;
+  font-size: 0.65rem;
+  font-weight: 300;
+  line-height: 2;
+  letter-spacing: 0.18em;
+  color: rgba(218, 204, 182, 0.84);
+  text-shadow:
+    0 0 1px rgba(0, 0, 0, 0.88),
+    0 1px 3px rgba(0, 0, 0, 0.72);
+  pointer-events: none;
+}
+
+.oda-root--draw .oda-whisper {
+  opacity: 0;
+  transition: opacity 0.6s ease;
+}
+
+.oda-whisper--mute {
+  top: 28%;
+  font-size: 0.58rem;
+  letter-spacing: 0.32em;
+  color: rgba(160, 148, 132, 0.35);
+}
+
+/* 折射涟漪层 */
+.oda-ripples {
+  position: absolute;
+  inset: 0;
+  z-index: 18;
+  pointer-events: none;
+}
+
+.oda-ripple {
+  position: absolute;
+  width: 12px;
+  height: 12px;
+  margin: -6px 0 0 -6px;
+  border-radius: 50%;
+  border: 1px solid rgba(200, 175, 120, 0.55);
+  box-shadow:
+    0 0 0 1px rgba(255, 250, 235, 0.12),
+    inset 0 0 12px rgba(255, 248, 220, 0.15);
+  animation: oda-ripple-expand 0.72s ease-out forwards;
+  mix-blend-mode: screen;
+}
+
+@keyframes oda-ripple-expand {
+  0% {
+    transform: scale(0.2);
+    opacity: 0.95;
+  }
+  100% {
+    transform: scale(18);
+    opacity: 0;
+  }
+}
+
+/* 天心层 */
+.oda-nexus {
+  position: absolute;
+  left: 50%;
+  top: 42%;
+  z-index: 22;
+  width: min(88vw, 22rem);
+  height: min(88vw, 22rem);
+  transform: translate(-50%, -50%);
+  display: grid;
+  place-items: center;
+  pointer-events: none;
+}
+
+.oda-nexus-inner {
+  pointer-events: auto;
+  position: relative;
+  width: 72%;
+  height: 72%;
+  transform-style: preserve-3d;
+  transform: translate3d(calc(var(--oda-px) * -14px), calc(var(--oda-py) * -12px), 0) rotateX(calc(var(--oda-py) * -9deg))
+    rotateY(calc(var(--oda-px) * 11deg));
+  transition: transform 0.14s ease-out;
+}
+
+.oda-root--idle .oda-nexus-inner {
+  animation: oda-nexus-breathe 5.5s ease-in-out infinite;
+}
+
+@keyframes oda-nexus-breathe {
+  0%,
+  100% {
+    filter: brightness(1);
+  }
+  50% {
+    filter: brightness(1.06);
+  }
+}
+
+/* Dimension 1：悬浮投影（非默认 box-shadow） */
+.oda-nexus-shadow {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 58%;
+  height: 52%;
+  transform: translate(
+      calc(-50% + var(--oda-px) * 26px),
+      calc(-42% + var(--oda-py) * 22px)
+    )
+    scale(1.02);
+  border-radius: 50%;
+  background: radial-gradient(ellipse at 50% 50%, rgba(0, 0, 0, 0.55) 0%, rgba(0, 0, 0, 0.08) 62%, transparent 72%);
+  filter: blur(calc(18px + var(--oda-blur-extra, 0px)));
+  opacity: calc(0.55 + var(--oda-px) * 0.04 + var(--oda-py) * 0.03);
+  z-index: 1;
+  pointer-events: none;
+  transition: opacity 0.18s ease-out, filter 0.18s ease-out;
+}
+
+.oda-ring-svg {
+  position: absolute;
+  inset: -8%;
+  z-index: 2;
+  animation: oda-ring-drift 140s linear infinite;
+  opacity: 0.78;
+  filter: drop-shadow(0 0 8px rgba(184, 134, 11, 0.2));
+}
+
+.oda-ring-svg.oda-ring-flash .oda-ring-stroke {
+  stroke: rgba(230, 205, 150, 0.92);
+  filter: drop-shadow(0 0 4px rgba(230, 205, 150, 0.35));
+}
+
+@keyframes oda-ring-drift {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.oda-hex-glass {
+  position: relative;
+  z-index: 4;
+  width: 100%;
+  height: 100%;
+  clip-path: polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%);
+  /* 不透明底：避免 backdrop-filter 失效时整块「黑死」 */
+  background: linear-gradient(155deg, rgba(52, 40, 68, 0.88) 0%, rgba(22, 14, 32, 0.94) 55%, rgba(14, 10, 22, 0.96) 100%);
+  backdrop-filter: blur(20px) saturate(118%);
+  -webkit-backdrop-filter: blur(20px) saturate(118%);
+  box-shadow:
+    inset 0 0 0 0.5px rgba(18, 12, 8, 0.98),
+    inset 0 0 0 1px rgba(210, 180, 120, 0.28),
+    inset 0 -20px 48px rgba(0, 0, 0, 0.5),
+    0 0 0 0.5px rgba(22, 16, 10, 0.98),
+    0 0 28px rgba(40, 28, 18, 0.22);
+}
+
+.oda-root--idle .oda-hex-glass {
+  animation: oda-hex-edge 7s ease-in-out infinite;
+}
+
+@keyframes oda-hex-edge {
+  0%,
+  100% {
+    box-shadow:
+      inset 0 0 0 0.5px rgba(18, 12, 8, 0.96),
+      inset 0 0 0 1px rgba(200, 175, 120, 0.24),
+      inset 0 -20px 48px rgba(0, 0, 0, 0.45),
+      0 0 0 0.5px rgba(24, 17, 11, 0.96),
+      0 0 32px rgba(40, 28, 18, 0.18);
+  }
+  50% {
+    box-shadow:
+      inset 0 0 0 0.5px rgba(22, 15, 10, 0.99),
+      inset 0 0 0 1px rgba(215, 188, 130, 0.32),
+      inset 0 -20px 48px rgba(0, 0, 0, 0.45),
+      0 0 0 0.5px rgba(28, 20, 13, 0.96),
+      0 0 42px rgba(50, 36, 22, 0.2);
+  }
+}
+
+.oda-hex-glass::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    118deg,
+    transparent 38%,
+    rgba(255, 248, 230, 0.08) 48%,
+    transparent 58%
+  );
+  opacity: calc(0.35 + var(--oda-px) * 0.25 + var(--oda-py) * -0.15);
+  pointer-events: none;
+}
+
+.oda-holo-num {
+  position: absolute;
+  left: 50%;
+  top: 38%;
+  z-index: 8;
+  transform: translate3d(
+      calc(-50% + var(--oda-px) * -6px),
+      calc(-50% + var(--oda-py) * -4px),
+      40px
+    )
+    translateZ(24px);
+  font-size: clamp(2.1rem, 7vw, 3.2rem);
+  font-weight: 200;
+  letter-spacing: 0.22em;
+  color: rgba(248, 236, 210, 0.96);
+  text-shadow:
+    0 0 1px rgba(0, 0, 0, 0.88),
+    0 1px 2px rgba(0, 0, 0, 0.75),
+    0 0 18px rgba(60, 44, 28, 0.35);
+  pointer-events: none;
+  font-variant-numeric: tabular-nums;
+}
+
+.oda-core-cue {
+  position: absolute;
+  left: 50%;
+  bottom: 10%;
+  z-index: 9;
+  transform: translateX(-50%);
+  font-size: 0.68rem;
+  font-weight: 400;
+  letter-spacing: 0.42em;
+  line-height: 1.65;
+  text-align: center;
+  color: rgba(220, 185, 125, 0.88);
+  text-shadow:
+    0 0 1px rgba(0, 0, 0, 0.95),
+    0 2px 14px rgba(0, 0, 0, 0.65);
+  pointer-events: none;
+}
+
+/* 律动区：竖题 + 判词差速 */
+.oda-orbit-title {
+  position: absolute;
+  left: max(0.75rem, env(safe-area-inset-left));
+  top: 14%;
+  z-index: 12;
+  max-height: 58vh;
+  writing-mode: vertical-rl;
+  text-orientation: mixed;
+  letter-spacing: 0.55em;
+  font-size: clamp(0.95rem, 2.8vw, 1.15rem);
+  font-weight: 400;
+  color: rgba(244, 234, 216, 0.97);
+  /* 轻浮于琥珀液面之上；末层随 --oda-breathe 与底场同相微脉动 */
+  text-shadow:
+    0 0 1px rgba(0, 0, 0, 0.92),
+    0 1px 3px rgba(0, 0, 0, 0.78),
+    0 -1px 0 rgba(100, 78, 48, 0.35),
+    0 0.5px 0 rgba(255, 248, 238, 0.14),
+    0 -0.5px 1px rgba(0, 0, 0, 0.55),
+    0 calc(1.5px + var(--oda-breathe, 1) * 1.4px) calc(9px + var(--oda-breathe, 1) * 11px)
+      rgba(0, 0, 0, calc(0.32 + var(--oda-breathe, 1) * 0.14));
+  line-height: 1.85;
+  transform: translate3d(calc(var(--oda-px) * 10px), calc(var(--oda-py) * 8px), 0);
+  transition: transform 0.16s ease-out;
+}
+
+.oda-orbit-stack {
+  position: absolute;
+  right: max(0.75rem, env(safe-area-inset-right));
+  bottom: 26%;
+  z-index: 12;
+  display: flex;
+  max-width: min(17.5rem, 48vw);
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 0.55rem;
+  transform: translate3d(calc(var(--oda-px) * -18px), calc(var(--oda-py) * -14px), 0);
+  transition: transform 0.16s ease-out;
+}
+
+.oda-orbit-image {
+  margin: 0;
+  max-width: 100%;
+  font-size: clamp(0.62rem, 1.85vw, 0.72rem);
+  font-weight: 300;
+  line-height: 1.65;
+  letter-spacing: 0.18em;
+  text-align: right;
+  color: rgba(210, 175, 120, 0.9);
+  text-shadow: 0 1px 10px rgba(0, 0, 0, 0.55);
+}
+
+.oda-orbit-verdict--mute {
+  opacity: 0;
+  pointer-events: none;
+}
+
+/* 勿用 background-clip:text + transparent + filter：部分环境下正文会整块消失 */
+.oda-orbit-verdict {
+  margin: 0;
+  max-width: 100%;
+  font-size: clamp(0.78rem, 2.1vw, 0.92rem);
+  font-weight: 300;
+  line-height: 1.75;
+  letter-spacing: 0.12em;
+  text-align: right;
+  color: rgba(240, 230, 210, 0.97);
+  text-shadow:
+    0 0 1px rgba(0, 0, 0, 0.94),
+    0 1px 3px rgba(0, 0, 0, 0.82),
+    0 2px 14px rgba(0, 0, 0, 0.45);
+}
+
+.oda-seq {
+  position: absolute;
+  left: max(0.75rem, env(safe-area-inset-left));
+  top: max(0.5rem, env(safe-area-inset-top));
+  z-index: 14;
+  font-size: 0.72rem;
+  font-weight: 200;
+  letter-spacing: 0.32em;
+  color: rgba(226, 198, 150, 0.94);
+  text-shadow:
+    0 0 1px rgba(0, 0, 0, 0.9),
+    0 1px 3px rgba(0, 0, 0, 0.75);
+  transform: translate3d(calc(var(--oda-px) * 6px), calc(var(--oda-py) * 4px), 0);
+}
+
+.oda-seq-num {
+  letter-spacing: 0.22em;
+  color: rgba(236, 218, 185, 0.98);
+}
+
+/* 主操作条：解决「不知道点哪 / 像没内容」 */
+/* 待机：大师述要全文（可展开，不挡六角） */
+.oda-master-bg {
+  position: absolute;
+  left: 50%;
+  bottom: max(17.25rem, 29dvh);
+  z-index: 25;
+  width: min(22rem, 92vw);
+  min-width: 0;
+  max-width: calc(100vw - 1.5rem);
+  transform: translateX(-50%);
+  border: 1px solid rgba(120, 98, 72, 0.38);
+  border-radius: 3px;
+  background: rgba(6, 4, 8, 0.82);
+  box-shadow: 0 10px 36px rgba(0, 0, 0, 0.5);
+  pointer-events: auto;
+}
+
+.oda-master-bg-summary {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.4rem;
+  list-style: none;
+  cursor: pointer;
+  padding: 0.5rem 0.65rem;
+  font-size: 0.66rem;
+  font-weight: 400;
+  letter-spacing: 0.2em;
+  color: rgba(212, 192, 158, 0.96);
+  text-shadow: 0 1px 8px rgba(0, 0, 0, 0.75);
+}
+
+.oda-master-bg-summary-text {
+  min-width: 0;
+  flex: 1;
+  overflow-wrap: break-word;
+  word-break: break-word;
+}
+
+.oda-master-bg-summary::-webkit-details-marker {
+  display: none;
+}
+
+.oda-master-bg-summary::marker {
+  content: "";
+}
+
+.oda-master-bg-summary-hint {
+  font-size: 0.58rem;
+  letter-spacing: 0.28em;
+  color: rgba(168, 152, 128, 0.88);
+}
+
+.oda-master-bg-summary-sep {
+  margin: 0 0.25em;
+  color: rgba(120, 108, 92, 0.55);
+}
+
+.oda-master-bg-chev {
+  margin-top: 0.12rem;
+  font-size: 0.55rem;
+  color: rgba(184, 160, 120, 0.65);
+  transition: transform 0.2s ease;
+}
+
+.oda-master-bg[open] .oda-master-bg-chev {
+  transform: rotate(180deg);
+}
+
+.oda-master-bg-body {
+  max-height: min(38dvh, 15.5rem);
+  overflow-x: hidden;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  padding: 0 0.65rem 0.65rem;
+  border-top: 1px solid rgba(80, 68, 52, 0.35);
+  overflow-wrap: break-word;
+  word-break: break-word;
+  text-wrap: pretty;
+}
+
+.oda-master-bg-p {
+  margin: 0 0 0.62rem;
+  font-size: 0.7rem;
+  font-weight: 300;
+  line-height: 1.78;
+  letter-spacing: 0.06em;
+  color: rgba(218, 202, 176, 0.9);
+  text-shadow: 0 1px 6px rgba(0, 0, 0, 0.65);
+}
+
+.oda-master-bg-p:last-child {
+  margin-bottom: 0;
+}
+
+.oda-gate-strip {
+  position: absolute;
+  left: 50%;
+  bottom: max(9.5rem, 18dvh);
+  z-index: 26;
+  width: min(22rem, 92vw);
+  transform: translateX(-50%);
+  text-align: center;
+  pointer-events: auto;
+}
+
+.oda-gate-lead {
+  margin: 0 0 0.75rem;
+  padding: 0 0.5rem;
+  font-size: 0.82rem;
+  font-weight: 400;
+  line-height: 1.65;
+  letter-spacing: 0.08em;
+  color: rgba(242, 228, 205, 0.98);
+  text-shadow:
+    0 0 1px rgba(0, 0, 0, 0.96),
+    0 1px 3px rgba(0, 0, 0, 0.82),
+    0 2px 12px rgba(0, 0, 0, 0.45);
+}
+
+.oda-gate-strong {
+  color: rgba(230, 195, 120, 1);
+  font-weight: 500;
+}
+
+.oda-gate-btn {
+  display: inline-block;
+  margin: 0 auto;
+  border: 1px solid rgba(210, 175, 105, 0.65);
+  border-radius: 2px;
+  padding: 0.6rem 1.85rem;
+  background: rgba(36, 26, 52, 0.88);
+  color: rgba(250, 238, 215, 0.99);
+  font: inherit;
+  font-size: 0.84rem;
+  font-weight: 500;
+  letter-spacing: 0.42em;
+  cursor: pointer;
+  box-shadow: 0 6px 28px rgba(0, 0, 0, 0.45);
+  transition:
+    border-color 0.2s ease,
+    background 0.2s ease;
+}
+
+.oda-gate-btn:hover {
+  border-color: rgba(235, 200, 130, 0.9);
+  background: rgba(48, 36, 68, 0.92);
+}
+
+.oda-gate-btn:focus-visible {
+  outline: 2px solid rgba(230, 195, 120, 0.65);
+  outline-offset: 3px;
+}
+
+.oda-gate-sub {
+  margin: 0.55rem 0 0;
+  font-size: 0.62rem;
+  letter-spacing: 0.2em;
+  color: rgba(180, 168, 150, 0.85);
+  text-shadow: 0 1px 8px rgba(0, 0, 0, 0.65);
+}
+
+@media (max-height: 640px) {
+  .oda-master-bg {
+    bottom: max(15.5rem, 26dvh);
+  }
+
+  .oda-master-bg-body {
+    max-height: min(32dvh, 11rem);
+  }
+
+  .oda-gate-strip {
+    bottom: max(7.5rem, 12dvh);
+  }
+
+  .oda-gate-lead {
+    font-size: 0.74rem;
+    margin-bottom: 0.55rem;
+  }
+
+  .oda-gate-btn {
+    padding: 0.5rem 1.35rem;
+    font-size: 0.78rem;
+  }
+}
+
+/* 基石：水面底座 + 被动浮现 */
+.oda-water {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 20;
+  min-height: 38%;
+  padding-bottom: max(0.75rem, env(safe-area-inset-bottom));
+  padding-left: max(0.75rem, env(safe-area-inset-left));
+  padding-right: max(0.75rem, env(safe-area-inset-right));
+  background: linear-gradient(0deg, rgba(4, 2, 10, 0.92) 0%, rgba(10, 6, 18, 0.45) 52%, transparent 100%);
+  pointer-events: none;
+}
+
+.oda-water-sheen {
+  position: absolute;
+  left: 5%;
+  right: 5%;
+  bottom: 12%;
+  height: 2.5rem;
+  border-radius: 50%;
+  background: radial-gradient(ellipse at 50% 0%, rgba(60, 48, 72, 0.5) 0%, transparent 72%);
+  opacity: 0.55;
+  filter: blur(8px);
+  pointer-events: none;
+}
+
+.oda-water-line {
+  margin: 0 auto 0.65rem;
+  max-width: 18rem;
+  height: 0.5px;
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    rgba(160, 118, 62, 0.38) 22%,
+    rgba(210, 175, 110, 0.42) 50%,
+    rgba(160, 118, 62, 0.38) 78%,
+    transparent 100%
+  );
+  box-shadow:
+    0 0 0 0.5px rgba(14, 10, 7, 0.98),
+    0 0 1px rgba(0, 0, 0, 0.85);
+  opacity: calc(0.15 + var(--oda-bottom, 0) * 0.85);
+  transition: opacity 0.35s ease;
+}
+
+.oda-water-text {
+  text-align: center;
+  font-size: 0.78rem;
+  font-weight: 400;
+  letter-spacing: 0.18em;
+  line-height: 1.85;
+  color: rgba(228, 212, 188, 0.98);
+  opacity: calc(0.42 + var(--oda-bottom, 0) * 0.56);
+  text-shadow:
+    0 0 1px rgba(0, 0, 0, 0.9),
+    0 2px 20px rgba(0, 0, 0, 0.55),
+    0 0.45px 0 rgba(255, 246, 232, 0.1),
+    0 -0.5px 1.2px rgba(0, 0, 0, 0.5),
+    0 calc(1.6px + var(--oda-breathe, 1) * 1.2px) calc(10px + var(--oda-breathe, 1) * 10px)
+      rgba(0, 0, 0, calc(0.34 + var(--oda-breathe, 1) * 0.12));
+  transform: translateY(calc((1 - var(--oda-bottom, 0)) * 6px));
+  transition:
+    opacity 0.45s ease,
+    transform 0.45s ease;
+  pointer-events: none;
+}
+
+/* 待机：底部默认可读性抬高，避免「啥也没有」 */
+.oda-root--idle .oda-water-text {
+  opacity: calc(0.55 + var(--oda-bottom, 0) * 0.44);
+}
+
+.oda-root--idle .oda-water-line {
+  opacity: calc(0.22 + var(--oda-bottom, 0) * 0.78);
+}
+
+.oda-water-hint {
+  margin-top: 0.35rem;
+  font-size: 0.66rem;
+  letter-spacing: 0.22em;
+  color: rgba(190, 176, 155, 0.88);
+  opacity: calc(0.45 + var(--oda-bottom, 0) * 0.52);
+  text-shadow:
+    0 0 1px rgba(0, 0, 0, 0.88),
+    0 0.4px 0 rgba(255, 244, 228, 0.08),
+    0 -0.45px 1px rgba(0, 0, 0, 0.48);
+}
+
+.oda-root--idle .oda-water-hint {
+  opacity: calc(0.58 + var(--oda-bottom, 0) * 0.4);
+}
+
+.oda-reset {
+  pointer-events: auto;
+  display: block;
+  margin: 0.85rem auto 0;
+  border: 0;
+  padding: 0.35rem 1rem;
+  background: transparent;
+  font: inherit;
+  font-size: 0.62rem;
+  font-weight: 300;
+  letter-spacing: 0.42em;
+  color: rgba(200, 182, 150, 0.78);
+  cursor: pointer;
+  transition: opacity 0.35s ease, color 0.2s ease;
+}
+
+.oda-reset:hover {
+  color: rgba(230, 210, 175, 0.95);
+}
+
+.oda-reset:focus-visible {
+  outline: 1px solid rgba(184, 134, 11, 0.45);
+  outline-offset: 4px;
+}
+
+/* 启封态 */
+.oda-core-btn {
+  position: absolute;
+  inset: 0;
+  margin: auto;
+  width: 100%;
+  height: 100%;
+  border: 0;
+  padding: 0;
+  background: transparent;
+  cursor: pointer;
+  border-radius: 0;
+}
+
+.oda-core-btn:focus-visible {
+  outline: 1px solid rgba(184, 134, 11, 0.45);
+  outline-offset: 6px;
+}
+
+.oda-shuffle-msg {
+  position: absolute;
+  left: 50%;
+  bottom: 40%;
+  transform: translateX(-50%);
+  z-index: 30;
+  font-size: 0.75rem;
+  letter-spacing: 0.42em;
+  color: rgba(200, 186, 160, 0.75);
+  white-space: nowrap;
+}
+
+.oda-classic-link {
+  position: absolute;
+  right: max(0.5rem, env(safe-area-inset-right));
+  top: max(0.35rem, env(safe-area-inset-top));
+  z-index: 50;
+  font-size: 0.62rem;
+  letter-spacing: 0.12em;
+  color: rgba(200, 185, 160, 0.82);
+  text-decoration: none;
+  pointer-events: auto;
+  padding: 0.35rem 0.5rem;
+  text-shadow: 0 1px 8px rgba(0, 0, 0, 0.75);
+}
+
+.oda-classic-link:hover {
+  color: rgba(235, 218, 188, 0.95);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .oda-root {
+    --oda-breathe: 1;
+  }
+
+  .oda-ring-svg {
+    animation: none;
+  }
+
+  .oda-master-bg-chev {
+    transition: none;
+  }
+
+  .oda-root--idle .oda-nexus-inner,
+  .oda-root--idle .oda-hex-glass {
+    animation: none;
+  }
+
+  .oda-nexus-inner {
+    transform: none;
+  }
+
+  .oda-orbit-title,
+  .oda-orbit-stack {
+    transform: none;
+  }
+}
