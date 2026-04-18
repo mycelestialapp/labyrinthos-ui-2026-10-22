@@ -101,6 +101,14 @@ export function NumerologyWorkspaceShell({ children }: { children: React.ReactNo
         }}
         aria-hidden
       />
+      {/* 顶区淡蓝冷光：卡片上缘 rim 的环境光来源（极弱，避免染屏） */}
+      <div
+        className="pointer-events-none fixed inset-0 z-0 opacity-[0.2]"
+        style={{
+          background: `radial-gradient(ellipse 118% 48% at 50% -6%, rgba(186, 210, 255, 0.16) 0%, transparent 52%)`,
+        }}
+        aria-hidden
+      />
       <div
         className="pointer-events-none fixed inset-0 z-0 opacity-[0.38]"
         style={{
@@ -190,11 +198,13 @@ export function NumerologyWorkspaceShell({ children }: { children: React.ReactNo
       */}
       <div
         className={`relative isolate z-10 mx-auto grid w-full max-w-[100rem] grid-cols-1 gap-5 px-4 pb-16 pt-5 sm:gap-6 sm:px-6 md:px-8 lg:pt-6 ${
-          isGateHome ? "lg:grid-cols-1 lg:gap-5" : "lg:grid-cols-[minmax(0,12.5rem)_minmax(0,1fr)] lg:gap-5"
+          isGateHome
+            ? "lg:grid-cols-1 lg:gap-5"
+            : "numerology-shell-route-depth lg:grid-cols-[minmax(0,12.5rem)_minmax(0,1fr)] lg:gap-5"
         }`}
       >
         {!isGateHome ? (
-          <aside className="relative z-20 min-w-0 w-full lg:sticky lg:top-[4.5rem] lg:self-start lg:max-w-[12.5rem]">
+          <aside className="numerology-shell-depth-aside relative z-20 min-w-0 w-full lg:sticky lg:top-[4.5rem] lg:self-start lg:max-w-[12.5rem]">
             <NumerologyEnergyNavPanel currentPath={norm} onNavigate={onInstantNavigate} />
           </aside>
         ) : null}
@@ -203,7 +213,7 @@ export function NumerologyWorkspaceShell({ children }: { children: React.ReactNo
           id="numerology-main"
           role="main"
           tabIndex={-1}
-          className="relative z-10 min-w-0 w-full overflow-x-hidden outline-none"
+          className={`relative z-10 min-w-0 w-full overflow-x-hidden outline-none ${!isGateHome ? "numerology-shell-depth-main" : ""}`}
         >
           {children}
         </div>

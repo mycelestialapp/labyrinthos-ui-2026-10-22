@@ -168,6 +168,106 @@ body {
   }
 }
 
+/* 数秘 · 3D 分层（透视 + translateZ；视差由 Gate motion 驱动） */
+[data-numerology-shell] .numerology-depth-stage {
+  perspective: 2000px;
+  perspective-origin: 50% 42%;
+}
+
+[data-numerology-shell] .numerology-depth-root {
+  transform-style: preserve-3d;
+  will-change: transform;
+}
+
+[data-numerology-shell] .numerology-depth-mandala {
+  transform: translateZ(34px);
+}
+
+[data-numerology-shell] .numerology-depth-mirror {
+  transform: translateZ(10px);
+}
+
+[data-numerology-shell] .numerology-depth-form {
+  transform: translateZ(-6px);
+}
+
+[data-numerology-shell] .numerology-depth-nav {
+  transform: translateZ(-16px);
+}
+
+/* 首屏英雄卡：更高磨砂、古铜金丝边 + 外晕（假 bloom） */
+[data-numerology-shell] .numerology-hero-depth-card {
+  border-color: rgba(196, 170, 120, 0.4) !important;
+  backdrop-filter: blur(48px) saturate(118%) !important;
+  -webkit-backdrop-filter: blur(48px) saturate(118%) !important;
+  box-shadow:
+    inset 0 0 0 0.5px rgba(255, 245, 220, 0.14),
+    inset 0 0 72px rgba(10, 14, 22, 0.5),
+    0 0 0 0.5px rgba(184, 154, 106, 0.22),
+    0 0 32px rgba(184, 154, 106, 0.12),
+    0 28px 64px rgba(6, 8, 14, 0.48) !important;
+}
+
+/* 曼陀罗六角外框：金丝 + 内光 */
+[data-numerology-shell] .numerology-mandala-rim {
+  border-color: rgba(200, 175, 128, 0.42) !important;
+  box-shadow:
+    0 0 0 0.5px rgba(232, 210, 170, 0.2),
+    0 0 28px rgba(184, 154, 106, 0.14),
+    inset 0 0 48px rgba(255, 255, 255, 0.05);
+}
+
+/* 主路径大数：金属刻字感（勿与纯白扁平混） */
+[data-numerology-shell] .numerology-lp-metal {
+  background: linear-gradient(
+    188deg,
+    #ffffff 0%,
+    #e8edf4 32%,
+    #b8c0cc 52%,
+    #f6f0e4 72%,
+    #d8dee8 100%
+  );
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  -webkit-text-fill-color: transparent;
+  filter: drop-shadow(0 2px 2px rgba(0, 0, 0, 0.55)) drop-shadow(0 0 18px rgba(200, 188, 150, 0.28));
+}
+
+/* 子路由：侧栏略退、主区略前（仅 lg） */
+@media (min-width: 1024px) {
+  [data-numerology-shell] .numerology-shell-route-depth {
+    transform-style: preserve-3d;
+  }
+
+  [data-numerology-shell] .numerology-shell-depth-aside {
+    transform: translateZ(-14px);
+  }
+
+  [data-numerology-shell] .numerology-shell-depth-main {
+    transform: translateZ(8px);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  [data-numerology-shell] .numerology-depth-root {
+    transform: none !important;
+  }
+
+  [data-numerology-shell] .numerology-depth-mandala,
+  [data-numerology-shell] .numerology-depth-mirror,
+  [data-numerology-shell] .numerology-depth-form,
+  [data-numerology-shell] .numerology-depth-nav,
+  [data-numerology-shell] .numerology-shell-depth-aside,
+  [data-numerology-shell] .numerology-shell-depth-main {
+    transform: none !important;
+  }
+
+  [data-numerology-shell] .numerology-depth-root {
+    will-change: auto;
+  }
+}
+
 /* 数秘 · 键盘用户「跳到主内容」（不依赖 tailwind sr-only 变体在各版本是否齐全） */
 a.numerology-skip-main {
   position: absolute;

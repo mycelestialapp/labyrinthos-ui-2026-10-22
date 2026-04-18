@@ -2,7 +2,8 @@
 
 import { Cinzel, Noto_Serif_SC } from "next/font/google";
 import { ChevronDown } from "lucide-react";
-import { useLayoutEffect, useMemo, type ReactNode } from "react";
+import { motion, useMotionValue, useReducedMotion, useSpring, useTransform } from "framer-motion";
+import { useCallback, useLayoutEffect, useMemo, type ReactNode } from "react";
 import { NumerologyMirrorChapterCard, NumerologyMirrorHandbook } from "@/components/numerology/NumerologyMirrorHandbook";
 import { useNumerologyInstantNav } from "@/components/numerology/NumerologyInstantNavContext";
 import { NumerologyEnergyNavPanel } from "@/components/numerology/numerology-energy-nav";
@@ -93,6 +94,31 @@ export function NumerologyGateView() {
 
   const instantNav = useNumerologyInstantNav();
 
+  const reducedMotion = useReducedMotion() ?? false;
+  const heroPointerX = useMotionValue(0.5);
+  const heroPointerY = useMotionValue(0.5);
+  const heroTiltX = useTransform(heroPointerY, [0, 1], [-3.2, 3.2]);
+  const heroTiltY = useTransform(heroPointerX, [0, 1], [3.2, -3.2]);
+  const heroSpringTiltX = useSpring(heroTiltX, { stiffness: 280, damping: 28, mass: 0.42 });
+  const heroSpringTiltY = useSpring(heroTiltY, { stiffness: 280, damping: 28, mass: 0.42 });
+
+  const onHeroPointerMove = useCallback(
+    (e: React.PointerEvent<HTMLDivElement>) => {
+      if (reducedMotion) return;
+      const el = e.currentTarget;
+      const r = el.getBoundingClientRect();
+      if (!r.width || !r.height) return;
+      heroPointerX.set((e.clientX - r.left) / r.width);
+      heroPointerY.set((e.clientY - r.top) / r.height);
+    },
+    [reducedMotion, heroPointerX, heroPointerY],
+  );
+
+  const onHeroPointerLeave = useCallback(() => {
+    heroPointerX.set(0.5);
+    heroPointerY.set(0.5);
+  }, [heroPointerX, heroPointerY]);
+
   const markdownSource = useMemo(
     () => ({
       y,
@@ -161,7 +187,7 @@ export function NumerologyGateView() {
     const snap = numerologyGateInstantSnapshotPartsZh(lp, py, theme.key);
     return (
       <div
-        className={`min-w-0 border-t border-[rgba(168,188,208,0.14)] pt-5 [grid-area:mir] lg:pt-4 ${zhSerif.className}`}
+        className={`numerology-depth-mirror relative isolate min-w-0 border-t border-[rgba(168,188,208,0.14)] pt-5 [grid-area:mir] lg:pt-4 ${zhSerif.className}`}
       >
         <div className="space-y-2 rounded-xl border border-[rgba(168,188,208,0.14)] bg-[rgba(168,188,208,0.06)] px-3 py-2.5">
           <p className="text-[12px] leading-relaxed text-[#cbd5e1]">{snap.lead}</p>
@@ -360,18 +386,30 @@ export function NumerologyGateView() {
   }, []);
 
   return (
-    <div className="w-full min-w-0 space-y-6 sm:space-y-7 lg:pl-[min(7.5vw,4rem)] xl:pl-[min(7.5vw,4.5rem)]">
-      {/* 首屏单卡：lg 三列等宽（导航｜曼陀罗｜生辰），镜鉴通栏占第二行 */}
+      <div className="w-full min-w-0 space-y-6 sm:space-y-7 lg:pl-[min(7.5vw,4rem)] xl:pl-[min(7.5vw,4.5rem)]">
+      {/* 首屏单卡：lg 三列等宽（导航｜曼陀罗｜生辰），镜鉴通栏占第二行；透视 + 微视差 + Z 分层 */}
       <div className="w-full min-w-0">
-        <NumerologyGlassCard className="min-h-0 min-w-0">
-          <div className="grid min-w-0 grid-cols-1 gap-6 [grid-template-areas:'nav'_'m'_'mir'_'b'] sm:gap-7 lg:grid-cols-3 lg:gap-x-6 lg:gap-y-5 lg:[grid-template-areas:'nav_m_b'_'mir_mir_mir'] xl:gap-x-7">
-            <NumerologyEnergyNavPanel
-              embedded
-              className="min-w-0 w-full self-start [grid-area:nav] lg:sticky lg:top-1"
-              currentPath={instantNav?.instantPath}
-              onNavigate={instantNav?.navigate}
-            />
-            <div className="[grid-area:m] numerology-mandala-disc numerology-mandala-hex-shell relative mx-auto aspect-square w-full max-w-[min(100%,400px)] min-w-0 shrink-0 justify-self-center overflow-visible border border-white/[0.08] bg-[radial-gradient(ellipse_68%_68%_at_50%_50%,rgba(255,255,255,0.09),transparent_58%)] sm:max-w-[min(100%,380px)] lg:mx-0 lg:max-w-full lg:justify-self-center">
+        <NumerologyGlassCard className="numerology-hero-depth-card min-h-0 min-w-0">
+          <div className="numerology-depth-stage min-w-0">
+            <motion.div
+              className="numerology-depth-root grid min-w-0 grid-cols-1 gap-6 [grid-template-areas:'nav'_'m'_'mir'_'b'] sm:gap-7 lg:grid-cols-3 lg:gap-x-6 lg:gap-y-5 lg:[grid-template-areas:'nav_m_b'_'mir_mir_mir'] xl:gap-x-7"
+              style={{
+                transformStyle: "preserve-3d",
+                rotateX: reducedMotion ? 0 : heroSpringTiltX,
+                rotateY: reducedMotion ? 0 : heroSpringTiltY,
+              }}
+              onPointerMove={onHeroPointerMove}
+              onPointerLeave={onHeroPointerLeave}
+            >
+            <div className="numerology-depth-nav [grid-area:nav] min-w-0 w-full self-start lg:sticky lg:top-1">
+              <NumerologyEnergyNavPanel
+                embedded
+                className="min-w-0 w-full"
+                currentPath={instantNav?.instantPath}
+                onNavigate={instantNav?.navigate}
+              />
+            </div>
+            <div className="numerology-depth-mandala [grid-area:m] numerology-mandala-disc numerology-mandala-hex-shell numerology-mandala-rim relative mx-auto aspect-square w-full max-w-[min(100%,400px)] min-w-0 shrink-0 justify-self-center overflow-visible border border-white/[0.08] bg-[radial-gradient(ellipse_68%_68%_at_50%_50%,rgba(255,255,255,0.09),transparent_58%)] sm:max-w-[min(100%,380px)] lg:mx-0 lg:max-w-full lg:justify-self-center">
                 <div className="absolute inset-0 flex items-center justify-center p-[3px] text-[#9eb4c8]">
                   <NumerologyMandala2D
                     lifePath={lp}
@@ -382,11 +420,10 @@ export function NumerologyGateView() {
                 </div>
                 <div className="numerology-mandala-enter pointer-events-none absolute inset-0 z-10 flex items-center justify-center">
                   <span
-                    className="leading-none tabular-nums text-[#f8fafc]"
+                    className="numerology-lp-metal leading-none tabular-nums"
                     style={{
                       fontFamily: displaySerif.style.fontFamily,
                       fontSize: "clamp(5.25rem, 14vw, 8.5rem)",
-                      textShadow: `0 1px 0 rgba(0,0,0,0.45), 0 0 18px rgba(${theme.accentRgb},0.28)`,
                     }}
                   >
                     {lp}
@@ -396,7 +433,7 @@ export function NumerologyGateView() {
 
               {gateMirrorBand}
 
-              <div className="[grid-area:b] flex w-full min-w-0 flex-col justify-center border-t border-[rgba(168,188,208,0.14)] pt-5 sm:mx-auto sm:max-w-[min(100%,19rem)] lg:mx-0 lg:max-w-none lg:border-l lg:border-t-0 lg:pl-5 lg:pt-0 xl:pl-6">
+              <div className="numerology-depth-form [grid-area:b] flex w-full min-w-0 flex-col justify-center border-t border-[rgba(168,188,208,0.14)] pt-5 sm:mx-auto sm:max-w-[min(100%,19rem)] lg:mx-0 lg:max-w-none lg:border-l lg:border-t-0 lg:pl-5 lg:pt-0 xl:pl-6">
                 <div className="flex w-full min-w-0 max-w-full flex-col gap-4 self-start sm:gap-5">
                   <NumerologyGregorianDateField
                     y={y}
@@ -438,6 +475,7 @@ export function NumerologyGateView() {
                   </label>
                 </div>
               </div>
+            </motion.div>
           </div>
         </NumerologyGlassCard>
       </div>
