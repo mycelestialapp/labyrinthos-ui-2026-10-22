@@ -218,22 +218,44 @@ body {
     inset 0 0 40px rgba(255, 255, 255, 0.04);
 }
 
-/* 主路径大数：金属刻字感（勿与纯白扁平混） */
+/* 主路径大数：浮雕 + 轻挤压（纯 text-shadow，避免 clip 字无法吃阴影、也避免重 filter 发糊） */
 [data-numerology-shell] .numerology-lp-metal {
-  background: linear-gradient(
-    188deg,
-    #ffffff 0%,
-    #e8edf4 32%,
-    #b8c0cc 52%,
-    #f6f0e4 72%,
-    #d8dee8 100%
-  );
-  -webkit-background-clip: text;
-  background-clip: text;
-  color: transparent;
-  -webkit-text-fill-color: transparent;
-  /* 单层阴影：双 drop-shadow 易让笔画发糊 */
-  filter: drop-shadow(0 1px 1px rgba(0, 0, 0, 0.65));
+  color: #eef2f8;
+  -webkit-text-fill-color: #eef2f8;
+  -webkit-font-smoothing: antialiased;
+  text-shadow:
+    0 -1px 0 rgba(255, 255, 255, 0.28),
+    0 1px 0 rgba(8, 10, 14, 0.55),
+    0 2px 0 rgba(12, 14, 20, 0.5),
+    0 3px 0 rgba(12, 14, 20, 0.35),
+    0 5px 10px rgba(0, 0, 0, 0.45),
+    0 12px 28px rgba(0, 0, 0, 0.38);
+}
+
+/* 镜鉴列题：小一号浮雕，与正文区分布开 */
+[data-numerology-shell] .numerology-mirror-chapter-3d {
+  color: #e4ebf3;
+  text-shadow:
+    0 1px 0 rgba(255, 255, 255, 0.14),
+    0 -1px 0 rgba(0, 0, 0, 0.38),
+    0 2px 6px rgba(0, 0, 0, 0.28);
+}
+
+/* 镜鉴正文：极轻「离纸」阴影，不叠多层防糊 */
+[data-numerology-shell] .numerology-mirror-body-relief {
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.35);
+}
+
+/* 镜鉴通栏首行：略抬起的浮雕 */
+[data-numerology-shell] .numerology-mirror-lead-3d {
+  text-shadow:
+    0 1px 0 rgba(255, 255, 255, 0.1),
+    0 -1px 0 rgba(0, 0, 0, 0.28),
+    0 2px 8px rgba(0, 0, 0, 0.25);
+}
+
+[data-numerology-shell] .numerology-mirror-label-relief {
+  text-shadow: 0 1px 1px rgba(0, 0, 0, 0.32);
 }
 
 /* 子路由：侧栏略退、主区略前（仅 lg） */

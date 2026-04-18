@@ -50,13 +50,13 @@ export function NumerologyMirrorChapterCard({
     <section
       className={`flex min-h-0 min-w-0 flex-col rounded-xl border border-[rgba(168,188,208,0.14)] bg-[rgba(10,16,24,0.72)] px-3 py-2 shadow-[inset_0_1px_0_rgba(255,255,255,0.04)] antialiased [text-rendering:optimizeLegibility] ${serifClassName} ${className}`}
     >
-      <p className="mb-1.5 border-b border-[rgba(168,188,208,0.1)] pb-1 text-[11px] font-semibold tracking-[0.22em] text-[#a8b8c8]">
+      <p className="numerology-mirror-chapter-3d mb-1.5 border-b border-[rgba(168,188,208,0.1)] pb-1 text-[11px] font-semibold tracking-[0.22em]">
         {chapterTitle}
       </p>
       <NumerologyMirrorHandbook
         text={text}
-        bodyClassName="text-[12px] leading-[1.78] text-[#e8eef5] xl:text-[13px] xl:leading-[1.82]"
-        labelClassName="text-[10px] font-medium tracking-[0.18em] text-[#7c8fa3]"
+        bodyClassName="numerology-mirror-body-relief text-[12px] leading-[1.78] text-[#e8eef5] xl:text-[13px] xl:leading-[1.82]"
+        labelClassName="numerology-mirror-label-relief text-[10px] font-medium tracking-[0.18em] text-[#8a9cb0]"
       />
     </section>
   );

@@ -190,7 +190,7 @@ export function NumerologyGateView() {
         className={`numerology-depth-mirror relative isolate min-w-0 border-t border-[rgba(168,188,208,0.14)] pt-5 [grid-area:mir] antialiased [text-rendering:optimizeLegibility] lg:pt-4 ${zhSerif.className}`}
       >
         <div className="space-y-2 rounded-xl border border-[rgba(168,188,208,0.16)] bg-[rgba(10,16,24,0.72)] px-3 py-2.5">
-          <p className="text-[12px] leading-relaxed text-[#e2e8f0]">{snap.lead}</p>
+          <p className="numerology-mirror-lead-3d text-[12px] leading-relaxed text-[#e2e8f0]">{snap.lead}</p>
           <p className="text-[11px] leading-relaxed text-[#9eb4c8]">{snap.cluster}</p>
         </div>
         <p className="mt-3 text-[11px] uppercase tracking-[0.35em] text-[#9eb4c8]/65">{numerologyGateMirrorEyebrowZh}</p>
