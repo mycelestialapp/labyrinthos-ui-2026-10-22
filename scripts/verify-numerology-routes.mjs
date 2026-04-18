@@ -5,7 +5,7 @@ import fs from "node:fs";
 import path from "node:path";
 
 const root = process.cwd();
-const routes = ["", "chart", "matrix", "wheel", "syn", "lab"];
+const routes = ["", "chart", "matrix", "wheel", "syn"];
 
 for (const seg of routes) {
   const dir = seg ? path.join(root, "app", "numerology", seg) : path.join(root, "app", "numerology");

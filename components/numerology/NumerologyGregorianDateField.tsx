@@ -111,6 +111,10 @@ type Props = {
   showWheelHint?: boolean;
   /** 用户在滚轮面板点「确定」并写入公历后触发（用于共鸣等「未确认前不展示读文」） */
   onDateCommit?: () => void;
+  /**
+   * unset：主按钮不展示年月日数字（纯汉字提示），滚轮仍按当前 y/m/d 打开；用于共鸣页首屏。
+   */
+  numericDisplay?: "full" | "unset";
 };
 
 export function NumerologyGregorianDateField({
@@ -125,6 +129,7 @@ export function NumerologyGregorianDateField({
   centered = false,
   showWheelHint = true,
   onDateCommit,
+  numericDisplay = "full",
 }: Props) {
   const [open, setOpen] = useState(false);
   const [draftY, setDraftY] = useState(y);
@@ -190,7 +195,8 @@ export function NumerologyGregorianDateField({
     };
   }, [open]);
 
-  const display = `${y}年${m}月${d}日`;
+  const display =
+    numericDisplay === "unset" ? "公历 · 待选（点按选择）" : `${y}年${m}月${d}日`;
 
   const portal =
     open && typeof document !== "undefined"
@@ -264,7 +270,9 @@ export function NumerologyGregorianDateField({
       <button
         type="button"
         onClick={openSheet}
-        className={`${numerologyInputClassName} !flex !w-full !cursor-pointer items-center gap-2 text-base text-[#f1f5f9] ${
+        className={`${numerologyInputClassName} !flex !w-full !cursor-pointer items-center gap-2 ${
+          numericDisplay === "unset" ? "text-[#cbd5e1]" : "text-base text-[#f1f5f9]"
+        } ${
           centered
             ? "relative !justify-center !pr-10 !text-center"
             : "justify-between !text-left"
@@ -272,7 +280,13 @@ export function NumerologyGregorianDateField({
         aria-haspopup="dialog"
         aria-expanded={open}
       >
-        <span className={`tabular-nums tracking-[0.02em] ${serifHintClassName}`}>{display}</span>
+        <span
+          className={`tracking-[0.02em] ${serifHintClassName} ${
+            numericDisplay === "unset" ? "text-[13px] text-[#94a3b8]" : "text-base tabular-nums text-[#f1f5f9]"
+          }`}
+        >
+          {display}
+        </span>
         <Calendar
           className={`h-4 w-4 shrink-0 opacity-70 ${centered ? "pointer-events-none absolute right-3 top-1/2 -translate-y-1/2" : ""}`}
           strokeWidth={1.35}

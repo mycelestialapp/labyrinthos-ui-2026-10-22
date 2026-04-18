@@ -22,7 +22,7 @@ export function NumerologyInstantNavProvider({
   return <NumerologyInstantNavContext.Provider value={value}>{children}</NumerologyInstantNavContext.Provider>;
 }
 
-/** 仅在 `NumerologyWorkspaceShell` 内有效；寰宇之门嵌入导航用于与侧栏一致的即时路径与跳转。 */
+/** 仅在 `NumerologyWorkspaceShell` 内有效；嵌入导航与壳侧栏共用 Next 路径 + `router.push` 切换模块。 */
 export function useNumerologyInstantNav(): NumerologyInstantNavValue | null {
   return useContext(NumerologyInstantNavContext);
 }

@@ -47,11 +47,4 @@ export const NUMEROLOGY_WORKSPACE_MODULES: NumerologyWorkspaceModule[] = [
     status: "ready",
     description: "双人主路径矩阵定稿与合拍档位；沟通提纲式备忘，仅供整理",
   },
-  {
-    id: "lab",
-    label: "炼金工具",
-    path: "/numerology/lab",
-    status: "ready",
-    description: "化约链演示；与第二段备忘表规则互证",
-  },
 ];

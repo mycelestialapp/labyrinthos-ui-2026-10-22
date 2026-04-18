@@ -4,7 +4,7 @@
 
 import { Noto_Serif_SC } from "next/font/google";
 
-import { Fragment, type ReactNode, useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { Fragment, type ReactNode, useEffect, useMemo, useRef, useState } from "react";
 
 import { birthdayNumber, lifePathNumber } from "@/lib/numerology-pythagorean";
 
@@ -89,27 +89,26 @@ export function NumerologySynView() {
 
   const 乙SyncedAfterHydrate = useRef(false);
 
-  /** 未在任一侧公历滚轮点「确定」前，不展示主路径数字与共读/合拍文案 */
-  const [synReadoutReady, setSynReadoutReady] = useState(false);
-
-  const onSynDateCommit = useCallback(() => {
-    setSynReadoutReady(true);
-  }, []);
+  /** 首屏日期条不显示阿拉伯数字；两侧各在滚轮内点「确定」一次后才落数并展开共读 */
+  const [meDateCommitted, setMeDateCommitted] = useState(false);
+  const [peerDateCommitted, setPeerDateCommitted] = useState(false);
+  const synReadoutReady = meDateCommitted && peerDateCommitted;
 
 
 
   useEffect(() => {
-
     if (!hydrated || 乙SyncedAfterHydrate.current) return;
-
-    乙SyncedAfterHydrate.current = true;
-
-    setY2(a.y);
-
-    setM2(a.m + 1 > 12 ? 1 : a.m + 1);
-
-    setD2(a.d);
-
+    let cancelled = false;
+    queueMicrotask(() => {
+      if (cancelled) return;
+      乙SyncedAfterHydrate.current = true;
+      setY2(a.y);
+      setM2(a.m + 1 > 12 ? 1 : a.m + 1);
+      setD2(a.d);
+    });
+    return () => {
+      cancelled = true;
+    };
   }, [hydrated, a.y, a.m, a.d]);
 
   const lpA = a.lifePath;
@@ -165,7 +164,8 @@ export function NumerologySynView() {
                   serifHintClassName={zhSerif.className}
                   centered
                   showWheelHint={false}
-                  onDateCommit={onSynDateCommit}
+                  numericDisplay={meDateCommitted ? "full" : "unset"}
+                  onDateCommit={() => setMeDateCommitted(true)}
                 />
 
                 {synReadoutReady ? (
@@ -194,7 +194,8 @@ export function NumerologySynView() {
                   serifHintClassName={zhSerif.className}
                   centered
                   showWheelHint={false}
-                  onDateCommit={onSynDateCommit}
+                  numericDisplay={peerDateCommitted ? "full" : "unset"}
+                  onDateCommit={() => setPeerDateCommitted(true)}
                 />
 
                 {synReadoutReady ? (
@@ -208,6 +209,12 @@ export function NumerologySynView() {
               </div>
 
             </div>
+
+            {!synReadoutReady ? (
+              <p className={`mt-3 px-1 text-center text-[11px] leading-relaxed text-[#64748b] ${zhSerif.className}`}>
+                两侧公历各在滚轮里点一次「确定」，才展开主路径与共读；首屏日期条不显示数目字。
+              </p>
+            ) : null}
 
           </div>
 

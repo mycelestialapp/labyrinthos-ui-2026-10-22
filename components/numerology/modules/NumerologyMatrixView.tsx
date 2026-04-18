@@ -86,7 +86,26 @@ export function NumerologyMatrixView() {
 
       <NumerologyGlassCard className="!overflow-hidden">
         <p className={`text-[10px] uppercase tracking-[0.26em] text-[#94a3b8] ${zhSerif.className}`}>格数手册</p>
-        <p className={`mt-2 text-[11px] leading-relaxed text-[#64748b] ${zhSerif.className}`}>
+        <div
+          className="mx-auto mt-3 grid w-full max-w-[min(100%,20rem)] grid-cols-3 gap-2 sm:max-w-md"
+          aria-label="当前命盘亮格：1–9 化约去重"
+        >
+          {Array.from({ length: 9 }, (_, i) => {
+            const n = i + 1;
+            const on = rootSet.has(n);
+            return (
+              <NumerologyGlassCard
+                key={n}
+                className={`!flex !aspect-square !items-center !justify-center !p-0 text-2xl tabular-nums ${
+                  on ? "border-[rgba(168,188,208,0.55)] text-[#f1f5f9]" : "text-[#94a3b8]/70"
+                }`}
+              >
+                {n}
+              </NumerologyGlassCard>
+            );
+          })}
+        </div>
+        <p className={`mt-4 text-[11px] leading-relaxed text-[#64748b] ${zhSerif.className}`}>
           亮格多则叠读条数随层而涨（例：四亮格时两两 6 条、三三 4 条、四格 1 条），穷举使然，非逼你一夜读完。首屏为开篇与单格；双格默认展开，三格及以上收于折叠。念到哪段算哪段，仍以主路径与个人年为纲。
         </p>
         <div
@@ -132,23 +151,6 @@ export function NumerologyMatrixView() {
           )}
         </div>
       </NumerologyGlassCard>
-
-      <div className="mx-auto grid w-full max-w-[min(100%,20rem)] grid-cols-3 gap-2 sm:max-w-md">
-        {Array.from({ length: 9 }, (_, i) => {
-          const n = i + 1;
-          const on = rootSet.has(n);
-          return (
-            <NumerologyGlassCard
-              key={n}
-              className={`!flex !aspect-square !items-center !justify-center !p-0 text-2xl tabular-nums ${
-                on ? "border-[rgba(168,188,208,0.55)] text-[#f1f5f9]" : "text-[#94a3b8]/70"
-              }`}
-            >
-              {n}
-            </NumerologyGlassCard>
-          );
-        })}
-      </div>
     </div>
   );
 }

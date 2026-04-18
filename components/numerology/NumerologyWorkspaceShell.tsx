@@ -2,16 +2,9 @@
 
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
-import { ChevronLeft, Sparkles } from "lucide-react";
-import { Cinzel } from "next/font/google";
-import { useCallback, useEffect, useMemo, useState } from "react";
-import { NumerologyGateView } from "@/components/numerology/NumerologyGateView";
+import { ChevronLeft } from "lucide-react";
+import { useCallback, useEffect, useMemo } from "react";
 import { NumerologyEnergyNavPanel } from "@/components/numerology/numerology-energy-nav";
-import { NumerologyChartView } from "@/components/numerology/modules/NumerologyChartView";
-import { NumerologyLabView } from "@/components/numerology/modules/NumerologyLabView";
-import { NumerologyMatrixView } from "@/components/numerology/modules/NumerologyMatrixView";
-import { NumerologySynView } from "@/components/numerology/modules/NumerologySynView";
-import { NumerologyWheelView } from "@/components/numerology/modules/NumerologyWheelView";
 import { NUMEROLOGY_WORKSPACE_MODULES } from "@/lib/numerology-workspace-modules";
 import {
   NUMEROLOGY_ACCENT_RGB,
@@ -20,18 +13,6 @@ import {
 } from "@/components/numerology/numerology-shared-ui";
 import { useNumerologyWorkspace } from "@/components/numerology/NumerologyWorkspaceProvider";
 import { NumerologyInstantNavProvider } from "@/components/numerology/NumerologyInstantNavContext";
-import {
-  NUMEROLOGY_INSTANT_NAV_EVENT,
-  numerologyInstantNavigate,
-} from "@/lib/numerology-instant-nav";
-
-const displaySerif = Cinzel({
-  weight: ["400", "600", "700"],
-  subsets: ["latin"],
-  display: "swap",
-});
-
-const COSMOS_SESSION_KEY = "labyrinthos_numerology_cosmos_v1";
 
 function normalizePath(input: string | null | undefined): string {
   return (input ?? "/").replace(/\/$/, "") || "/";
@@ -50,80 +31,17 @@ export function NumerologyWorkspaceShell({ children }: { children: React.ReactNo
   const router = useRouter();
   const pathname = usePathname();
   const norm = useMemo(() => numerologyShellPath(pathname), [pathname]);
-  const [instantPath, setInstantPath] = useState(norm);
-  /** 寰宇之门：能量导航嵌入首卡左侧，外壳不再占侧栏列 */
-  const isGateHome = instantPath === "/numerology";
-  const { lifePath, serverSync, dismissServerSync } = useNumerologyWorkspace();
+  /** 寰宇之门：以 Next 路径为准；嵌入导航与壳侧栏共用 `norm`，避免 pushState 与 children 打架出现双导航 */
+  const isGateHome = norm === "/numerology";
+  const { serverSync, dismissServerSync } = useNumerologyWorkspace();
   const voidDepthStyle = useNumerologyVoidDepthStyle();
-  const [cosmos, setCosmos] = useState(false);
 
-  useEffect(() => {
-    setInstantPath(norm);
-  }, [norm]);
-
-  useEffect(() => {
-    const syncFromLocation = () => {
-      setInstantPath(numerologyShellPath(window.location.pathname));
-    };
-    window.addEventListener("popstate", syncFromLocation);
-    window.addEventListener(NUMEROLOGY_INSTANT_NAV_EVENT, syncFromLocation as EventListener);
-    return () => {
-      window.removeEventListener("popstate", syncFromLocation);
-      window.removeEventListener(NUMEROLOGY_INSTANT_NAV_EVENT, syncFromLocation as EventListener);
-    };
-  }, []);
-
-  const onInstantNavigate = useCallback((path: string) => {
-    numerologyInstantNavigate(path);
-  }, []);
-
-  /**
-   * Next 的 `children` 与真实 URL 同步；仅「即时 pushState」时 pathname 滞后，才用 switch 镜像挂载。
-   * 各 `page.tsx` 已恢复导出视图，避免 children 恒为 null 导致白屏。
-   */
-  const workspaceContent = useMemo(() => {
-    if (norm === instantPath) return children;
-    switch (instantPath) {
-      case "/numerology":
-        return <NumerologyGateView />;
-      case "/numerology/chart":
-        return <NumerologyChartView />;
-      case "/numerology/matrix":
-        return <NumerologyMatrixView />;
-      case "/numerology/wheel":
-        return <NumerologyWheelView />;
-      case "/numerology/syn":
-        return <NumerologySynView />;
-      case "/numerology/lab":
-        return <NumerologyLabView />;
-      default:
-        return <NumerologyGateView />;
-    }
-  }, [children, instantPath, norm]);
-
-  useEffect(() => {
-    let cancelled = false;
-    const t = window.setTimeout(() => {
-      if (cancelled) return;
-      try {
-        if (sessionStorage.getItem(COSMOS_SESSION_KEY) === "1") setCosmos(true);
-      } catch {
-        /* ignore */
-      }
-    }, 0);
-    return () => {
-      cancelled = true;
-      window.clearTimeout(t);
-    };
-  }, []);
-
-  useEffect(() => {
-    try {
-      sessionStorage.setItem(COSMOS_SESSION_KEY, cosmos ? "1" : "0");
-    } catch {
-      /* ignore */
-    }
-  }, [cosmos]);
+  const onInstantNavigate = useCallback(
+    (path: string) => {
+      void router.push(path, { scroll: false });
+    },
+    [router],
+  );
 
   /**
    * 预取子路由：useEffect 延后执行，避免连打 prefetch 拖住首帧/水合。
@@ -166,20 +84,8 @@ export function NumerologyWorkspaceShell({ children }: { children: React.ReactNo
     };
   }, [router]);
 
-  const particles = useMemo(
-    () =>
-      Array.from({ length: 32 }, (_, i) => ({
-        left: `${(i * 41) % 92}%`,
-        top: `${(i * 29) % 88}%`,
-        size: 1 + (i % 4),
-        dur: 6 + (i % 5),
-        delay: (i % 9) * 0.35,
-      })),
-    [],
-  );
-
   return (
-    <NumerologyInstantNavProvider instantPath={instantPath} navigate={onInstantNavigate}>
+    <NumerologyInstantNavProvider instantPath={norm} navigate={onInstantNavigate}>
     <div
       className="relative min-h-[100dvh] overflow-x-hidden bg-[#0b0f14] font-sans text-[#cbd5e1]"
       data-numerology-shell
@@ -232,33 +138,6 @@ export function NumerologyWorkspaceShell({ children }: { children: React.ReactNo
         aria-hidden
       />
 
-      {cosmos ? (
-        <div className="pointer-events-none fixed inset-0 z-0" aria-hidden>
-          <div
-            className="absolute inset-0 opacity-[0.48]"
-            style={{
-              background: `radial-gradient(ellipse 58% 50% at 22% 18%, rgba(${NUMEROLOGY_ACCENT_RGB},0.16) 0%, transparent 54%)`,
-            }}
-          />
-          {particles.map((p, i) => (
-            <span
-              key={i}
-              data-numerology-particle
-              className="absolute rounded-full"
-              style={{
-                left: p.left,
-                top: p.top,
-                width: p.size,
-                height: p.size,
-                background: `rgba(${NUMEROLOGY_ACCENT_RGB},${0.06 + (i % 4) * 0.028})`,
-                animation: `numerology-dust ${p.dur}s ease-in-out ${p.delay}s infinite alternate`,
-                willChange: "opacity, transform",
-              }}
-            />
-          ))}
-        </div>
-      ) : null}
-
       <header
         role="banner"
         className="sticky top-0 z-50 border-b-[0.5px] border-[rgba(168,188,208,0.22)] bg-[rgba(36,44,54,0.55)] px-4 py-3 backdrop-blur-md md:px-8"
@@ -276,32 +155,6 @@ export function NumerologyWorkspaceShell({ children }: { children: React.ReactNo
               <p className="truncate text-[10px] uppercase tracking-[0.42em] text-[#94a3b8]">坛城数轨 · Atelier Cosmos</p>
               <p className="truncate text-[12px] tracking-[0.12em] text-[#f1f5f9]/88">数秘</p>
             </div>
-          </div>
-
-          <div className="flex shrink-0 items-center gap-2 sm:gap-4">
-            <div className="numerology-badge-pulse flex items-center gap-2 rounded-full border-[0.5px] border-[rgba(168,188,208,0.35)] bg-[rgba(28,36,46,0.58)] px-2.5 py-1 pr-3">
-              <span
-                className="relative flex h-8 w-8 items-center justify-center rounded-full border-[0.5px] border-[rgba(168,188,208,0.4)] text-xs font-semibold text-[#f1f5f9]"
-                style={{ fontFamily: displaySerif.style.fontFamily }}
-              >
-                {lifePath}
-              </span>
-              <span className="hidden text-[10px] uppercase tracking-[0.28em] text-[#94a3b8] sm:inline">主路径</span>
-            </div>
-
-            <button
-              type="button"
-              onClick={() => setCosmos((c) => !c)}
-              aria-pressed={cosmos}
-              className={`inline-flex items-center gap-1.5 rounded-full border-[0.5px] px-3 py-1.5 text-[10px] uppercase tracking-[0.22em] transition-colors ${
-                cosmos
-                  ? "border-[rgba(168,188,208,0.55)] bg-[rgba(168,188,208,0.12)] text-[#f1f5f9]"
-                  : "border-[rgba(168,188,208,0.2)] text-[#9eb4c8]/75 hover:border-[rgba(168,188,208,0.4)]"
-              }`}
-            >
-              <Sparkles className="h-3.5 w-3.5" strokeWidth={1.5} />
-              {cosmos ? "寰宇" : "入寰宇"}
-            </button>
           </div>
         </div>
       </header>
@@ -332,8 +185,8 @@ export function NumerologyWorkspaceShell({ children }: { children: React.ReactNo
 
       {/*
         布局规则：
-        - 窄于 lg：单栏；子页外壳侧栏仍为 3/4 列网格。
-        - lg：子页为侧栏 12.5rem + 主区；寰宇之门仅主区（导航在 NumerologyGateView 首卡内）。
+        - 窄于 lg：单栏；子页先侧栏后主区。
+        - lg：子页为侧栏 12.5rem + 主区；寰宇之门仅主区（导航在 NumerologyGateView 首卡内）。模块切换走 router.push，与 children 同源避免双导航。
       */}
       <div
         className={`relative isolate z-10 mx-auto grid w-full max-w-[100rem] grid-cols-1 gap-5 px-4 pb-16 pt-5 sm:gap-6 sm:px-6 md:px-8 lg:pt-6 ${
@@ -342,7 +195,7 @@ export function NumerologyWorkspaceShell({ children }: { children: React.ReactNo
       >
         {!isGateHome ? (
           <aside className="relative z-20 min-w-0 w-full lg:sticky lg:top-[4.5rem] lg:self-start lg:max-w-[12.5rem]">
-            <NumerologyEnergyNavPanel currentPath={instantPath} onNavigate={onInstantNavigate} />
+            <NumerologyEnergyNavPanel currentPath={norm} onNavigate={onInstantNavigate} />
           </aside>
         ) : null}
 
@@ -352,7 +205,7 @@ export function NumerologyWorkspaceShell({ children }: { children: React.ReactNo
           tabIndex={-1}
           className="relative z-10 min-w-0 w-full overflow-x-hidden outline-none"
         >
-          {workspaceContent}
+          {children}
         </div>
       </div>
 

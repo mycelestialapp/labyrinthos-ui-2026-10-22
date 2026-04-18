@@ -61,25 +61,8 @@ body {
   background-color: #f1f5f9;
 }
 
-/* 数秘 · 坛城数轨：寰宇粒子微动 */
-@keyframes numerology-dust {
-  from {
-    opacity: 0.12;
-    transform: translate(0, 0);
-  }
-  to {
-    opacity: 0.5;
-    transform: translate(4px, -6px);
-  }
-}
-
 @media (prefers-reduced-motion: reduce) {
-  [data-numerology-particle] {
-    animation: none !important;
-  }
-
-  .numerology-mandala-enter,
-  .numerology-badge-pulse {
+  .numerology-mandala-enter {
     animation: none !important;
   }
 
@@ -94,7 +77,7 @@ body {
 
 }
 
-/* 数秘 · 坛城：主数入场与顶栏徽章 */
+/* 数秘 · 坛城：主数入场 */
 @keyframes numerology-mandala-in {
   from {
     opacity: 0;
@@ -161,22 +144,6 @@ body {
   transform-origin: 0 0;
   transform-box: fill-box;
   animation: numerology-mandala-orbit-rot 96s linear infinite;
-}
-
-@keyframes numerology-badge-pulse {
-  0%,
-  100% {
-    opacity: 0.88;
-    transform: scale(1);
-  }
-  50% {
-    opacity: 1;
-    transform: scale(1.04);
-  }
-}
-
-.numerology-badge-pulse {
-  animation: numerology-badge-pulse 5.5s ease-in-out infinite;
 }
 
 /* 数秘 · 顶光呼吸（非寰宇默认也轻微可见） */

@@ -11,6 +11,8 @@ const nextConfig: NextConfig = {
       { source: "/nebula", destination: "/hub", permanent: false },
       { source: "/luopan", destination: "/compass", permanent: false },
       { source: "/numerology/archive", destination: "/numerology", permanent: false },
+      /** 炼金工具已下线：旧书签与外链落到寰宇之门 */
+      { source: "/numerology/lab", destination: "/numerology", permanent: true },
     ];
   },
 };

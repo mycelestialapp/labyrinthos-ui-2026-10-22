@@ -3,9 +3,8 @@
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
-import { CalendarClock, FlaskConical, Grid3x3, Home, Orbit, Users } from "lucide-react";
+import { CalendarClock, Grid3x3, Home, Orbit, Users } from "lucide-react";
 import type { LucideIcon } from "lucide-react";
-import { numerologyInstantNavigate } from "@/lib/numerology-instant-nav";
 import { NUMEROLOGY_WORKSPACE_MODULES } from "@/lib/numerology-workspace-modules";
 import { NumerologyGlassCard } from "@/components/numerology/numerology-shared-ui";
 
@@ -15,7 +14,6 @@ const ICON_BY_ID: Record<string, LucideIcon> = {
   matrix: Grid3x3,
   wheel: CalendarClock,
   syn: Users,
-  lab: FlaskConical,
 };
 
 const NAV_ICONS = NUMEROLOGY_WORKSPACE_MODULES.map((mod) => ({
@@ -107,11 +105,11 @@ export function NumerologyEnergyNavPanel({
                       typeof window !== "undefined" &&
                       norm.startsWith("/numerology") &&
                       item.path.startsWith("/numerology");
-                    if (canInstant) {
-                      numerologyInstantNavigate(item.path);
-                      return;
-                    }
-                    router.push(item.path, { scroll: false });
+                  if (canInstant) {
+                    void router.push(item.path, { scroll: false });
+                    return;
+                  }
+                  router.push(item.path, { scroll: false });
                   }}
                   className={`flex min-h-[2.75rem] min-w-0 cursor-pointer flex-col items-center justify-center gap-0.5 rounded-xl px-1.5 py-2 text-center text-[11px] leading-snug tracking-[0.04em] transition-colors sm:min-h-[3rem] sm:px-2 sm:text-[11px] lg:min-h-0 lg:flex-row lg:justify-start lg:gap-2 lg:px-2.5 lg:py-2.5 lg:text-left lg:tracking-[0.06em] ${
                     embedded ? "lg:gap-3 lg:px-3 lg:py-4 lg:text-[13px]" : "lg:gap-2 lg:text-[12px]"

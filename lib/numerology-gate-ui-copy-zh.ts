@@ -173,9 +173,39 @@ export const numerologyGateRawTableZh = {
   personalYear: (calendarYear: number) => `个人年（${calendarYear}）`,
 } as const;
 
-/** 第二段备忘表前一句，与顶栏「本表在说什么」分工：此处只交代本表行义 */
+/** 备忘表数字下方极短脚注：与 `numerologyGateRawLayerHandbookZh` 同站位；表内只放提要，展开里仍是完整备忘。 */
+export function numerologyGateRawTableRowFootnotesZh(input: {
+  calendarYear: number;
+  lifePath: number;
+  personalYear: number;
+  breakdown: LifePathBreakdown;
+}): {
+  monthReduced: string;
+  dayReduced: string;
+  yearReduced: string;
+  combined: string;
+  personalYear: string;
+} {
+  const cy = input.calendarYear;
+  const lp = input.lifePath;
+  const py = input.personalYear;
+  const b = input.breakdown;
+  return {
+    monthReduced: `月份收成一位（${b.monthReduced}），再与日、年并入主路径。`,
+    dayReduced: `日子收成一位（${b.dayReduced}）；「生日数」另格解读，勿与此格拧成一句。`,
+    yearReduced: `出生年年份收成一位（${b.yearReduced}）；式内一步，勿与 ${cy} 个人年混读。`,
+    combined: `三数相加得 ${b.combinedRaw}，再收成主路径 ${lp}；应与曼陀罗中心一致。`,
+    personalYear: `生日月日与 ${cy} 年年份并算，得外圈 ${py}；先主路径，再叠今年这一圈。`,
+  };
+}
+
+/** 第二段备忘表前一句：短，避免说明书腔；细拆收进下方「展开」 */
 export const numerologyGateRawLayerIntroZh =
-  "这张小表把月、日、年收成一位，再加成主路径，并写出今年的个人年。拿它对曼陀罗和上排五个数，不当判词；想听怎么说人，请看上面第一段长文和下面的慢慢推演。";
+  "下面是本页算式结果，用来和曼陀罗、上排五格对一眼。要弄清每一行字义再点展开。";
+
+/** 第二段：灰框长文折叠摘要（默认收起） */
+export const numerologyGateReadoutSettleHandbookDetailsSummaryZh =
+  "展开：表上每一行在说什么（和生日数、今年个人年别混）";
 
 /** 备忘表层内读本：释各行在读法上之站位，并嵌入当页数字作互证；不作命断，以免与上层口述、推演叠床架屋。 */
 export function numerologyGateRawLayerHandbookZh(input: {

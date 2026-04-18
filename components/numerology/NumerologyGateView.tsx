@@ -1,6 +1,7 @@
 "use client";
 
 import { Cinzel, Noto_Serif_SC } from "next/font/google";
+import { ChevronDown } from "lucide-react";
 import { useLayoutEffect, useMemo, type ReactNode } from "react";
 import { NumerologyMirrorChapterCard, NumerologyMirrorHandbook } from "@/components/numerology/NumerologyMirrorHandbook";
 import { useNumerologyInstantNav } from "@/components/numerology/NumerologyInstantNavContext";
@@ -35,7 +36,9 @@ import {
   numerologyGateNameLatinLabelZh,
   numerologyGateRawLayerHandbookZh,
   numerologyGateRawLayerIntroZh,
+  numerologyGateRawTableRowFootnotesZh,
   numerologyGateRawTableZh,
+  numerologyGateReadoutSettleHandbookDetailsSummaryZh,
   numerologyGateReadoutListenModuleTitlesZh,
   numerologyGateReadoutPhaseTitlesZh,
   numerologyGateReadoutStatusBodyZh,
@@ -197,6 +200,29 @@ export function NumerologyGateView() {
   }, [lp, py, theme.key]);
 
   const layerBlocks: { step: string; anchorId: string; title: string; body: ReactNode }[] = useMemo(() => {
+    const rawFoot = numerologyGateRawTableRowFootnotesZh({
+      calendarYear,
+      lifePath: lp,
+      personalYear: py,
+      breakdown,
+    });
+    const rawSettleRows: { key: string; label: string; value: string; note: string }[] = [
+      { key: "m", label: numerologyGateRawTableZh.monthReduced, value: String(breakdown.monthReduced), note: rawFoot.monthReduced },
+      { key: "d", label: numerologyGateRawTableZh.dayReduced, value: String(breakdown.dayReduced), note: rawFoot.dayReduced },
+      { key: "y", label: numerologyGateRawTableZh.yearReduced, value: String(breakdown.yearReduced), note: rawFoot.yearReduced },
+      {
+        key: "c",
+        label: numerologyGateRawTableZh.combined,
+        value: `${breakdown.combinedRaw} → ${lp}`,
+        note: rawFoot.combined,
+      },
+      {
+        key: "py",
+        label: numerologyGateRawTableZh.personalYear(calendarYear),
+        value: String(py),
+        note: rawFoot.personalYear,
+      },
+    ];
     const bdLayer = birthdayNumberLayerCopyZh(bd);
     const exLayer = ex != null ? expressionLayerCopyZh(ex) : null;
     const suLayer = su != null ? soulUrgeLayerCopyZh(su) : null;
@@ -242,44 +268,53 @@ export function NumerologyGateView() {
         title: numerologyGateReadoutPhaseTitlesZh.settle,
         body: (
           <div className={`space-y-5 overflow-x-auto text-[14px] ${zhSerif.className}`}>
-            <p className="text-[12px] leading-[1.68] text-[#94a3b8]">{numerologyGateRawLayerIntroZh}</p>
-            <div className={`rounded-xl border border-[rgba(168,188,208,0.1)] bg-[rgba(6,14,24,0.35)] px-3 py-2.5 ${zhSerif.className}`}>
-              <NumerologyMirrorHandbook
-                text={numerologyGateRawLayerHandbookZh({
-                  calendarYear,
-                  lifePath: lp,
-                  personalYear: py,
-                  breakdown,
-                })}
-                bodyClassName="text-[14px] leading-[1.68] text-[#d4dfe6]"
-              />
+            <p className="text-[13px] leading-relaxed text-[#94a3b8] sm:text-[14px]">{numerologyGateRawLayerIntroZh}</p>
+            <div className="w-full min-w-0 space-y-2.5 sm:space-y-3" role="list">
+              {rawSettleRows.map((row) => (
+                <div
+                  key={row.key}
+                  role="listitem"
+                  className="rounded-xl border border-[rgba(168,188,208,0.14)] bg-[rgba(8,16,26,0.45)] px-3.5 py-3 shadow-[inset_0_1px_0_rgba(255,255,255,0.03)] sm:px-4 sm:py-3.5"
+                >
+                  <div className="flex min-w-0 items-baseline justify-between gap-3">
+                    <span className="min-w-0 flex-1 text-[12px] font-normal leading-snug tracking-wide text-[#94a3b8] sm:text-[13px]">
+                      {row.label}
+                    </span>
+                    <span
+                      className={`shrink-0 tabular-nums text-lg font-semibold tracking-tight text-[#f1f5f9] sm:text-xl ${displaySerif.className}`}
+                    >
+                      {row.value}
+                    </span>
+                  </div>
+                  <p className="mt-2.5 border-t border-[rgba(168,188,208,0.1)] pt-2.5 text-pretty text-[11px] leading-relaxed break-words text-[#8b9cb0] sm:text-[12px] sm:leading-relaxed">
+                    {row.note}
+                  </p>
+                </div>
+              ))}
             </div>
-            <table className="w-full min-w-[280px] table-fixed border-collapse text-[#cbd5e1]">
-              <tbody>
-                <tr className="border-b border-[rgba(168,188,208,0.12)]">
-                  <th className="w-[52%] py-2 pr-3 text-left font-normal text-[#94a3b8]">{numerologyGateRawTableZh.monthReduced}</th>
-                  <td className="py-2 text-center tabular-nums">{breakdown.monthReduced}</td>
-                </tr>
-                <tr className="border-b border-[rgba(168,188,208,0.12)]">
-                  <th className="w-[52%] py-2 pr-3 text-left font-normal text-[#94a3b8]">{numerologyGateRawTableZh.dayReduced}</th>
-                  <td className="py-2 text-center tabular-nums">{breakdown.dayReduced}</td>
-                </tr>
-                <tr className="border-b border-[rgba(168,188,208,0.12)]">
-                  <th className="w-[52%] py-2 pr-3 text-left font-normal text-[#94a3b8]">{numerologyGateRawTableZh.yearReduced}</th>
-                  <td className="py-2 text-center tabular-nums">{breakdown.yearReduced}</td>
-                </tr>
-                <tr className="border-b border-[rgba(168,188,208,0.12)]">
-                  <th className="w-[52%] py-2 pr-3 text-left font-normal text-[#94a3b8]">{numerologyGateRawTableZh.combined}</th>
-                  <td className="py-2 text-center tabular-nums">
-                    {breakdown.combinedRaw} → {lp}
-                  </td>
-                </tr>
-                <tr>
-                  <th className="w-[52%] py-2 pr-3 text-left font-normal text-[#94a3b8]">{numerologyGateRawTableZh.personalYear(calendarYear)}</th>
-                  <td className="py-2 text-center tabular-nums">{py}</td>
-                </tr>
-              </tbody>
-            </table>
+            <details className="group rounded-xl border border-[rgba(168,188,208,0.12)] bg-[rgba(6,14,24,0.3)]">
+              <summary className="flex cursor-pointer list-none items-start gap-2.5 px-3 py-3 marker:content-none [&::-webkit-details-marker]:hidden">
+                <ChevronDown
+                  className="mt-0.5 h-4 w-4 shrink-0 text-[#94a3b8] transition-transform group-open:rotate-180"
+                  strokeWidth={1.5}
+                  aria-hidden
+                />
+                <span className="min-w-0 flex-1 break-words text-[13px] leading-snug text-[#cbd5e1] sm:text-[14px]">
+                  {numerologyGateReadoutSettleHandbookDetailsSummaryZh}
+                </span>
+              </summary>
+              <div className={`border-t border-[rgba(168,188,208,0.1)] px-3 pb-3 pt-2 ${zhSerif.className}`}>
+                <NumerologyMirrorHandbook
+                  text={numerologyGateRawLayerHandbookZh({
+                    calendarYear,
+                    lifePath: lp,
+                    personalYear: py,
+                    breakdown,
+                  })}
+                  bodyClassName="text-[14px] leading-[1.68] text-[#d4dfe6]"
+                />
+              </div>
+            </details>
             <ul
               className={`list-inside list-disc space-y-2.5 border-t border-[rgba(168,188,208,0.1)] pt-4 text-[14px] leading-[1.68] text-[#cbd5e1] sm:text-[15px] sm:leading-[1.72] ${zhSerif.className}`}
             >
