@@ -22,6 +22,14 @@ export default function BottomNav() {
   if (pathname === "/numerology" || pathname?.startsWith("/numerology/")) {
     return null;
   }
+  /** 雷诺曼工作台自带固定 dock（z-40），与全局底栏同贴底会抢点击 */
+  if (pathname === "/lenormand" || pathname?.startsWith("/lenormand/")) {
+    return null;
+  }
+  /** 神谕壳自带顶栏与底部留白；全局底栏易与启笺区抢点击且重复「星云」入口 */
+  if (pathname === "/oracle" || pathname?.startsWith("/oracle/")) {
+    return null;
+  }
   const handleNavClick = (href: string, active: boolean) => {
     if (typeof window === "undefined") return;
     if (active) {

@@ -1,0 +1,364 @@
+/* 雷诺曼工作台：主流 App 常见分区 — 阵式带 + 牌桌 + 侧栏 + 底栏 */
+
+.lenormand-workspace {
+  --len-bg-deep: #14101c;
+  --len-bg-card: rgba(26, 22, 37, 0.92);
+  --len-gold: #c5a059;
+  --len-gold-dim: rgba(197, 160, 89, 0.45);
+  --len-ink: #e8dcc4;
+  --len-muted: rgba(232, 220, 196, 0.55);
+  font-family: "Cormorant Garamond", "Noto Serif SC", "Source Han Serif SC", serif;
+}
+
+.lenormand-workspace__title-block {
+  text-align: center;
+  margin-bottom: 1.25rem;
+}
+
+.lenormand-workspace__title {
+  font-size: clamp(1.75rem, 4vw, 2.35rem);
+  font-weight: 500;
+  letter-spacing: 0.35em;
+  color: var(--len-gold);
+  text-indent: 0.35em;
+}
+
+.lenormand-workspace__subtitle {
+  margin-top: 0.5rem;
+  font-size: 0.8rem;
+  letter-spacing: 0.12em;
+  color: var(--len-gold-dim);
+}
+
+.lenormand-workspace__hint {
+  margin-top: 0.75rem;
+  max-width: 36rem;
+  margin-left: auto;
+  margin-right: auto;
+  font-size: 0.72rem;
+  line-height: 1.75;
+  color: var(--len-muted);
+  letter-spacing: 0.06em;
+}
+
+/* —— 阵式横向轮播（对标：主屏横向切牌阵 / 功能卡） —— */
+.lenormand-carousel {
+  display: flex;
+  gap: 1rem;
+  overflow-x: auto;
+  overscroll-behavior-x: contain;
+  scroll-snap-type: x mandatory;
+  padding: 0.5rem 0 1rem;
+  margin: 0 -0.25rem;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(197, 160, 89, 0.35) transparent;
+}
+
+.lenormand-carousel::-webkit-scrollbar {
+  height: 6px;
+}
+.lenormand-carousel::-webkit-scrollbar-thumb {
+  background: rgba(197, 160, 89, 0.3);
+  border-radius: 99px;
+}
+
+.lenormand-carousel-card {
+  flex: 0 0 min(88vw, 300px);
+  scroll-snap-align: start;
+  min-width: 0;
+  border-radius: 1.25rem;
+  border: 0.5px solid rgba(197, 160, 89, 0.28);
+  background:
+    radial-gradient(120% 80% at 50% 0%, rgba(197, 160, 89, 0.08), transparent 55%),
+    var(--len-bg-card);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.04), 0 12px 40px rgba(0, 0, 0, 0.35);
+  position: relative;
+  padding: 1.35rem 1.25rem 1.5rem;
+  cursor: pointer;
+  text-align: left;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease, transform 0.15s ease;
+}
+
+.lenormand-carousel-card:hover {
+  border-color: rgba(197, 160, 89, 0.45);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.06), 0 16px 48px rgba(0, 0, 0, 0.4);
+}
+
+.lenormand-carousel-card--active {
+  border-color: rgba(197, 160, 89, 0.55);
+  box-shadow:
+    inset 0 0 0 1px rgba(197, 160, 89, 0.12),
+    0 0 0 1px rgba(197, 160, 89, 0.15),
+    0 16px 48px rgba(0, 0, 0, 0.45);
+}
+
+.lenormand-carousel-card__corner {
+  position: absolute;
+  top: 0.65rem;
+  right: 0.75rem;
+  font-family: ui-monospace, monospace;
+  font-size: 0.65rem;
+  letter-spacing: 0.18em;
+  color: rgba(197, 160, 89, 0.5);
+}
+
+.lenormand-carousel-card__icon {
+  text-align: center;
+  font-size: 1rem;
+  color: var(--len-gold);
+  margin-bottom: 0.5rem;
+  letter-spacing: 0;
+}
+
+.lenormand-carousel-card__name {
+  text-align: center;
+  font-size: 1.05rem;
+  font-weight: 500;
+  letter-spacing: 0.28em;
+  text-indent: 0.28em;
+  color: var(--len-gold);
+}
+
+.lenormand-carousel-card__tag {
+  text-align: center;
+  margin-top: 0.35rem;
+  font-size: 0.68rem;
+  color: var(--len-gold-dim);
+  letter-spacing: 0.08em;
+}
+
+.lenormand-carousel-card__body {
+  margin-top: 0.85rem;
+  font-size: 0.72rem;
+  line-height: 1.8;
+  color: var(--len-muted);
+  letter-spacing: 0.04em;
+}
+
+/* —— 主栏 + 侧栏（对标：牌桌 + 牌义抽屉/侧栏） —— */
+.lenormand-main-grid {
+  display: grid;
+  gap: 1.25rem;
+  align-items: start;
+}
+
+@media (min-width: 1024px) {
+  .lenormand-main-grid {
+    grid-template-columns: minmax(0, 1fr) 220px;
+  }
+}
+
+.lenormand-table-panel {
+  border-radius: 1rem;
+  border: 0.5px solid rgba(197, 160, 89, 0.2);
+  background: rgba(18, 14, 26, 0.65);
+  min-height: 280px;
+  padding: 1rem;
+}
+
+.lenormand-table-panel__label {
+  font-size: 0.65rem;
+  letter-spacing: 0.2em;
+  color: rgba(197, 160, 89, 0.55);
+  margin-bottom: 0.75rem;
+}
+
+/* 牌位网格预览（仅占位，后续接真实抽牌） */
+.lenormand-slot-grid {
+  display: grid;
+  gap: 0.5rem;
+  width: 100%;
+}
+
+.lenormand-slot-grid--3 {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  max-width: 28rem;
+  margin: 0 auto;
+}
+
+.lenormand-slot-grid--5 {
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  max-width: 100%;
+}
+
+.lenormand-slot-grid--9 {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  max-width: 16rem;
+  margin: 0 auto;
+}
+
+.lenormand-slot-grid--gt {
+  grid-template-columns: repeat(8, minmax(0, 1fr));
+  gap: 0.35rem;
+  max-height: 220px;
+  overflow: auto;
+  overscroll-behavior: contain;
+}
+
+.lenormand-slot {
+  aspect-ratio: 3 / 4;
+  min-height: 0;
+  min-width: 0;
+  border-radius: 0.45rem;
+  border: 1px dashed rgba(197, 160, 89, 0.22);
+  background: rgba(0, 0, 0, 0.2);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.35rem;
+  padding: 0.35rem;
+  font-size: 0.6rem;
+  letter-spacing: 0.06em;
+  color: rgba(232, 220, 196, 0.25);
+}
+
+.lenormand-slot__time {
+  font-size: 0.55rem;
+  letter-spacing: 0.14em;
+  color: rgba(197, 160, 89, 0.55);
+}
+
+.lenormand-slot__card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.18rem;
+  text-align: center;
+  color: rgba(232, 220, 196, 0.82);
+}
+
+.lenormand-slot__symbol {
+  font-size: 1.1rem;
+  line-height: 1;
+}
+
+.lenormand-slot__name {
+  font-size: 0.58rem;
+  letter-spacing: 0.08em;
+  color: rgba(232, 220, 196, 0.84);
+}
+
+.lenormand-slot__meaning {
+  font-size: 0.5rem;
+  line-height: 1.25;
+  color: rgba(232, 220, 196, 0.55);
+}
+
+.lenormand-slot-grid--gt .lenormand-slot {
+  aspect-ratio: 1;
+  font-size: 0.48rem;
+  min-height: 1.5rem;
+}
+
+.lenormand-aside {
+  border-radius: 1rem;
+  border: 0.5px solid rgba(197, 160, 89, 0.18);
+  background: rgba(20, 16, 28, 0.75);
+  padding: 1rem;
+  position: sticky;
+  top: 5.5rem;
+}
+
+.lenormand-aside__title {
+  font-size: 0.7rem;
+  letter-spacing: 0.18em;
+  color: var(--len-gold);
+  margin-bottom: 0.75rem;
+}
+
+.lenormand-legend-row {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.68rem;
+  color: var(--len-muted);
+  margin-bottom: 0.5rem;
+}
+
+.lenormand-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 999px;
+  flex-shrink: 0;
+}
+.lenormand-dot--person {
+  background: #7eb8da;
+}
+.lenormand-dot--event {
+  background: #c9a86c;
+}
+.lenormand-dot--path {
+  background: #9a7bbf;
+}
+
+.lenormand-aside__search {
+  width: 100%;
+  margin-top: 0.75rem;
+  padding: 0.5rem 0.65rem;
+  border-radius: 0.5rem;
+  border: 1px solid rgba(197, 160, 89, 0.2);
+  background: rgba(0, 0, 0, 0.25);
+  color: var(--len-ink);
+  font-size: 0.72rem;
+}
+
+.lenormand-aside__search::placeholder {
+  color: rgba(232, 220, 196, 0.35);
+}
+
+/* —— 底栏（对标：洗牌 / 切牌 / 抽牌 固定条） —— */
+.lenormand-dock {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 40;
+  display: flex;
+  gap: 0.5rem;
+  justify-content: center;
+  padding: 0.65rem 1rem calc(0.65rem + env(safe-area-inset-bottom));
+  background: linear-gradient(to top, rgba(12, 10, 18, 0.96), rgba(12, 10, 18, 0.75));
+  border-top: 0.5px solid rgba(197, 160, 89, 0.18);
+  backdrop-filter: blur(10px);
+}
+
+@media (min-width: 1024px) {
+  .lenormand-dock {
+    position: sticky;
+    margin-top: 1.5rem;
+    border-radius: 0.75rem;
+    border: 0.5px solid rgba(197, 160, 89, 0.18);
+    padding: 0.75rem 1rem;
+  }
+}
+
+.lenormand-dock-btn {
+  flex: 1;
+  max-width: 11rem;
+  padding: 0.65rem 0.75rem;
+  border-radius: 0.5rem;
+  font-size: 0.7rem;
+  letter-spacing: 0.2em;
+  text-indent: 0.2em;
+  border: 1px solid rgba(197, 160, 89, 0.35);
+  background: rgba(197, 160, 89, 0.1);
+  color: #e8dcc4;
+  cursor: pointer;
+  transition: background 0.15s ease, border-color 0.15s ease;
+}
+
+.lenormand-dock-btn:hover {
+  background: rgba(197, 160, 89, 0.18);
+  border-color: rgba(197, 160, 89, 0.5);
+}
+
+.lenormand-dock-btn--primary {
+  background: rgba(197, 160, 89, 0.22);
+  border-color: rgba(197, 160, 89, 0.5);
+}
+
+.lenormand-dock-btn:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}

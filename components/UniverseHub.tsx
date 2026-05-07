@@ -111,6 +111,7 @@ const CARDS: HubCard[] = [
     plan:
       "线性与九宫布局；人物、事件与路径牌组合解读，偏具体场景与时间邻近度。适合追问谁会入场、事如何推进、近处有何变，而少谈空泛命运。",
     Icon: Gem,
+    href: "/lenormand",
   },
   {
     title: "符文",
