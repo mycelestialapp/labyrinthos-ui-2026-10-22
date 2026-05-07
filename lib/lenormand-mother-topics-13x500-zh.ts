@@ -1,24 +1,5 @@
 import type { QuestionCategory } from "./question-category-keywords";
 
-/**
- * 13大类（按你当前方案固定，不含“其他”）
- */
-export const CORE_13_CATEGORIES: QuestionCategory[] = [
-  "感情婚姻",
-  "事业工作",
-  "财运投资",
-  "学业考试",
-  "身体健康",
-  "人际关系",
-  "出行迁居",
-  "官司法律",
-  "生育子女",
-  "失物寻找",
-  "选择决策",
-  "代人问卜",
-  "灵性成长",
-];
-
 export type MotherTopic = {
   id: string;
   category: QuestionCategory;
@@ -156,6 +137,16 @@ const PRIMARY_50_BY_CATEGORY: Record<QuestionCategory, string[]> = {
   其他: [],
 };
 
+/**
+ * 母题覆盖的领域：与 `PRIMARY_50_BY_CATEGORY` / 问题分类一致，**不含「其他」**（含宠物、占风水等）。
+ */
+export const MOTHER_TOPIC_COVERED_CATEGORIES: QuestionCategory[] = (
+  Object.keys(PRIMARY_50_BY_CATEGORY) as QuestionCategory[]
+).filter((c) => c !== "其他");
+
+/** @deprecated 请使用 `MOTHER_TOPIC_COVERED_CATEGORIES` */
+export const CORE_13_CATEGORIES: QuestionCategory[] = MOTHER_TOPIC_COVERED_CATEGORIES;
+
 function normalize(text: string): string {
   return (text || "")
     .trim()
@@ -168,7 +159,7 @@ function idOf(category: string, primaryIndex: number, angleIndex: number): strin
   return `TOPIC_${category}_${String(primaryIndex + 1).padStart(2, "0")}_${String(angleIndex + 1).padStart(2, "0")}`;
 }
 
-export const MOTHER_TOPICS_13X500: MotherTopic[] = CORE_13_CATEGORIES.flatMap((category) => {
+export const MOTHER_TOPICS_13X500: MotherTopic[] = MOTHER_TOPIC_COVERED_CATEGORIES.flatMap((category) => {
   const primaries = PRIMARY_50_BY_CATEGORY[category];
   return primaries.flatMap((primary, i) =>
     ANGLES_10.map((angle, j) => ({
@@ -213,27 +204,42 @@ export function matchMotherTopicDetailed(question: string, category: QuestionCat
   const qn = normalize(question);
   if (!qn) return null;
   const bucket = TOPICS_BY_CATEGORY[category];
+  if (!bucket.length) return null;
+
   let best: MotherTopic | null = null;
-  let bestScore = 0;
+  let bestScore = -1;
+  let bestAngleHit = false;
+
   for (const t of bucket) {
-    let score = 0;
     const p = normalize(t.primary);
     const a = normalize(t.angle);
-    if (p && qn.includes(p)) score += 5;
-    if (a && qn.includes(a)) score += 2;
+    if (!p || !qn.includes(p)) continue;
+
+    let score = 6;
+    const angleHit = Boolean(a && qn.includes(a));
+    if (angleHit) score += 3;
     for (const tag of t.tags) {
-      if (tag && qn.includes(tag)) score += 1;
+      if (!tag || tag === normalize(t.category) || tag === p || tag === a) continue;
+      if (qn.includes(tag)) score += 1;
     }
-    if (score > bestScore) {
+
+    const better =
+      score > bestScore || (score === bestScore && angleHit && !bestAngleHit);
+    if (better) {
       best = t;
       bestScore = score;
+      bestAngleHit = angleHit;
     }
   }
-  if (!best || bestScore < 4) return null;
-  return {
-    topic: best,
-    score: bestScore,
-    confidence: bestScore >= 7 ? "high" : "medium",
-  };
+
+  if (!best) return null;
+
+  // 仅命中主主题短语、未命中角度且无额外 tag：宁可不输出母题
+  if (bestScore === 6 && !bestAngleHit) return null;
+
+  const confidence: "high" | "medium" =
+    bestScore >= 9 || (bestScore >= 7 && bestAngleHit) ? "high" : "medium";
+
+  return { topic: best, score: bestScore, confidence };
 }
 
