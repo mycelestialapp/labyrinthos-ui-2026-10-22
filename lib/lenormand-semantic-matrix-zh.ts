@@ -142,6 +142,8 @@ export function getCardContextPolarity(input: {
   positionLabel: string;
   intent: ReadingIntent;
   evidenceLevel: EvidenceLevel;
+  /** 与全库母题一致的对焦句，各阵位、各大类共用同一口径 */
+  motherHint?: string;
 }): CardCategoryPolarity {
   const base = getCardCategoryPolarity(input.card, input.category);
   const spreadLens = SPREAD_LENS[input.spreadId];
@@ -152,10 +154,11 @@ export function getCardContextPolarity(input: {
       : input.evidenceLevel === "medium"
         ? "当前证据中等，宜结合行为一致性核对。"
         : "当前证据较强，可提高结构判断权重。";
+  const motherLine = input.motherHint ? `${input.motherHint}` : "";
 
   return {
-    positive: `${base.positive}${spreadLens.positive}。位于「${input.positionLabel}」时，${intentLens.positive}。${evidenceLine}`,
-    negative: `${base.negative}${spreadLens.negative}。位于「${input.positionLabel}」时，${intentLens.negative}。${evidenceLine}`,
+    positive: `${base.positive}${spreadLens.positive}。位于「${input.positionLabel}」时，${intentLens.positive}。${motherLine}${evidenceLine}`,
+    negative: `${base.negative}${spreadLens.negative}。位于「${input.positionLabel}」时，${intentLens.negative}。${motherLine}${evidenceLine}`,
   };
 }
 

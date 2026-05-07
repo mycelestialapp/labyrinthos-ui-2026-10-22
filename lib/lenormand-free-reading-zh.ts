@@ -122,9 +122,15 @@ export function buildLenormandFreeReadingZh(
   const synthesis = buildSynthesisLine(spreadType, cards);
   const boundary = compactGuidance(blocks.boundary.replace(/^边界：/, ""));
 
-  return [
+  const head: string[] = [
     `【开篇】${blocks.opening}`,
     `【牌阵职责】${blocks.spreadRole}`,
+  ];
+  if (blocks.motherTopicLine) {
+    head.push(`【母题对焦】${blocks.motherTopicLine}`);
+  }
+  return [
+    ...head,
     "【逐位解读】",
     ...positionLines,
     "【单牌正反面（按问题大类）】",

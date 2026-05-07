@@ -5,6 +5,7 @@ import type { QuestionCategory } from "./question-category-keywords";
 import { getCardContextPolarity } from "./lenormand-semantic-matrix-zh";
 import { matchMotherTopicDetailed } from "./lenormand-mother-topics-13x500-zh";
 import type { ReadingIntent, EvidenceLevel } from "./lenormand-reading-types";
+import { normalizeQuestionTextZh } from "./question-text-normalize-zh";
 
 export type QuestionProfile = {
   categoryKey: QuestionCategory;
@@ -22,6 +23,8 @@ export type ReadingBlocks = {
   polarity: string;
   focus: string;
   boundary: string;
+  /** 命中母题时供开篇/免费层展示；与 focus 内技术字段同源 */
+  motherTopicLine: string | null;
 };
 
 type SpreadMeta = {
@@ -51,27 +54,24 @@ const SPREAD_META: Record<LenormandSpreadId, SpreadMeta> = {
 const NEGATIVE_WORDS = ["困惑", "模糊", "阻碍", "耗损", "焦虑", "结束", "曲折", "挑战", "责任"];
 const POSITIVE_WORDS = ["幸运", "成功", "希望", "收获", "礼物", "关键", "稳定", "财富", "忠诚"];
 
-function normalize(text: string): string {
-  return (text || "")
-    .toLowerCase()
-    .replace(/\s+/g, "")
-    .replace(/[，。！？、；：,.!?;:()（）【】\[\]'"“”‘’《》<>\/\\|+-_=~`@#$%^&*]/g, "");
-}
-
 function detectIntent(question: string): ReadingIntent {
-  const q = normalize(question);
+  const q = normalizeQuestionTextZh(question);
   if (!q) return "state";
-  if (/(会不会|能不能|有没有|是否|是不是)/.test(q)) return "judgement";
-  if (/(为什么|怎么回事|原因)/.test(q)) return "diagnosis";
-  if (/(多久|何时|什么时候|时间)/.test(q)) return "timing";
+  if (/(会不会|能不能|有没有|是否|是不是|行不行|可不可以|该不该|要不要|对吗|靠谱吗|能成吗|会好吗|行吗)/.test(q)) {
+    return "judgement";
+  }
+  if (/(为什么|怎么回事|原因|咋回事|何以|为何|什么原因)/.test(q)) return "diagnosis";
+  if (/(多久|何时|什么时候|什么时间|几天|几个月|几年|还要多久|哪天|何日)/.test(q)) return "timing";
   return "state";
 }
 
 function detectEvidenceLevel(question: string): EvidenceLevel {
-  const q = normalize(question);
+  const q = normalizeQuestionTextZh(question);
   if (!q) return "low";
-  if (/(我感觉|我怀疑|好像|似乎|可能|猜)/.test(q)) return "low";
-  if (/(聊天记录|截图|证据|已经|明确|当场|亲眼)/.test(q)) return "high";
+  if (/(我感觉|我怀疑|好像|似乎|可能|猜|听说|不太确定|直觉|也许|大概)/.test(q)) return "low";
+  if (/(聊天记录|截图|证据|已经|明确|当场|亲眼|合同|录音|转账|验血|化验单|判决书|书面)/.test(q)) {
+    return "high";
+  }
   return "medium";
 }
 
@@ -130,6 +130,8 @@ export function buildReadingBlocks(input: {
   const spread = SPREAD_META[input.spreadId];
   const topicMatch = matchMotherTopicDetailed(q, profile.categoryKey);
   const topic = topicMatch?.topic ?? null;
+  const motherHint = topic ? `母题对焦：${topic.primary}·${topic.angle}。` : undefined;
+  const motherTopicLine = topic ? `「${topic.primary}」·${topic.angle}：${topic.text}` : null;
   const cardLines = input.cards.map((c) => `- ${c.nameZh}：${c.shortMeaning}`);
   const cardPolarityLines = input.cards.map((c, idx) => {
     const positionLabel = `${spread.name}第${idx + 1}位`;
@@ -140,6 +142,7 @@ export function buildReadingBlocks(input: {
       positionLabel,
       intent: profile.intent,
       evidenceLevel: profile.evidenceLevel,
+      motherHint,
     });
     return `- ${c.nameZh}\n  正：${pn.positive}\n  反：${pn.negative}`;
   });
@@ -152,6 +155,7 @@ export function buildReadingBlocks(input: {
     polarity: buildPolarityLine(input.cards),
     focus: `问题画像：${profile.category} / ${profile.intent} / 证据${profile.evidenceLevel}${topic ? ` / 母题${topic.id}` : ""}${topicMatch ? ` / 命中${topicMatch.confidence}` : ""}。${buildFocusLine(profile.intent, profile.evidenceLevel)}`,
     boundary: `边界：${profile.guidance}`,
+    motherTopicLine,
   };
 }
 

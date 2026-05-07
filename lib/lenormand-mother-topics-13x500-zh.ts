@@ -1,4 +1,5 @@
 import type { QuestionCategory } from "./question-category-keywords";
+import { normalizeQuestionTextZh as normalize } from "./question-text-normalize-zh";
 
 export type MotherTopic = {
   id: string;
@@ -147,12 +148,81 @@ export const MOTHER_TOPIC_COVERED_CATEGORIES: QuestionCategory[] = (
 /** @deprecated 请使用 `MOTHER_TOPIC_COVERED_CATEGORIES` */
 export const CORE_13_CATEGORIES: QuestionCategory[] = MOTHER_TOPIC_COVERED_CATEGORIES;
 
-function normalize(text: string): string {
-  return (text || "")
-    .trim()
-    .toLowerCase()
-    .replace(/\s+/g, "")
-    .replace(/[，。！？、；：,.!?;:()（）【】\[\]'"“”‘’《》<>\/\\|+-_=~`@#$%^&*]/g, "");
+/**
+ * 十个判读角度：口语同义词（已归一化），全库母题共用。
+ */
+const ANGLE_SYNONYM_PHRASES_RAW: Record<string, string[]> = {
+  当下状态: ["现在", "目前", "当前", "眼下", "现阶段", "此刻", "当前阶段"],
+  近期趋势: ["接下来", "往后", "之后", "后面", "短期", "近一段", "往后走", "趋势", "走向"],
+  隐藏动因: ["为什么", "啥原因", "根本原因", "背后", "深层", "真正的", "为啥", "怎么回事"],
+  核心矛盾: ["核心问题", "主要矛盾", "症结", "卡在哪", "僵持点", "胶着"],
+  显性表现: ["表面上", "外在", "看得见", "表现出来的", "外显", "明面上"],
+  潜在风险: ["风险", "隐患", "要小心", "会不会恶化", "不利", "恶化可能"],
+  稳定条件: ["稳下来", "稳住", "支撑", "靠啥稳定", "怎么稳", "稳住局面"],
+  失衡信号: ["不对劲", "失衡", "失调", "异常信号", "出了问题", "怪怪的"],
+  边界焦点: ["边界", "底线", "分寸", "能不能接受", "红线", "接受度"],
+  判读重点: ["重点", "关键", "优先看", "先看", "主要盯", "该看啥"],
+};
+
+const ANGLE_HIT_NEEDLES_BY_ANGLE_NORM: Record<string, string[]> = (() => {
+  const out: Record<string, string[]> = {};
+  for (const [angle, syns] of Object.entries(ANGLE_SYNONYM_PHRASES_RAW)) {
+    const key = normalize(angle);
+    const set = new Set<string>();
+    if (key) set.add(key);
+    for (const s of syns) {
+      const n = normalize(s);
+      if (n.length >= 2) set.add(n);
+    }
+    out[key] = [...set];
+  }
+  return out;
+})();
+
+function angleHit(qn: string, angleRaw: string): boolean {
+  const key = normalize(angleRaw);
+  const needles = ANGLE_HIT_NEEDLES_BY_ANGLE_NORM[key];
+  return Boolean(needles?.some((n) => n.length && qn.includes(n)));
+}
+
+const PRIMARY_NEEDLES_CACHE = new Map<string, string[]>();
+
+/** 类内安全的主题短语命中：整词优先，其次唯一前缀/后缀简写（全分类自动生成）。 */
+export function primaryHitNeedlesForCategory(category: QuestionCategory, primaryRaw: string): string[] {
+  const full = normalize(primaryRaw);
+  const cacheKey = `${category}:${full}`;
+  const cached = PRIMARY_NEEDLES_CACHE.get(cacheKey);
+  if (cached) return cached;
+
+  const primaries = PRIMARY_50_BY_CATEGORY[category].map((x) => normalize(x));
+  const needles = new Set<string>([full]);
+
+  if (full.length >= 4) {
+    for (let len = 3; len >= 2; len--) {
+      const prefix = full.slice(0, len);
+      const withPrefix = primaries.filter((p) => p.startsWith(prefix));
+      if (withPrefix.length === 1 && withPrefix[0] === full) {
+        needles.add(prefix);
+        break;
+      }
+    }
+    for (let len = 3; len >= 2; len--) {
+      const suffix = full.slice(-len);
+      const withSuffix = primaries.filter((p) => p.endsWith(suffix));
+      if (withSuffix.length === 1 && withSuffix[0] === full) {
+        needles.add(suffix);
+        break;
+      }
+    }
+  }
+
+  const arr = [...needles];
+  PRIMARY_NEEDLES_CACHE.set(cacheKey, arr);
+  return arr;
+}
+
+function primaryPhraseHit(qn: string, category: QuestionCategory, primaryRaw: string): boolean {
+  return primaryHitNeedlesForCategory(category, primaryRaw).some((n) => n.length && qn.includes(n));
 }
 
 function idOf(category: string, primaryIndex: number, angleIndex: number): string {
@@ -213,22 +283,25 @@ export function matchMotherTopicDetailed(question: string, category: QuestionCat
   for (const t of bucket) {
     const p = normalize(t.primary);
     const a = normalize(t.angle);
-    if (!p || !qn.includes(p)) continue;
+    if (!p || !primaryPhraseHit(qn, t.category, t.primary)) continue;
 
     let score = 6;
-    const angleHit = Boolean(a && qn.includes(a));
-    if (angleHit) score += 3;
+    const angleMatched = angleHit(qn, t.angle);
+    if (angleMatched) score += 3;
+    const primaryNeedles = new Set(primaryHitNeedlesForCategory(t.category, t.primary));
     for (const tag of t.tags) {
-      if (!tag || tag === normalize(t.category) || tag === p || tag === a) continue;
+      if (!tag || tag === normalize(t.category)) continue;
+      if (primaryNeedles.has(tag)) continue;
+      if (tag === a) continue;
       if (qn.includes(tag)) score += 1;
     }
 
     const better =
-      score > bestScore || (score === bestScore && angleHit && !bestAngleHit);
+      score > bestScore || (score === bestScore && angleMatched && !bestAngleHit);
     if (better) {
       best = t;
       bestScore = score;
-      bestAngleHit = angleHit;
+      bestAngleHit = angleMatched;
     }
   }
 

@@ -10,6 +10,7 @@
  */
 
 import type { QuestionCategory } from "./question-category-keywords";
+import { normalizeQuestionTextZh } from "./question-text-normalize-zh";
 
 export type TopicRule = {
   /** 命中條件：正則或關鍵詞（關鍵詞時為「問題包含任一即命中」） */
@@ -234,21 +235,13 @@ export const GUIDANCE_TOPICS: Partial<Record<QuestionCategory, TopicRule[]>> = {
   ],
 };
 
-function normalizeQuestionText(raw: string): string {
-  return (raw || "")
-    .trim()
-    .toLowerCase()
-    .replace(/\s+/g, "")
-    .replace(/[，。！？、；：,.!?;:()（）【】\[\]'"“”‘’《》<>\/\\|+-_=~`@#$%^&*]/g, "");
-}
-
 function matchTopic(question: string, rule: TopicRule): boolean {
-  const q = normalizeQuestionText(question);
+  const q = normalizeQuestionTextZh(question);
   if (!q) return false;
   if (rule.pattern instanceof RegExp) {
     return rule.pattern.test(question.trim()) || rule.pattern.test(q);
   }
-  return rule.pattern.some((kw) => q.includes(normalizeQuestionText(kw)));
+  return rule.pattern.some((kw) => q.includes(normalizeQuestionTextZh(kw)));
 }
 
 /**

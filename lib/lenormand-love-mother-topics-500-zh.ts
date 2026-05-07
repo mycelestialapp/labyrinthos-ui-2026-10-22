@@ -1,9 +1,11 @@
 /**
  * 感情类 500 母题库（50 × 10）
  * - primaryThemes: 一级母题（50）
- * - angles: 细分角度（10）
- * 最终用于“问题归一化 → 母题映射”。
+ * - angles: 细分角度（10），与 `lenormand-mother-topics-13x500-zh` 的 ANGLES_10 一致
+ * 匹配逻辑与全库母题共用（见 `matchLoveMotherTopic`）。
  */
+
+import { matchMotherTopicDetailed } from "./lenormand-mother-topics-13x500-zh";
 
 export type LoveMotherTopic = {
   id: string;
@@ -75,7 +77,7 @@ const ANGLES: string[] = [
   "稳定条件",
   "失衡信号",
   "边界焦点",
-  "判读要点",
+  "判读重点",
 ];
 
 function toId(primaryIndex: number, angleIndex: number): string {
@@ -99,10 +101,16 @@ export function buildLoveMotherTopics500(): LoveMotherTopic[] {
 
 export const LOVE_MOTHER_TOPICS_500: LoveMotherTopic[] = buildLoveMotherTopics500();
 
+/** 与全库 `matchMotherTopicDetailed(q,"感情婚姻")` 同口径，ID 前缀为 `LOVE_` 以兼容旧脚本。 */
 export function matchLoveMotherTopic(question: string): LoveMotherTopic | null {
-  const q = (question || "").trim();
-  if (!q) return null;
-  const hit = LOVE_MOTHER_TOPICS_500.find((t) => q.includes(t.primary.slice(0, 2)) || q.includes(t.primary));
-  return hit ?? null;
+  const m = matchMotherTopicDetailed(question || "", "感情婚姻");
+  if (!m) return null;
+  const t = m.topic;
+  return {
+    id: t.id.replace(/^TOPIC_感情婚姻_/, "LOVE_"),
+    primary: t.primary,
+    angle: t.angle,
+    text: t.text,
+  };
 }
 

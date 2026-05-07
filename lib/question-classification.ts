@@ -9,6 +9,7 @@ import {
   CATEGORY_KEYWORDS,
 } from "./question-category-keywords";
 import { getTopicGuidance } from "./question-guidance-topics";
+import { normalizeQuestionTextZh } from "./question-text-normalize-zh";
 
 export type { QuestionCategory };
 
@@ -32,17 +33,6 @@ const CATEGORY_LABELS: Record<QuestionCategory, string> = {
 };
 
 /**
- * 统一归一化，减少口语输入里的空格/标点对匹配的干扰。
- */
-function normalizeQuestionText(raw: string): string {
-  return (raw || "")
-    .trim()
-    .toLowerCase()
-    .replace(/\s+/g, "")
-    .replace(/[，。！？、；：,.!?;:()（）【】\[\]'"“”‘’《》<>\/\\|+-_=~`@#$%^&*]/g, "");
-}
-
-/**
  * 根据问题文本检测所属分类（13 大类之一）
  * 匹配规则：按 CATEGORY_KEYWORDS 顺序，若问题包含该分类任一关键词即命中；新增问法只需在 questionCategoryKeywords 中加词。
  */
@@ -50,12 +40,12 @@ export function detectQuestionCategory(question: string): {
   category: QuestionCategory;
   label: string;
 } {
-  const q = normalizeQuestionText(question || "");
+  const q = normalizeQuestionTextZh(question || "");
   if (!q) {
     return { category: '其他', label: CATEGORY_LABELS.其他 };
   }
   for (const { category, keywords } of CATEGORY_KEYWORDS) {
-    if (keywords.some((kw) => q.includes(normalizeQuestionText(kw)))) {
+    if (keywords.some((kw) => q.includes(normalizeQuestionTextZh(kw)))) {
       return { category, label: CATEGORY_LABELS[category] };
     }
   }
