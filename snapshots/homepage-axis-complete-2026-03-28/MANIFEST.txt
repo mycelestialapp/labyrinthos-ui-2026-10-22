@@ -1,4 +1,4 @@
-﻿Homepage snapshot (axis + compass + 3-screen home)
+Homepage snapshot (axis + compass + 3-screen home)
 Date: 2026-03-28
 Restore: copy paths back to repo root preserving structure.
 

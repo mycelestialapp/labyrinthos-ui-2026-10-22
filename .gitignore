@@ -80,3 +80,4 @@ __pycache__/
 /scripts/q3-teach-minors-fragment.ts
 /scripts/emit-q3-teach-minors.mjs
 /scripts/study-minor-master-synth.mjs
+.env
