@@ -42,9 +42,9 @@ export const NUMEROLOGY_WORKSPACE_MODULES: NumerologyWorkspaceModule[] = [
   },
   {
     id: "syn",
-    label: "共鸣分析",
+    label: "双人合盘",
     path: "/numerology/syn",
     status: "ready",
-    description: "双人主路径矩阵定稿与合拍档位；沟通提纲式备忘，仅供整理",
+    description: "两人合不合：主路径对读与合拍档位，仅供整理相处节奏",
   },
 ];

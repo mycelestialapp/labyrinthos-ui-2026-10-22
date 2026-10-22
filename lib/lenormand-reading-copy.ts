@@ -1,23 +1,23 @@
 import type { LenormandCard } from "./lenormand-cards";
-import { buildLenormandFreeReadingZh } from "./lenormand-free-reading-zh";
+import { buildLenormandMasterReadingZh } from "./lenormand-master-reading-zh";
 import type { LenormandSpreadId } from "./lenormand-spread-id";
 
 export type { LenormandSpreadId } from "./lenormand-spread-id";
 
-/** 底座模式：统一走结构化生成（阵位+分类指引）。 */
+/** 单面连读：相邻成句，无正逆位。 */
 export type LenormandReadingResolution = {
-  kind: "structured-free";
+  kind: "master-line";
   text: string;
 };
 
 /**
- * 与底座一致：不绑定特定牌组文案，统一按问题与牌阵生成解读。
+ * 正统 Petit Lenormand 没有正逆位。解读只按牌序、邻接与问题大类生成。
  */
 export function resolveLenormandReading(input: {
   spreadId: LenormandSpreadId;
   cards: LenormandCard[];
   inquiry?: string;
 }): LenormandReadingResolution {
-  const text = buildLenormandFreeReadingZh(input.spreadId, input.cards, input.inquiry);
-  return { kind: "structured-free", text };
+  const text = buildLenormandMasterReadingZh(input.spreadId, input.cards, input.inquiry);
+  return { kind: "master-line", text };
 }

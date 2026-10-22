@@ -142,7 +142,7 @@ export function NumerologySynView() {
 
           <div className="min-w-0 w-full shrink-0 lg:max-w-xs">
 
-          <p className="text-center text-[11px] uppercase tracking-[0.3em] text-[#9eb4c8]/60 sm:text-[12px]">共鸣分析</p>
+          <p className="text-center text-[11px] uppercase tracking-[0.3em] text-[#9eb4c8]/60 sm:text-[12px]">双人合盘</p>
 
           <div className="mt-4 overflow-hidden rounded-2xl border border-[rgba(148,163,184,0.14)] bg-[rgba(10,16,24,0.42)] shadow-[inset_0_1px_0_rgba(255,255,255,0.04)]">
 

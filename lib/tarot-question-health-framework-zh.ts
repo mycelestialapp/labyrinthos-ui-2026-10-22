@@ -1,0 +1,342 @@
+/**
+ * 身体健康 · 分类框架（东西方共用场景，中文成稿）。
+ *
+ * 格子写两边都会碰上的就诊／调理现场；点选题不夹外文。冻结核 20 条原文一字不改。
+ * 牌面帮看节奏和取舍，替代不了执业医疗。缺口题暂无 78×2 成稿，解读走通用大师解。
+ */
+import { Q_HEALTH as T } from "./tarot-master-question-content-life-categories";
+import { HEALTH_GAP_CANONICAL } from "./tarot-question-hidden-chain-zh";
+import { HEALTH_X } from "./tarot-question-health-extra-scenes-zh";
+
+export type HealthFrameworkGroup = {
+  label: string;
+  keys: string[];
+  surface: string[];
+};
+
+export const HEALTH_Q = {
+  chest: T[0]!,
+  twoHospitals: T[1]!,
+  nodule: T[2]!,
+  toothEr: T[3]!,
+  melatonin: T[4]!,
+  stomachStop: T[5]!,
+  cosmetic: T[6]!,
+  vaccine: T[7]!,
+  backPain: T[8]!,
+  workPanic: T[9]!,
+  parentsCheck: T[10]!,
+  rehabSkip: T[11]!,
+  childFever: T[12]!,
+  allergyMismatch: T[13]!,
+  dietList: T[14]!,
+  dietPills: T[15]!,
+  psychWait: T[16]!,
+  refillCity: T[17]!,
+  elderSupp: T[18]!,
+  coldIv: T[19]!,
+  sick: HEALTH_GAP_CANONICAL[0]!,
+  organ: HEALTH_GAP_CANONICAL[1]!,
+  heal: HEALTH_GAP_CANONICAL[2]!,
+  whenHeal: HEALTH_GAP_CANONICAL[3]!,
+  checkFirst: HEALTH_GAP_CANONICAL[4]!,
+  ...HEALTH_X,
+} as const;
+
+export const HEALTH_FROZEN_CANONICAL: readonly string[] = [
+  HEALTH_Q.chest,
+  HEALTH_Q.twoHospitals,
+  HEALTH_Q.nodule,
+  HEALTH_Q.toothEr,
+  HEALTH_Q.melatonin,
+  HEALTH_Q.stomachStop,
+  HEALTH_Q.cosmetic,
+  HEALTH_Q.vaccine,
+  HEALTH_Q.backPain,
+  HEALTH_Q.workPanic,
+  HEALTH_Q.parentsCheck,
+  HEALTH_Q.rehabSkip,
+  HEALTH_Q.childFever,
+  HEALTH_Q.allergyMismatch,
+  HEALTH_Q.dietList,
+  HEALTH_Q.dietPills,
+  HEALTH_Q.psychWait,
+  HEALTH_Q.refillCity,
+  HEALTH_Q.elderSupp,
+  HEALTH_Q.coldIv,
+];
+
+export const HEALTH_FRAMEWORK_GROUPS: HealthFrameworkGroup[] = [
+  {
+    label: "身体总势",
+    keys: ["身体运", "健康运", "生病", "器官", "治好", "哪天能好", "最该先", "信号", "松一口气", "大病", "三个月", "忍痛", "注意"],
+    surface: [
+      HEALTH_Q.luckNow,
+      HEALTH_Q.luckYear,
+      HEALTH_Q.luckMonths,
+      HEALTH_Q.luckWhen,
+      HEALTH_Q.luckPatch,
+      HEALTH_Q.luckNote,
+      HEALTH_Q.luckRisk,
+      HEALTH_Q.luckBig,
+      HEALTH_Q.luckBlock,
+      HEALTH_Q.luckEndure,
+      HEALTH_Q.ignoreSignal,
+      HEALTH_Q.sick,
+      HEALTH_Q.organ,
+      HEALTH_Q.heal,
+      HEALTH_Q.whenHeal,
+      HEALTH_Q.checkFirst,
+    ],
+  },
+  {
+    label: "急诊就医",
+    keys: ["医院", "急诊", "胸闷", "牙疼", "信谁", "急救", "挂哪科", "第二意见", "换医院", "出血", "今晚", "发烧", "过敏", "吐泻", "摔倒", "伤口", "住院", "费用", "晕"],
+    surface: [
+      HEALTH_Q.chest,
+      HEALTH_Q.toothEr,
+      HEALTH_Q.twoHospitals,
+      HEALTH_Q.goTonight,
+      HEALTH_Q.ambulance,
+      HEALTH_Q.waitEr,
+      HEALTH_Q.whichDept,
+      HEALTH_Q.secondOpinion,
+      HEALTH_Q.doctorSwitch,
+      HEALTH_Q.tellDoc,
+      HEALTH_Q.nightClinic,
+      HEALTH_Q.bleedNow,
+      HEALTH_Q.adultFever,
+      HEALTH_Q.allergyShock,
+      HEALTH_Q.foodPoison,
+      HEALTH_Q.strokeWarn,
+      HEALTH_Q.accident,
+      HEALTH_Q.woundBad,
+      HEALTH_Q.noSlot,
+      HEALTH_Q.admitHome,
+      HEALTH_Q.costCare,
+      HEALTH_Q.misdiag,
+      HEALTH_Q.faintNow,
+    ],
+  },
+  {
+    label: "检查复查",
+    keys: ["结节", "复查", "疫苗", "拍片", "体检", "指标", "影像", "穿刺", "筛查", "报告", "牙", "家族", "胸部", "下身", "痣", "视力", "听力", "鼓着", "咳嗽"],
+    surface: [
+      HEALTH_Q.nodule,
+      HEALTH_Q.backPain,
+      HEALTH_Q.vaccine,
+      HEALTH_Q.delayFollow,
+      HEALTH_Q.labFlag,
+      HEALTH_Q.moreImage,
+      HEALTH_Q.packLevel,
+      HEALTH_Q.screenNow,
+      HEALTH_Q.falseAlarm,
+      HEALTH_Q.waitResult,
+      HEALTH_Q.dentistDelay,
+      HEALTH_Q.familyHist,
+      HEALTH_Q.breastScreen,
+      HEALTH_Q.gutScope,
+      HEALTH_Q.cervixScreen,
+      HEALTH_Q.moleCheck,
+      HEALTH_Q.visionHear,
+      HEALTH_Q.intimateCheck,
+      HEALTH_Q.twoTests,
+      HEALTH_Q.skipYear,
+      HEALTH_Q.lymph,
+      HEALTH_Q.geneTest,
+      HEALTH_Q.coughLong,
+    ],
+  },
+  {
+    label: "用药手术",
+    keys: ["药", "褪黑素", "胃药", "停药", "处方", "输液", "手术", "复健", "康复", "副作用", "漏服", "同意书", "草药", "抗菌", "转院", "出院", "强疗程", "麻醉", "支架"],
+    surface: [
+      HEALTH_Q.melatonin,
+      HEALTH_Q.stomachStop,
+      HEALTH_Q.refillCity,
+      HEALTH_Q.coldIv,
+      HEALTH_Q.rehabSkip,
+      HEALTH_Q.selfStop,
+      HEALTH_Q.depend,
+      HEALTH_Q.sideFx,
+      HEALTH_Q.surgeryNow,
+      HEALTH_Q.surgeryRisk,
+      HEALTH_Q.consent,
+      HEALTH_Q.recover,
+      HEALTH_Q.rehabPlan,
+      HEALTH_Q.physio,
+      HEALTH_Q.missDose,
+      HEALTH_Q.herbWest,
+      HEALTH_Q.finishAbx,
+      HEALTH_Q.mixMeds,
+      HEALTH_Q.waitSurgery,
+      HEALTH_Q.secondCut,
+      HEALTH_Q.infectionPost,
+      HEALTH_Q.dischargeEarly,
+      HEALTH_Q.stayHospital,
+      HEALTH_Q.chemoChoice,
+      HEALTH_Q.anesthesia,
+      HEALTH_Q.transferHosp,
+      HEALTH_Q.device,
+    ],
+  },
+  {
+    label: "疼痛慢病",
+    keys: ["疼", "慢性", "反复", "疲劳", "免疫", "激素", "甲状腺", "肚子", "指标", "关节", "头晕", "头痛", "喘", "月经", "潮热", "排尿", "耳鸣", "卡住", "打鼾", "腿肿"],
+    surface: [
+      HEALTH_Q.chronic,
+      HEALTH_Q.relapse,
+      HEALTH_Q.longPain,
+      HEALTH_Q.fatigue,
+      HEALTH_Q.immune,
+      HEALTH_Q.hormone,
+      HEALTH_Q.gut,
+      HEALTH_Q.bpSugar,
+      HEALTH_Q.joint,
+      HEALTH_Q.breath,
+      HEALTH_Q.headache,
+      HEALTH_Q.dizzy,
+      HEALTH_Q.heartChol,
+      HEALTH_Q.kidney,
+      HEALTH_Q.liver,
+      HEALTH_Q.autoimm,
+      HEALTH_Q.asthma,
+      HEALTH_Q.cycle,
+      HEALTH_Q.menopause,
+      HEALTH_Q.prostate,
+      HEALTH_Q.eyePress,
+      HEALTH_Q.tinnitus,
+      HEALTH_Q.stone,
+      HEALTH_Q.cancerLive,
+      HEALTH_Q.afterVirus,
+      HEALTH_Q.sleepBreath,
+    ],
+  },
+  {
+    label: "身心睡眠",
+    keys: ["心慌", "心理科", "精神科", "睡眠", "失眠", "焦虑", "咨询", "透支", "用药情绪", "撑不住", "惊吓", "注意力", "戒酒", "住院观察"],
+    surface: [
+      HEALTH_Q.workPanic,
+      HEALTH_Q.psychWait,
+      HEALTH_Q.bodyOrMind,
+      HEALTH_Q.sleepFix,
+      HEALTH_Q.anxietyMed,
+      HEALTH_Q.counsel,
+      HEALTH_Q.panicAttack,
+      HEALTH_Q.burnoutBody,
+      HEALTH_Q.therapyWait,
+      HEALTH_Q.medChange,
+      HEALTH_Q.lowMood,
+      HEALTH_Q.cantHold,
+      HEALTH_Q.traumaBody,
+      HEALTH_Q.focusOff,
+      HEALTH_Q.eatControl,
+      HEALTH_Q.drinkStop,
+      HEALTH_Q.inPatient,
+      HEALTH_Q.griefBody,
+      HEALTH_Q.medVsTalk,
+    ],
+  },
+  {
+    label: "调理外形",
+    keys: ["医美", "过敏", "忌口", "减肥", "皮肤", "体重", "烟", "酒", "咖啡", "作息", "补剂", "运动伤", "掉发", "痘", "矫正", "种牙", "断食", "针灸", "助听器", "久坐"],
+    surface: [
+      HEALTH_Q.cosmetic,
+      HEALTH_Q.allergyMismatch,
+      HEALTH_Q.dietList,
+      HEALTH_Q.dietPills,
+      HEALTH_Q.skin,
+      HEALTH_Q.weight,
+      HEALTH_Q.smokeDrink,
+      HEALTH_Q.lifestyle,
+      HEALTH_Q.supplementSelf,
+      HEALTH_Q.exercise,
+      HEALTH_Q.hairLoss,
+      HEALTH_Q.acne,
+      HEALTH_Q.visionFix,
+      HEALTH_Q.dentalFix,
+      HEALTH_Q.cosmeticRegret,
+      HEALTH_Q.fastDiet,
+      HEALTH_Q.overTrain,
+      HEALTH_Q.needle,
+      HEALTH_Q.hearAid,
+      HEALTH_Q.posture,
+    ],
+  },
+  {
+    label: "家人照护",
+    keys: ["父母", "体检劝", "孩子发烧", "老人", "保健品", "陪诊", "瞒病", "照护", "摔倒", "记性", "少受罪", "外地", "伴侣病", "谁签字", "传染", "夜里"],
+    surface: [
+      HEALTH_Q.parentsCheck,
+      HEALTH_Q.childFever,
+      HEALTH_Q.elderSupp,
+      HEALTH_Q.parentRefuse,
+      HEALTH_Q.accompany,
+      HEALTH_Q.elderFall,
+      HEALTH_Q.caregiver,
+      HEALTH_Q.familyHide,
+      HEALTH_Q.dementia,
+      HEALTH_Q.endLife,
+      HEALTH_Q.nursing,
+      HEALTH_Q.farParent,
+      HEALTH_Q.partnerIll,
+      HEALTH_Q.kidVax,
+      HEALTH_Q.kidMood,
+      HEALTH_Q.whoDecide,
+      HEALTH_Q.infectHome,
+      HEALTH_Q.nightNurse,
+    ],
+  },
+];
+
+export const HEALTH_FEATURED_SURFACE: readonly string[] = [
+  HEALTH_Q.luckNow,
+  HEALTH_Q.chest,
+  HEALTH_Q.toothEr,
+  HEALTH_Q.heal,
+  HEALTH_Q.nodule,
+  HEALTH_Q.surgeryNow,
+  HEALTH_Q.psychWait,
+  HEALTH_Q.childFever,
+  HEALTH_Q.stomachStop,
+  HEALTH_Q.twoHospitals,
+  HEALTH_Q.luckPatch,
+  HEALTH_Q.bodyOrMind,
+  HEALTH_Q.labFlag,
+  HEALTH_Q.parentsCheck,
+];
+
+export type HealthFilterTab = {
+  id: string;
+  label: string;
+  groupLabels: string[];
+  surface?: readonly string[];
+};
+
+/** 方向即框架：一点开铺该组全部现场题。高频是精选入口。 */
+export const HEALTH_FILTER_TABS: readonly HealthFilterTab[] = [
+  { id: "hot", label: "高频", groupLabels: [], surface: HEALTH_FEATURED_SURFACE },
+  { id: "luck", label: "运势", groupLabels: ["身体总势"] },
+  { id: "er", label: "急诊/就医", groupLabels: ["急诊就医"] },
+  { id: "check", label: "检查/复查", groupLabels: ["检查复查"] },
+  { id: "treat", label: "用药/手术", groupLabels: ["用药手术"] },
+  { id: "chronic", label: "疼痛/慢病", groupLabels: ["疼痛慢病"] },
+  { id: "mind", label: "身心/睡眠", groupLabels: ["身心睡眠"] },
+  { id: "body", label: "调理/外形", groupLabels: ["调理外形"] },
+  { id: "family", label: "家人/照护", groupLabels: ["家人照护"] },
+];
+
+export const HEALTH_DEFAULT_FILTER_ID = "hot";
+
+export function healthSurfacesForFilter(
+  filterId: string,
+  groups: ReadonlyArray<{ label: string; surface: readonly string[] }>,
+): string[] {
+  const tab = HEALTH_FILTER_TABS.find((t) => t.id === filterId) ?? HEALTH_FILTER_TABS[0];
+  if (tab?.surface?.length) return [...tab.surface];
+  if (!tab || tab.groupLabels.length === 0) {
+    return groups.flatMap((g) => [...g.surface]);
+  }
+  const want = new Set(tab.groupLabels);
+  return groups.filter((g) => want.has(g.label)).flatMap((g) => [...g.surface]);
+}

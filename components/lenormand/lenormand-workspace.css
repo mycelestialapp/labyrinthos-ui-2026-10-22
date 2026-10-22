@@ -144,7 +144,7 @@
 
 @media (min-width: 1024px) {
   .lenormand-main-grid {
-    grid-template-columns: minmax(0, 1fr) 220px;
+    grid-template-columns: minmax(0, 1fr) minmax(240px, 280px);
   }
 }
 
@@ -163,7 +163,7 @@
   margin-bottom: 0.75rem;
 }
 
-/* 牌位网格预览（仅占位，后续接真实抽牌） */
+/* 牌位网格：启牌后显示 36 张传统母题牌面 */
 .lenormand-slot-grid {
   display: grid;
   gap: 0.5rem;
@@ -171,14 +171,18 @@
 }
 
 .lenormand-slot-grid--3 {
-  grid-template-columns: repeat(3, minmax(0, 1fr));
+  grid-template-columns: repeat(3, minmax(5.2rem, 1fr));
   max-width: 28rem;
   margin: 0 auto;
+  overflow-x: auto;
+  overscroll-behavior-x: contain;
 }
 
 .lenormand-slot-grid--5 {
-  grid-template-columns: repeat(5, minmax(0, 1fr));
+  grid-template-columns: repeat(5, minmax(4.6rem, 1fr));
   max-width: 100%;
+  overflow-x: auto;
+  overscroll-behavior-x: contain;
 }
 
 .lenormand-slot-grid--9 {
@@ -190,13 +194,22 @@
 .lenormand-slot-grid--gt {
   grid-template-columns: repeat(8, minmax(0, 1fr));
   gap: 0.35rem;
-  max-height: 220px;
+  max-height: 28rem;
   overflow: auto;
   overscroll-behavior: contain;
 }
 
+.lenormand-slot-wrap {
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.28rem;
+}
+
 .lenormand-slot {
   aspect-ratio: 3 / 4;
+  width: 100%;
   min-height: 0;
   min-width: 0;
   border-radius: 0.45rem;
@@ -211,12 +224,35 @@
   font-size: 0.6rem;
   letter-spacing: 0.06em;
   color: rgba(232, 220, 196, 0.25);
+  overflow: hidden;
+}
+
+.lenormand-slot--drawn {
+  padding: 0;
+  border-style: solid;
+  border-color: rgba(197, 160, 89, 0.5);
+  background: #1a140f;
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.35);
+}
+
+.lenormand-slot__face {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  user-select: none;
+  transform: none;
 }
 
 .lenormand-slot__time {
   font-size: 0.55rem;
   letter-spacing: 0.14em;
-  color: rgba(197, 160, 89, 0.55);
+  color: rgba(197, 160, 89, 0.7);
+  text-align: center;
+  min-width: 0;
+  max-width: 100%;
+  line-height: 1.3;
+  overflow-wrap: anywhere;
 }
 
 .lenormand-slot__card {
@@ -243,12 +279,34 @@
   font-size: 0.5rem;
   line-height: 1.25;
   color: rgba(232, 220, 196, 0.55);
+  text-align: center;
+  padding: 0 0.15rem;
 }
 
 .lenormand-slot-grid--gt .lenormand-slot {
-  aspect-ratio: 1;
+  aspect-ratio: 3 / 4;
   font-size: 0.48rem;
   min-height: 1.5rem;
+}
+
+.lenormand-aside__row {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.45rem;
+  min-width: 0;
+  font-size: 0.62rem;
+  line-height: 1.35;
+  color: rgba(232, 220, 196, 0.62);
+}
+
+.lenormand-aside__thumb {
+  width: 1.35rem;
+  height: 2.05rem;
+  flex-shrink: 0;
+  object-fit: cover;
+  border-radius: 0.18rem;
+  border: 0.5px solid rgba(197, 160, 89, 0.35);
+  background: #1a140f;
 }
 
 .lenormand-aside {

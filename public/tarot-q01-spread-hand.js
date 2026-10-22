@@ -1,0 +1,1 @@
+window.Q01SpreadHand = {};

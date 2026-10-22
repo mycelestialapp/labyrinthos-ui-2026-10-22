@@ -140,11 +140,11 @@ export const numerologyGateReadoutTitleZh = "读数分层";
 export const numerologyGateReadoutStatusLeadZh = "这一屏陪你：";
 
 export const numerologyGateReadoutStatusBodyZh =
-  "把公历生日收成中间的主路径；上排五个格是生日数、今年个人年、姓名三数（有拉丁名才算）；下表把月、日、年怎么折写给你，用来对眼，不当场下判决书。怎么折、保不保留 11/22/33，都以这一页为准。";
+  "把公历生日收成中间的主路径；上排五个格是生日数、今年个人年、姓名三数（有拉丁名才算）。下面只留解读正文，不当场下判决书。怎么折、保不保留 11/22/33，都以这一页为准。";
 
 /** 「个人星图」页：与之门「读数分层」同一术语下的本表说明；具体去哪块由星图页按钮/清单承接 */
 export const numerologyGateChartReadoutStatusBodyZh =
-  "与「寰宇之门」同一工作台：之门「读数分层」收成两大段（先听完 / 再落定），不再拆成四步。下面五格与六条摘句仍与之门同数；点链过去会滚到对应段。";
+  "与「寰宇之门」同一工作台：之门「读数分层」只留解读正文。下面五格仍与之门同数；点链过去会滚到对应段。";
 
 /** 与页脚 / 导出尾行同一收束句 */
 export const numerologyGateDisclaimerZh = numerologyReadingVoiceClosingLineZh();

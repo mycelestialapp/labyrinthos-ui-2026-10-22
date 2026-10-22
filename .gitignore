@@ -15,6 +15,7 @@
 
 # next.js
 /.next/
+/.cache/
 /out/
 
 # production
@@ -57,5 +58,12 @@ next-env.d.ts
 /scripts/.lint-life-six-health-rubric.cjs
 /scripts/.lint-life-six-b-rubric.cjs
 /scripts/.verify-numerology.cjs
+/scripts/.*.cjs
 
 .vercel
+
+# local build cache and scratch
+/.next-dev/
+__pycache__/
+/tmp-*
+/_tmp_*

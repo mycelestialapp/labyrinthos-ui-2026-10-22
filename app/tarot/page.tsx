@@ -9,7 +9,7 @@ export default function TarotPage() {
   return (
     <iframe
       title="圣域塔罗 · 大师版"
-      src="/tarot-master.html"
+      src="/tarot-master.html?v=115lock"
       className="fixed inset-0 z-0 block h-[100dvh] w-full border-0 bg-[#0b0510]"
     />
   );

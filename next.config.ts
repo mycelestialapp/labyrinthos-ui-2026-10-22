@@ -5,6 +5,22 @@ const nextConfig: NextConfig = {
   experimental: {
     optimizePackageImports: ["lucide-react", "@react-three/fiber", "@react-three/drei"],
   },
+  async headers() {
+    return [
+      {
+        source: "/tarot-master.html",
+        headers: [{ key: "Cache-Control", value: "no-store, must-revalidate" }],
+      },
+      {
+        source: "/tarotQuestionResolve.js",
+        headers: [{ key: "Cache-Control", value: "no-store, must-revalidate" }],
+      },
+      {
+        source: "/tarot-dev-stamp.txt",
+        headers: [{ key: "Cache-Control", value: "no-store, must-revalidate" }],
+      },
+    ];
+  },
   async redirects() {
     return [
       { source: "/xingyun", destination: "/hub", permanent: false },

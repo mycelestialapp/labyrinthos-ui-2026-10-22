@@ -31,6 +31,12 @@ function shouldRewriteTarotPathToStaticMaster(request: NextRequest): boolean {
  */
 export function middleware(request: NextRequest) {
   const { pathname, searchParams } = request.nextUrl;
+  /** 旧轮询地址：不要落到 App 404 编译，否则会把 3088 整台拖死。 */
+  if (pathname === "/tarot-dev-stamp" || pathname === "/tarot-dev-stamp/") {
+    const res = NextResponse.rewrite(new URL("/tarot-dev-stamp.txt", request.url));
+    res.headers.set("Cache-Control", "no-store, must-revalidate");
+    return res;
+  }
   if (pathname !== "/tarot" && pathname !== "/tarot/") {
     return NextResponse.next();
   }
@@ -43,11 +49,13 @@ export function middleware(request: NextRequest) {
     return NextResponse.rewrite(url);
   }
   if (shouldRewriteTarotPathToStaticMaster(request)) {
-    return NextResponse.rewrite(new URL("/tarot-master.html", request.url));
+    const res = NextResponse.rewrite(new URL("/tarot-master.html", request.url));
+    res.headers.set("Cache-Control", "no-store, must-revalidate");
+    return res;
   }
   return NextResponse.next();
 }
 
 export const config = {
-  matcher: ["/tarot", "/tarot/"],
+  matcher: ["/tarot", "/tarot/", "/tarot-dev-stamp", "/tarot-dev-stamp/"],
 };

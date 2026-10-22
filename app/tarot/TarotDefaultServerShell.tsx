@@ -92,7 +92,7 @@ export default function TarotDefaultServerShell() {
       </header>
       <iframe
         title="圣域塔罗大师版"
-        src="/tarot-master.html"
+        src="/tarot-master.html?v=115lock"
         style={{
           flex: "1 1 0",
           minHeight: 0,

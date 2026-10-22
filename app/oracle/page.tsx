@@ -1,6 +1,13 @@
-import TarotPageGate from "../tarot/TarotPageGate";
+"use client";
 
-/** 神谕卡主区：须 `forceOracle`，否则 SSR 无 window 会误渲染大师 HTML 顶栏与神谕壳叠在一起 */
+import OracleThreeActRitual from "@/components/oracle/OracleThreeActRitual";
+import { ReadingBackProvider } from "@/contexts/ReadingBackContext";
+
+/** 神谕卡主区：接回已完成的三幕式（选题 → 抽牌 → 解读） */
 export default function OracleCardsPage() {
-  return <TarotPageGate forceOracle />;
+  return (
+    <ReadingBackProvider>
+      <OracleThreeActRitual />
+    </ReadingBackProvider>
+  );
 }

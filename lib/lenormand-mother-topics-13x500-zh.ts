@@ -135,6 +135,27 @@ const PRIMARY_50_BY_CATEGORY: Record<QuestionCategory, string[]> = {
     "短期调整", "长期改造", "预算约束", "施工风险", "迁居影响", "租住限制", "合规边界", "专业勘察", "验证周期", "复盘机制",
     "能量稳定", "干扰识别", "关键锚点", "优先级排序", "迭代节奏", "过度调整风险", "真实体验", "改善判据", "长期维护", "终局判断",
   ],
+  占梦境: [
+    "梦境主题", "反复梦", "噩梦强度", "清醒程度", "情绪残留", "人物入梦", "场景重复", "象征密度", "预警感", "压力出口",
+    "白天对照", "未说出口", "关系投射", "工作投射", "金钱投射", "身体投射", "失落投射", "分离焦虑", "考试焦虑", "迁居不安",
+    "亲人入梦", "前任入梦", "陌生人入梦", "动物入梦", "水火房屋", "坠落追逐", "牙齿脱落", "迷路信号", "死亡转换", "怀孕象征",
+    "解梦边界", "过度当真", "行动依据", "忽略信号", "记录习惯", "睡眠质量", "片段碎片", "清晰长梦", "连续剧情", "醒来心绪",
+    "孩子述梦", "共享象征", "文化误读", "个人词典", "时机提示", "回避主题", "整合机会", "咨询转介", "现实核验", "终局判断",
+  ],
+  心理疏导: [
+    "情绪命名", "焦虑波动", "抑郁低潮", "惊恐发作", "羞耻启动", "内疚循环", "愤怒出口", "麻木保护", "讨好模式", "完美主义",
+    "自我批判", "自我价值", "界限能力", "求助意愿", "过载识别", "休息许可", "创伤残留", "触发点", "身体紧度", "睡眠崩坏",
+    "亲密警觉", "被看见需求", "孤独质量", "比较消耗", "社交后崩溃", "装没事", "责备自己", "内在小孩", "安全基地", "支持系统",
+    "咨询匹配", "药物协同", "复发念头", "今晚度过", "紧急工具", "战斗逃跑僵住", "情绪天气", "自我慈悲", "自我要求", "节奏修复",
+    "表达练习", "拒绝练习", "感受许可", "专业边界", "家人知情", "污名压力", "稳定练习", "复盘机制", "求助窗口", "终局判断",
+  ],
+  人生建议: [
+    "阶段主旋律", "人生章节", "真实对期待", "优先事项", "价值对齐", "召唤线索", "理想自己", "遗憾清单", "意义方向", "活出版本",
+    "安全与真实", "阶段门槛", "墓志铭练习", "当下与规划", "五年假设", "活着感觉", "成功定义", "忙碌逃避", "放下清单", "方向提示",
+    "年龄节点", "为谁而活", "金钱假设", "不被理解", "十年记忆", "身份卸载", "以后再说", "一年结果", "时间去向", "期待归还",
+    "够用节奏", "私人成功", "平庸恐惧", "无观众检验", "扎根与流动", "排序事业关系身体", "已知不执行", "浪费一生", "计划或许可", "十字路口",
+    "长期愿景", "短期一步", "观众依赖", "角色过载", "意义重建", "节奏设计", "选择成本", "人生复盘", "下一步许可", "终局判断",
+  ],
   其他: [],
 };
 
@@ -186,6 +207,42 @@ function angleHit(qn: string, angleRaw: string): boolean {
 }
 
 const PRIMARY_NEEDLES_CACHE = new Map<string, string[]>();
+const NOISY_BIGRAMS = new Set([
+  "关系", "压力", "风险", "稳定", "边界", "管理", "状态", "判断", "冲突", "能力",
+  "影响", "趋势", "评估", "决策", "沟通", "焦虑", "长期", "短期", "核心", "终局",
+]);
+
+const PRIMARY_ALIAS_RAW: Partial<Record<QuestionCategory, Record<string, string[]>>> = {
+  感情婚姻: {
+    复合意愿: ["回头", "回来", "复合", "和好", "重新在一起"],
+    复合可行性: ["还能复合", "能不能复合", "回不回来", "会不会回头"],
+  },
+  宠物: {
+    行为变化: ["总叫", "半夜叫", "突然叫", "异常叫"],
+    应激反应: ["应激", "紧张", "害怕", "受惊"],
+    健康风险: ["不舒服", "没精神", "食欲差", "状态差"],
+  },
+  出行迁居: {
+    车辆状态: ["车况", "车子状态", "车况不稳"],
+    行程安排: ["改期", "延期", "改时间"],
+    交通稳定: ["稳不稳", "路上稳不稳", "出行稳不稳"],
+  },
+};
+
+const PRIMARY_ALIAS_NORMALIZED: Partial<Record<QuestionCategory, Record<string, string[]>>> = (() => {
+  const out: Partial<Record<QuestionCategory, Record<string, string[]>>> = {};
+  for (const [category, mapping] of Object.entries(PRIMARY_ALIAS_RAW) as [QuestionCategory, Record<string, string[]>][]) {
+    const normalized: Record<string, string[]> = {};
+    for (const [primary, aliases] of Object.entries(mapping)) {
+      const key = normalize(primary);
+      const vals = aliases.map((a) => normalize(a)).filter((a) => a.length >= 2);
+      if (!key || vals.length === 0) continue;
+      normalized[key] = vals;
+    }
+    out[category] = normalized;
+  }
+  return out;
+})();
 
 /** 类内安全的主题短语命中：整词优先，其次唯一前缀/后缀简写（全分类自动生成）。 */
 export function primaryHitNeedlesForCategory(category: QuestionCategory, primaryRaw: string): string[] {
@@ -214,6 +271,17 @@ export function primaryHitNeedlesForCategory(category: QuestionCategory, primary
         break;
       }
     }
+    // 补充类内唯一的中间词片（2~3字），提升口语问法命中率。
+    for (let len = 3; len >= 2; len--) {
+      for (let i = 0; i <= full.length - len; i++) {
+        const chunk = full.slice(i, i + len);
+        if (NOISY_BIGRAMS.has(chunk)) continue;
+        const matched = primaries.filter((p) => p.includes(chunk));
+        if (matched.length === 1 && matched[0] === full) {
+          needles.add(chunk);
+        }
+      }
+    }
   }
 
   const arr = [...needles];
@@ -222,7 +290,11 @@ export function primaryHitNeedlesForCategory(category: QuestionCategory, primary
 }
 
 function primaryPhraseHit(qn: string, category: QuestionCategory, primaryRaw: string): boolean {
-  return primaryHitNeedlesForCategory(category, primaryRaw).some((n) => n.length && qn.includes(n));
+  const needles = primaryHitNeedlesForCategory(category, primaryRaw);
+  if (needles.some((n) => n.length && qn.includes(n))) return true;
+  const primaryNorm = normalize(primaryRaw);
+  const aliases = PRIMARY_ALIAS_NORMALIZED[category]?.[primaryNorm] ?? [];
+  return aliases.some((a) => qn.includes(a));
 }
 
 function idOf(category: string, primaryIndex: number, angleIndex: number): string {
@@ -256,7 +328,10 @@ const TOPICS_BY_CATEGORY: Record<QuestionCategory, MotherTopic[]> = {
   生育子女: [],
   失物寻找: [],
   选择决策: [],
+  占梦境: [],
   代人问卜: [],
+  心理疏导: [],
+  人生建议: [],
   灵性成长: [],
   占风水: [],
   其他: [],
@@ -306,9 +381,6 @@ export function matchMotherTopicDetailed(question: string, category: QuestionCat
   }
 
   if (!best) return null;
-
-  // 仅命中主主题短语、未命中角度且无额外 tag：宁可不输出母题
-  if (bestScore === 6 && !bestAngleHit) return null;
 
   const confidence: "high" | "medium" =
     bestScore >= 9 || (bestScore >= 7 && bestAngleHit) ? "high" : "medium";

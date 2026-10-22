@@ -26,3 +26,6 @@ export const MONEY_QUESTION_TEXTS: readonly string[] = [
   '看中一样东西纠结买不买其实是怕买了后悔？',
   '钱总是不知不觉没了要不要记账一个月试试？',
 ] as const;
+
+/** 财运缺口：期权／股权兑现（事业侧不占格子） */
+export const MONEY_EQUITY_VEST = "现在拿的期权／股权，未来真的能兑现吗？";

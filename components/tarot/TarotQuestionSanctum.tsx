@@ -1,14 +1,14 @@
 "use client";
 
 /**
- * 与 Dmy `OracleSanctumEntrance` 塔罗分支同源：十大类 + 点选具体问题 + 折叠自由输入。
+ * 19 大类 + 手输问题为主，点选例子为辅。
  * 数据：`lib/tarot-question-quick-pick.ts`（自 Dmy `questionQuickPick` 复制）。
  */
 import { useState } from "react";
-import { AnimatePresence, motion } from "framer-motion";
 import { ChevronDown, ChevronUp, X } from "lucide-react";
 import { lifeSixSanctumMasterHintZh } from "@/lib/tarot-life-six-sanctum-copy-zh";
 import { QUESTION_QUICK_PICK_WESTERN } from "@/lib/tarot-question-quick-pick";
+import { TAROT_DIR_BY_CATEGORY_WESTERN, WESTERN_DIR_PACKS, westernSurfacesFlat } from "@/lib/tarot-western";
 
 const DISCLAIMER_KEY = "labyrinthos_tarot_disclaimer_seen";
 
@@ -31,7 +31,7 @@ export default function TarotQuestionSanctum({
 }: TarotQuestionSanctumProps) {
   const O = visualVariant === "oracle";
   const [quickPickCategoryIndex, setQuickPickCategoryIndex] = useState(0);
-  const [showTarotFreeInput, setShowTarotFreeInput] = useState(false);
+  const [dirFilterId, setDirFilterId] = useState("hot");
   const [disclaimerDismissed, setDisclaimerDismissed] = useState(() => {
     if (typeof window === "undefined") return false;
     try {
@@ -98,7 +98,7 @@ export default function TarotQuestionSanctum({
           选择方向与具体问题
         </p>
         <div
-          className={`min-h-[200px] space-y-1 rounded-[60px] p-3 sm:p-4 ${
+          className={`max-h-[min(70vh,46rem)] min-h-[200px] space-y-1 overflow-y-auto overscroll-contain rounded-[60px] p-3 sm:p-4 ${
             O
               ? "border border-[#a9844a] bg-[rgba(20,10,25,0.6)]"
               : "rounded-2xl border border-[rgba(197,160,89,0.18)] bg-gradient-to-br from-[rgba(36,32,52,0.5)] to-[rgba(10,8,24,0.85)]"
@@ -106,8 +106,8 @@ export default function TarotQuestionSanctum({
         >
           {quickPickList.map((cat, i) => {
             const isActive = safeIndex === i;
-            const isLove = cat.id === "感情婚姻";
-            const isCareer = cat.id === "事业工作";
+            const dir = TAROT_DIR_BY_CATEGORY_WESTERN[cat.id];
+            const dirTabs = dir?.tabs ?? [];
             const lifeSixHint = lifeSixSanctumMasterHintZh(cat.id);
             return (
               <div key={cat.id} className={`border-b py-1.5 last:border-b-0 ${O ? "border-[#a9844a]/25" : "border-white/[0.06]"}`}>
@@ -115,6 +115,7 @@ export default function TarotQuestionSanctum({
                   type="button"
                   onClick={() => {
                     setQuickPickCategoryIndex(i);
+                    setDirFilterId(TAROT_DIR_BY_CATEGORY_WESTERN[cat.id]?.defaultId ?? "hot");
                     onCategoryChange?.(cat.id);
                   }}
                   className={
@@ -133,36 +134,101 @@ export default function TarotQuestionSanctum({
                 </button>
 
                 {isActive && (
-                  <div className="mt-2 space-y-2 px-1">
-                    {(isLove || isCareer || lifeSixHint) && (
+                  <div className="mt-2 space-y-3 px-1">
+                    <div className="flex min-w-0 flex-wrap items-stretch gap-2">
+                      <input
+                        type="text"
+                        value={question}
+                        maxLength={120}
+                        placeholder="输入你的问题"
+                        aria-label="输入你的问题"
+                        onChange={(e) => {
+                          onQuestionChange(e.target.value);
+                          if (cat.id) onCategoryChange?.(cat.id);
+                        }}
+                        onKeyDown={(e) => {
+                          if (e.key !== "Enter" || !onStartReading) return;
+                          e.preventDefault();
+                          onStartReading();
+                        }}
+                        className={`min-h-12 min-w-0 flex-1 rounded-full border px-4 py-2.5 text-sm outline-none sm:text-base ${
+                          O
+                            ? "border-[#a9844a] bg-[rgba(10,5,18,0.55)] text-[#f3e6d2] placeholder:text-[#8a7a60]"
+                            : "border-white/[0.12] bg-black/35 text-zinc-200 placeholder:text-zinc-600"
+                        }`}
+                      />
+                      {onStartReading ? (
+                        <button
+                          type="button"
+                          onClick={onStartReading}
+                          className={
+                            O
+                              ? "draw-btn shrink-0 justify-center px-5"
+                              : "shrink-0 rounded-full border border-[rgba(197,160,89,0.45)] bg-gradient-to-r from-[rgba(197,160,89,0.2)] to-[rgba(120,80,160,0.12)] px-5 py-2.5 text-sm font-medium tracking-[0.12em] text-[#E8D4A8]"
+                          }
+                        >
+                          抽牌
+                        </button>
+                      ) : null}
+                    </div>
+                    {(dir?.hint || lifeSixHint) && (
                       <p className={`px-2 text-xs leading-relaxed sm:text-[13px] ${O ? "text-[#cbaf7a]/90" : "text-zinc-500"}`}>
-                        {isLove &&
-                          "塔罗更擅长行动建议，而不是简单 yes/no 或精确时间。把问题落在「我能做什么」往往更有帮助。"}
-                        {isCareer &&
-                          "牌面更擅长取舍与行动建议，而不是单纯成败预测。建议聚焦「如何调整、可以做什么」。"}
-                        {!isLove && !isCareer && lifeSixHint}
+                        {dir?.hint ?? lifeSixHint}
                       </p>
                     )}
-                    <div className="grid grid-cols-1 gap-1.5 sm:grid-cols-2 sm:gap-2">
-                      {cat.questions.map((q, j) => (
-                        <button
-                          key={j}
-                          type="button"
-                          onClick={() => handlePickQuestion(q)}
-                          className={`rounded-xl border px-3 py-2 text-left text-[14px] leading-snug transition-colors sm:text-[15px] ${
-                            question === q
-                              ? O
-                                ? "border-[#ffd966] bg-[rgba(182,144,66,0.2)] text-[#ffdfa7] shadow-[0_0_24px_rgba(250,188,47,0.25)]"
-                                : "border-[#C5A059]/55 bg-[#C5A059]/18 text-[#E8D4A8] shadow-[0_8px_18px_rgba(0,0,0,0.2)]"
-                              : O
-                                ? "border-[#a9844a]/40 text-[#f2e1ba] hover:border-[#dbb45c]/55 hover:bg-[#b69042]/10"
-                                : "border-white/[0.08] text-zinc-300 hover:border-[#C5A059]/28 hover:bg-[#C5A059]/08"
-                          }`}
-                          style={{ fontFamily: O ? "'Cormorant Garamond', serif" : '"Noto Serif SC", "Source Han Serif SC", serif' }}
-                        >
-                          {q}
-                        </button>
-                      ))}
+                    {dirTabs.length > 0 && (
+                      <div className="flex min-w-0 gap-3 overflow-x-auto overscroll-x-contain pb-1" role="tablist" aria-label={`${cat.label}二次筛选`}>
+                        {dirTabs.map((tab) => {
+                          const on = dirFilterId === tab.id;
+                          return (
+                            <button
+                              key={tab.id}
+                              type="button"
+                              role="tab"
+                              aria-selected={on}
+                              onClick={() => setDirFilterId(tab.id)}
+                              className={`shrink-0 whitespace-nowrap rounded-full border px-4 py-2.5 text-[18px] font-semibold leading-tight sm:text-[20px] ${
+                                on
+                                  ? O
+                                    ? "border-[#dbb45c] bg-[rgba(182,144,66,0.32)] text-[#ffefa8]"
+                                    : "border-[#C5A059]/55 bg-[#C5A059]/18 text-[#E8D4A8]"
+                                  : O
+                                    ? "border-[#a9844a]/55 text-[#f3e6d2] hover:border-[#b6974b]"
+                                    : "border-white/[0.08] text-zinc-300 hover:border-[#C5A059]/28"
+                              }`}
+                              style={{ fontFamily: '"Noto Serif SC", "Source Han Serif SC", "Songti SC", serif' }}
+                            >
+                              {tab.label}
+                            </button>
+                          );
+                        })}
+                      </div>
+                    )}
+                    <div className="min-w-0 overflow-x-auto overscroll-x-contain pr-1">
+                      <div className="flex flex-wrap gap-x-4 gap-y-3">
+                        {(WESTERN_DIR_PACKS[cat.id]
+                          ? westernSurfacesFlat(dirFilterId, WESTERN_DIR_PACKS[cat.id]!)
+                          : cat.questions
+                        ).map((q, j) => (
+                          <button
+                            key={`${cat.id}-${j}`}
+                            type="button"
+                            onClick={() => handlePickQuestion(q)}
+                            className={`max-w-full shrink-0 rounded-full border px-4 py-2 text-left text-[14px] leading-snug break-words transition-colors sm:text-[15px] ${
+                              question === q
+                                ? O
+                                  ? "border-[#ffd966] bg-[rgba(182,144,66,0.2)] text-[#ffdfa7] shadow-[0_0_24px_rgba(250,188,47,0.25)]"
+                                  : "border-[#C5A059]/55 bg-[#C5A059]/18 text-[#E8D4A8] shadow-[0_8px_18px_rgba(0,0,0,0.2)]"
+                                : O
+                                  ? "border-[#a9844a]/40 text-[#f2e1ba] hover:border-[#dbb45c]/55 hover:bg-[#b69042]/10"
+                                  : "border-white/[0.08] text-zinc-300 hover:border-[#C5A059]/28 hover:bg-[#C5A059]/08"
+                            }`}
+                            style={{ fontFamily: O ? "'Cormorant Garamond', serif" : '"Noto Serif SC", "Source Han Serif SC", serif' }}
+                          >
+                            {q}
+                          </button>
+                        ))}
+                      </div>
                     </div>
                   </div>
                 )}
@@ -170,83 +236,6 @@ export default function TarotQuestionSanctum({
             );
           })}
         </div>
-      </div>
-
-      {question.trim() && (
-        <div className="space-y-3">
-          <div
-            className={`rounded-[40px] px-4 py-3 ${
-              O
-                ? "border border-[rgba(212,175,55,0.4)] bg-[rgba(10,5,18,0.65)]"
-                : "rounded-2xl border border-[rgba(197,160,89,0.2)] bg-black/35"
-            }`}
-          >
-            <p className={`text-xs ${O ? "text-[#e7cf9c]" : "text-zinc-500"}`} style={O ? { fontFamily: "'Cinzel', serif" } : undefined}>
-              当前问题
-            </p>
-            <p className={`mt-1 text-base leading-relaxed sm:text-lg ${O ? "text-[#f2e1ba]" : "text-zinc-200"}`}>{question}</p>
-          </div>
-          {onStartReading && (
-            <button
-              type="button"
-              onClick={onStartReading}
-              className={
-                O
-                  ? "draw-btn w-full justify-center"
-                  : "w-full rounded-2xl border border-[rgba(197,160,89,0.45)] bg-gradient-to-r from-[rgba(197,160,89,0.2)] to-[rgba(120,80,160,0.12)] py-3.5 text-sm font-medium tracking-[0.15em] text-[#E8D4A8] transition hover:border-[#C5A059]/65"
-              }
-            >
-              前往牌阵与抽牌
-            </button>
-          )}
-        </div>
-      )}
-
-      <div className="space-y-2">
-        <button
-          type="button"
-          onClick={() => setShowTarotFreeInput((v) => !v)}
-          className={
-            O
-              ? "flex w-full items-center justify-center gap-2 rounded-[40px] border border-[#a9844a] bg-[rgba(20,10,25,0.45)] py-3 text-sm font-medium text-[#cbaf7a] transition hover:border-[#dbb45c] hover:bg-[rgba(182,144,66,0.12)] hover:text-[#f2e1ba]"
-              : "flex w-full items-center justify-center gap-2 rounded-xl border border-white/[0.1] bg-black/25 py-3 text-sm font-medium text-zinc-400 transition hover:border-[#C5A059]/25 hover:bg-white/[0.04] hover:text-zinc-300"
-          }
-          style={O ? { fontFamily: "'Cinzel', serif" } : undefined}
-        >
-          或自己输入问题
-          {showTarotFreeInput ? <ChevronUp className="h-4 w-4" aria-hidden /> : <ChevronDown className="h-4 w-4" aria-hidden />}
-        </button>
-        <AnimatePresence>
-          {showTarotFreeInput && (
-            <motion.div
-              initial={{ height: 0, opacity: 0 }}
-              animate={{ height: "auto", opacity: 1 }}
-              exit={{ height: 0, opacity: 0 }}
-              transition={{ duration: 0.2 }}
-              className="overflow-hidden"
-            >
-              <div
-                className={
-                  O
-                    ? "rounded-[30px] border border-[rgba(212,175,55,0.35)] bg-[rgba(10,5,18,0.5)] p-3"
-                    : "rounded-2xl border border-white/[0.1] bg-black/35 p-3"
-                }
-              >
-                <textarea
-                  value={question}
-                  onChange={(e) => onQuestionChange(e.target.value)}
-                  rows={2}
-                  maxLength={200}
-                  placeholder="例如：我该如何改善目前的感情沟通？"
-                  className={`w-full resize-none bg-transparent text-sm leading-relaxed outline-none ${
-                    O ? "text-[#f3e6d2] placeholder:text-[#8a7a60]" : "text-zinc-200 placeholder:text-zinc-600"
-                  }`}
-                  style={O ? { fontFamily: "'Cormorant Garamond', serif" } : undefined}
-                />
-              </div>
-            </motion.div>
-          )}
-        </AnimatePresence>
       </div>
     </section>
   );

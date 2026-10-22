@@ -4,11 +4,11 @@
     <meta charset="UTF-8">
     <!-- 文档 URL 为 /tarot 时，相对路径脚本/样式须相对站点根解析，否则易全白 -->
     <base href="/">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>圣域塔罗 · 完整六大牌阵 · 大师版</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700;900&family=Cormorant+Garamond:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700;900&family=Cormorant+Garamond:ital,wght@0,400;0,600;1,400&family=Noto+Serif+SC:wght@500;600&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <style>
         /* ---------- 全局样式 ---------- */
@@ -24,11 +24,11 @@
             background: #0b0510;
             min-height: 100vh;
             display: flex;
-            align-items: center;
+            align-items: flex-start;
             justify-content: center;
             font-family: 'Cormorant Garamond', serif;
             color: #e5d5b3;
-            padding: 2rem;
+            padding: 1rem 0.75rem 2.5rem;
             position: relative;
             overflow-x: hidden;
             font-size: 1.1rem;
@@ -92,19 +92,22 @@
             100% { opacity: 1; }
         }
 
-        /* 主圣所 */
+        /* 主圣所：不再套金边外框，让 19 大类有完整宽度 */
         .sanctum {
             position: relative;
             z-index: 20;
             width: 100%;
-            max-width: 1600px;
-            background: rgba(6, 2, 12, 0.4);
-            backdrop-filter: blur(16px) saturate(180%);
-            -webkit-backdrop-filter: blur(16px) saturate(180%);
-            border-radius: 60px;
-            padding: 3.5rem 3rem;
-            border: 1px solid rgba(212, 175, 55, 0.3);
-            box-shadow: 0 40px 80px -20px black;
+            max-width: none;
+            margin-left: auto;
+            margin-right: auto;
+            background: transparent;
+            backdrop-filter: none;
+            -webkit-backdrop-filter: none;
+            border-radius: 0;
+            padding: 1.2rem clamp(1rem, 2vw, 2.5rem) 2.5rem;
+            border: none;
+            box-shadow: none;
+            box-sizing: border-box;
         }
 
         /* 标题区 */
@@ -165,53 +168,113 @@
             border-color: #ffdd99;
             box-shadow: 0 0 15px #fabc2f;
         }
+        .spread-tag[hidden] {
+            display: none !important;
+        }
+        .spread-synthesis {
+            margin-top: 1.4rem;
+            padding-top: 1rem;
+            border-top: 1px solid rgba(164, 142, 98, 0.35);
+        }
+        .west-article {
+            font-family: 'Noto Serif SC', 'Source Han Serif SC', 'Songti SC', serif;
+            font-size: 1.05rem;
+            line-height: 1.8;
+            color: #d4d4d8;
+            background: none;
+            border: none;
+            box-shadow: none;
+        }
+        .west-article h3.west-kicker {
+            margin: 1.5rem 0 0.85rem;
+            padding-top: 0;
+            font-family: 'Noto Serif SC', 'Source Han Serif SC', 'Songti SC', serif;
+            font-size: 1.5rem;
+            font-weight: 700;
+            line-height: 1.45;
+            letter-spacing: 0.06em;
+            color: #FBBF24;
+            background: none;
+            border: none;
+            box-shadow: none;
+        }
+        .west-article h3.west-kicker:first-child {
+            margin-top: 0;
+        }
+        .west-flow {
+            margin: 0 0 1.5rem;
+            line-height: 1.8;
+            color: #d4d4d8;
+            background: none;
+            border: none;
+            box-shadow: none;
+            padding: 0;
+            overflow-wrap: break-word;
+        }
+        .west-name {
+            display: inline;
+            font-weight: 700;
+            color: #fcd34d;
+            background: rgba(120, 53, 15, 0.55);
+            padding: 0.08rem 0.4rem;
+            border-radius: 0.25rem;
+            box-decoration-break: clone;
+            -webkit-box-decoration-break: clone;
+            vertical-align: baseline;
+        }
+        .west-callout {
+            margin-top: 1.5rem;
+            padding: 1rem 1rem 0.25rem;
+            border: none;
+            border-left: 4px solid #f59e0b;
+            background: rgba(69, 26, 3, 0.2);
+            border-radius: 0 0.5rem 0.5rem 0;
+            box-shadow: none;
+        }
+        .west-callout h3.west-kicker {
+            margin-top: 0;
+            padding-top: 0;
+        }
 
         /* 问题库入口 */
         .question-sanctum {
-            background: rgba(10, 5, 15, 0.5);
-            backdrop-filter: blur(8px);
-            border-radius: 48px;
-            padding: 2rem 2.5rem;
-            margin-bottom: 3rem;
-            border: 1px solid rgba(212, 175, 55, 0.2);
+            margin-bottom: 2.2rem;
+            width: 100%;
+            min-width: 0;
         }
         .category-selector {
             display: flex;
             flex-direction: column;
             gap: 1.2rem;
             align-items: stretch;
+            width: 100%;
+            min-width: 0;
         }
         .category-tabs {
             display: flex;
             flex-direction: row;
-            flex-wrap: nowrap;
+            flex-wrap: wrap;
             align-items: center;
-            gap: 0.45rem 0.65rem;
+            justify-content: center;
+            gap: 0.7rem 0.85rem;
             width: 100%;
-            overflow-x: auto;
-            overflow-y: hidden;
-            padding-bottom: 0.25rem;
-            -webkit-overflow-scrolling: touch;
-            scrollbar-width: thin;
-            scrollbar-color: rgba(212, 175, 55, 0.35) transparent;
+            min-width: 0;
+            overflow: visible;
+            padding: 0.15rem 0 0.35rem;
         }
         .category-tabs::-webkit-scrollbar {
-            height: 4px;
-        }
-        .category-tabs::-webkit-scrollbar-thumb {
-            background: rgba(212, 175, 55, 0.35);
-            border-radius: 4px;
+            display: none;
         }
         .category-tab {
             flex: 0 0 auto;
             white-space: nowrap;
-            background: rgba(0, 0, 0, 0.35);
+            background: rgba(20, 10, 25, 0.6);
             border: 1px solid #7a6a4b;
             border-radius: 40px;
-            padding: 0.5rem 1rem;
+            padding: 0.55rem 1.15rem;
             font-family: 'Cormorant Garamond', serif;
-            font-size: 1rem;
-            color: #c9b896;
+            font-size: 1.02rem;
+            color: #d4b68a;
             cursor: pointer;
             outline: none;
             transition: 0.2s;
@@ -231,7 +294,44 @@
             outline: 2px solid #deb887;
             outline-offset: 2px;
         }
-        /* 大类标签下方：本类 20 题整块可折叠（非十个独立手风琴） */
+        .ask-compose {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: stretch;
+            gap: 0.65rem;
+            width: 100%;
+            min-width: 0;
+        }
+        .ask-compose input {
+            flex: 1 1 16rem;
+            min-width: 0;
+            min-height: 3.25rem;
+            box-sizing: border-box;
+            border-radius: 999px;
+            border: 1px solid #a9844a;
+            background: rgba(10, 5, 18, 0.55);
+            color: #f3e6d2;
+            padding: 0.85rem 1.25rem;
+            font-size: 1.05rem;
+            line-height: 1.45;
+        }
+        .ask-compose input::placeholder {
+            color: #8a7a60;
+        }
+        .ask-compose .ritual-btn {
+            flex: 0 0 auto;
+            margin: 0;
+            font-size: 1.15rem;
+            letter-spacing: 0.18em;
+            padding: 0.75rem 1.8rem;
+            box-shadow: 0 0 18px #9e7f45;
+        }
+        @media screen and (max-width: 640px) {
+            .ask-compose .ritual-btn {
+                width: 100%;
+            }
+        }
+        /* 例子在提问栏下方，不插在输入和抽牌之间 */
         .category-questions-details {
             margin-top: 1rem;
             border: 1px solid rgba(122, 106, 75, 0.5);
@@ -273,20 +373,75 @@
             padding: 0 1rem 1.1rem;
             border-top: 1px solid rgba(212, 175, 55, 0.12);
         }
+        .question-filter-tabs {
+            display: none;
+            flex-direction: row;
+            flex-wrap: nowrap;
+            align-items: center;
+            gap: 0.7rem;
+            width: 100%;
+            min-width: 0;
+            overflow-x: auto;
+            overscroll-behavior-x: contain;
+            padding: 0.85rem 0 1rem;
+            -webkit-overflow-scrolling: touch;
+            scrollbar-width: thin;
+        }
+        .question-filter-tabs.is-on {
+            display: flex;
+        }
+        .question-filter-tab {
+            flex: 0 0 auto;
+            white-space: nowrap;
+            background: rgba(20, 10, 25, 0.45);
+            border: 1px solid rgba(169, 132, 74, 0.75);
+            border-radius: 999px;
+            padding: 0.62rem 1.3rem;
+            font-family: 'Noto Serif SC', 'Source Han Serif SC', 'Songti SC', serif;
+            font-size: 1.28rem;
+            font-weight: 600;
+            line-height: 1.3;
+            color: #f3e6d2;
+            cursor: pointer;
+            outline: none;
+            min-width: 5.5rem;
+        }
+        .question-filter-tab:hover {
+            border-color: #b6974b;
+            color: #f3e6d2;
+        }
+        .question-filter-tab.active {
+            background: rgba(182, 144, 66, 0.32);
+            border-color: #dbb45c;
+            color: #ffefa8;
+        }
+        .question-filter-tab:focus-visible {
+            outline: 2px solid #deb887;
+            outline-offset: 2px;
+        }
         .question-grid {
             display: flex;
             flex-wrap: wrap;
-            gap: 1rem;
+            gap: 0.75rem 1rem;
+            width: 100%;
+            min-width: 0;
         }
         .question-option {
+            flex: 0 1 auto;
+            min-width: 0;
+            max-width: 100%;
+            box-sizing: border-box;
             background: rgba(255,255,255,0.02);
             border: 1px solid #5d4d31;
-            border-radius: 40px;
-            padding: 0.6rem 1.5rem;
+            border-radius: 1rem;
+            padding: 0.6rem 1.1rem;
             font-size: 1.1rem;
+            line-height: 1.55;
             color: #d3c7b0;
             cursor: pointer;
             transition: 0.2s;
+            white-space: normal;
+            overflow-wrap: break-word;
         }
         .question-option:hover {
             background: rgba(212, 175, 55, 0.1);
@@ -315,99 +470,189 @@
             display: block;
         }
 
-        /* 左右分栏布局（适用于所有牌阵） */
+        /* 牌阵与解读都吃满全局容器，左右与输入框对齐 */
         .spread-layout {
             display: flex;
-            gap: 3rem;
-            flex-wrap: wrap;
+            flex-direction: column;
+            gap: 1.15rem;
+            width: 100%;
+            max-width: none;
+            min-width: 0;
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            background: none;
+            border-radius: 0;
         }
         .position-panel {
-            flex: 1.2;
-            min-width: 320px;
-            background: rgba(10, 5, 15, 0.5);
-            backdrop-filter: blur(8px);
-            border-radius: 48px;
-            padding: 2.5rem 2rem;
-            border: 1px solid rgba(212, 175, 55, 0.2);
+            width: 100%;
+            min-width: 0;
+            background: transparent;
+            border: none;
+            border-radius: 0;
+            padding: 0;
         }
         .position-panel h3 {
-            font-family: 'Cinzel', serif;
+            font-family: 'Noto Serif SC', 'Source Han Serif SC', 'Songti SC', serif;
             color: #e7cf9c;
-            font-size: 1.9rem;
-            border-bottom: 1px solid #b5944b;
-            padding-bottom: 0.7rem;
-            margin-bottom: 2rem;
-            letter-spacing: 3px;
+            font-size: 1.05rem;
+            font-weight: 600;
+            letter-spacing: 0.14em;
+            border: none;
+            padding: 0;
+            margin: 0 0 0.85rem;
         }
         .position-list {
             display: flex;
-            flex-direction: column;
-            gap: 1rem;
+            flex-direction: row;
+            align-items: stretch;
+            gap: 0.5rem;
+            width: 100%;
+            min-width: 0;
+            overflow-x: auto;
+            overscroll-behavior-x: contain;
+            padding: 0.1rem 0 0.2rem;
         }
         .position-item {
             display: flex;
-            align-items: baseline;
-            justify-content: space-between;
-            padding: 1rem 1.3rem;
-            border-radius: 40px;
-            background: rgba(255,255,255,0.02);
-            border: 1px solid transparent;
-            transition: 0.2s;
-            cursor: pointer;
-            opacity: 0; /* 动画控制 */
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 0.15rem;
+            flex: 0 0 auto;
+            min-width: 6.4rem;
+            min-height: 0;
+            padding: 0.5rem 0.7rem;
+            border-radius: 999px;
+            background: rgba(243, 224, 176, 0.08);
+            border: none;
+            box-shadow: none;
+            cursor: default;
+            pointer-events: none;
+            opacity: 0;
             transform: translateY(-20px);
+            text-align: center;
         }
-        .position-item:hover {
-            background: rgba(212, 175, 55, 0.1);
-            border-color: #b6974b;
-        }
+        .position-item:hover,
         .position-item.active {
-            background: rgba(180, 140, 70, 0.2);
-            border-color: #e5b95c;
-            box-shadow: 0 0 15px rgba(230, 190, 80, 0.3);
+            background: rgba(243, 224, 176, 0.08);
+            border: none;
+            box-shadow: none;
         }
         .pos-name {
-            font-family: 'Cinzel', serif;
-            font-size: 1.25rem;
+            font-family: 'Noto Serif SC', 'Source Han Serif SC', 'Songti SC', serif;
+            font-size: 0.95rem;
+            line-height: 1.3;
             color: #ffdfa7;
+            white-space: nowrap;
         }
         .pos-card {
-            font-size: 1.15rem;
-            color: #d3c7b0;
-            font-style: italic;
-            background: rgba(0,0,0,0.2);
-            padding: 0.3rem 1rem;
-            border-radius: 30px;
-            border: 1px solid #6a5a3a;
+            font-family: 'Noto Serif SC', 'Source Han Serif SC', 'Songti SC', serif;
+            font-size: 0.8rem;
+            line-height: 1.35;
+            color: #cbbfa8;
+            font-style: normal;
+            white-space: nowrap;
+            background: none;
+            padding: 0;
+            border: none;
+            border-radius: 0;
         }
 
         /* 右侧解读区 */
         .reading-panel {
-            flex: 2;
-            min-width: 350px;
-            background: rgba(10, 5, 18, 0.6);
-            backdrop-filter: blur(16px);
-            border-radius: 48px;
-            padding: 2.5rem 2.5rem;
-            border: 1px solid rgba(212, 175, 55, 0.3);
+            width: 100%;
+            max-width: none;
+            min-width: 0;
+            margin: 0;
+            box-sizing: border-box;
+            background: rgba(24, 24, 27, 0.6);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid rgba(245, 158, 11, 0.2);
+            border-radius: 1rem;
+            padding: 1rem;
+            box-shadow: none;
+        }
+        @media screen and (min-width: 768px) {
+            .position-list {
+                display: grid;
+                overflow: visible;
+                gap: 0.75rem;
+                grid-template-columns: repeat(auto-fit, minmax(0, 1fr));
+            }
+            .spread-layout[data-spread="venus"] .position-list {
+                grid-template-columns: repeat(7, minmax(0, 1fr));
+            }
+            .spread-layout[data-spread="triangle"] .position-list,
+            .spread-layout[data-spread="trinity"] .position-list {
+                grid-template-columns: repeat(3, minmax(0, 1fr));
+            }
+            .spread-layout[data-spread="choice"] .position-list,
+            .spread-layout[data-spread="hexagram"] .position-list {
+                grid-template-columns: repeat(6, minmax(0, 1fr));
+            }
+            .spread-layout[data-spread="celtic"] .position-list {
+                grid-template-columns: repeat(5, minmax(0, 1fr));
+            }
+            .spread-layout[data-spread="single"] .position-list {
+                grid-template-columns: minmax(0, 14rem);
+                justify-content: start;
+            }
+            .position-item {
+                width: 100%;
+                min-width: 0;
+                flex: none;
+                overflow: visible;
+                border-radius: 1rem;
+                padding: 0.65rem 0.3rem;
+            }
+            .pos-name,
+            .pos-card {
+                white-space: normal;
+                overflow-wrap: anywhere;
+                max-width: 100%;
+            }
+            .reading-panel {
+                padding: 2rem;
+            }
         }
         .reading-header {
             display: flex;
-            align-items: center;
-            gap: 16px;
-            border-bottom: 1px solid #b5944b;
-            padding-bottom: 1.2rem;
-            margin-bottom: 2rem;
+            align-items: flex-start;
+            gap: 0.7rem;
+            border-bottom: none;
+            padding-bottom: 0;
+            margin-bottom: 0;
+            min-width: 0;
+        }
+        .reading-heading {
+            min-width: 0;
+            flex: 1 1 auto;
         }
         .reading-header i {
-            font-size: 2.4rem;
-            color: #deb887;
+            font-size: 1.25rem;
+            color: #e2c27a;
+            margin-top: 0.35rem;
         }
         .reading-header h2 {
-            font-family: 'Cinzel', serif;
-            font-size: 2.1rem;
-            color: #e7cf9c;
-            letter-spacing: 3px;
+            font-family: 'Noto Serif SC', 'Source Han Serif SC', 'Songti SC', serif;
+            font-size: 1.55rem;
+            font-weight: 600;
+            color: #f3e0b0;
+            letter-spacing: 0.16em;
+        }
+        .reading-question {
+            margin: 0.45rem 0 1rem;
+            font-family: 'Noto Serif SC', 'Source Han Serif SC', 'Songti SC', serif;
+            font-size: 1.08rem;
+            font-weight: 600;
+            line-height: 1.65;
+            color: #FBBF24;
+            overflow-wrap: break-word;
+        }
+        .reading-question:empty {
+            display: none;
         }
         .card-detail {
             opacity: 0;
@@ -470,10 +715,10 @@
             color: #f2e1ba;
         }
 
-        /* 抽牌按钮 */
+        /* 抽牌按钮（与输入框并排时由 .ask-compose 收口） */
         .draw-zone {
             text-align: center;
-            margin: 2.5rem 0 1.5rem;
+            margin: 0;
         }
         .ritual-btn {
             background: linear-gradient(145deg, #4a3a22, #2a1e12);
@@ -494,6 +739,103 @@
             box-shadow: 0 0 50px #dbb45c;
             transform: scale(1.03);
         }
+        .followup-zone {
+            width: 100%;
+            min-width: 0;
+            margin: 0 0 1.35rem;
+            padding: 0;
+            text-align: center;
+        }
+        .followup-hint {
+            color: #a48e62;
+            font-size: 0.95rem;
+            line-height: 1.55;
+            margin: 0 0 0.85rem;
+            max-width: none;
+        }
+        .followup-chips,
+        .asked-queue {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 0.55rem;
+            overflow-x: auto;
+            overscroll-behavior-x: contain;
+            margin-bottom: 0.75rem;
+        }
+        .followup-chip,
+        .asked-chip {
+            flex: 0 1 auto;
+            max-width: 22rem;
+            min-width: 0;
+            border-radius: 40px;
+            padding: 0.45rem 1.15rem;
+            font-size: 1rem;
+            line-height: 1.4;
+            white-space: normal;
+            text-align: center;
+            color: #d3c7b0;
+            background: rgba(255,255,255,0.03);
+            border: 1px solid #5d4d31;
+            cursor: pointer;
+        }
+        .followup-chip:hover,
+        .asked-chip:hover {
+            border-color: #b6974b;
+            color: #ffdfa7;
+        }
+        .followup-chip.active,
+        .asked-chip.active {
+            background: #b69042;
+            color: #0c0712;
+            border-color: #ffdd99;
+        }
+        .asked-label {
+            flex: 0 0 auto;
+            color: #8a7a60;
+            font-size: 0.85rem;
+            padding: 0.45rem 0.2rem;
+        }
+        .followup-compose {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: stretch;
+            gap: 0.55rem;
+            width: 100%;
+            min-width: 0;
+        }
+        .followup-compose input {
+            min-width: 0;
+            flex: 1 1 12rem;
+            max-width: none;
+            border-radius: 40px;
+            border: 1px solid #5d4d31;
+            background: rgba(10,5,18,0.45);
+            color: #f3e6d2;
+            padding: 0.55rem 1.1rem;
+            font-size: 1rem;
+        }
+        .followup-compose button {
+            flex: 0 0 auto;
+            border-radius: 40px;
+            border: 1px solid #a9844a;
+            background: rgba(20,10,25,0.45);
+            color: #cbaf7a;
+            padding: 0.55rem 1.2rem;
+            cursor: pointer;
+        }
+        .followup-more {
+            margin-top: 0.7rem;
+            text-align: center;
+        }
+        .followup-more summary {
+            cursor: pointer;
+            color: #8a7a60;
+            font-size: 0.9rem;
+            list-style: none;
+        }
+        .followup-more summary::-webkit-details-marker { display: none; }
+        .followup-more .followup-chips { margin-top: 0.65rem; }
 
         /* 粒子画布 */
         #stardust {
@@ -528,18 +870,79 @@
             100% { opacity: 0; transform: scale(1.2); }
         }
 
+        .reading-backbar {
+            display: none;
+            align-items: center;
+            justify-content: space-between;
+            gap: 0.75rem;
+            width: 100%;
+            min-width: 0;
+            margin: 0 0 1rem;
+            padding: 0.55rem 0 0.85rem;
+            border-bottom: 1px solid rgba(219, 180, 92, 0.55);
+        }
+        .reading-backbar a,
+        .reading-backbar button {
+            font-family: 'Noto Serif SC', 'Source Han Serif SC', 'Songti SC', serif;
+            font-size: 1.2rem;
+            line-height: 1.2;
+            letter-spacing: 0.08em;
+            text-decoration: none;
+            border-radius: 999px;
+            padding: 0.72rem 1.45rem;
+            cursor: pointer;
+            flex: 0 0 auto;
+        }
+        .reading-backbar a {
+            color: #ffe7b8;
+            background: rgba(28, 20, 10, 0.92);
+            border: 2px solid #dbb45c;
+            box-shadow: 0 0 18px rgba(219, 180, 92, 0.35);
+        }
+        .reading-backbar button {
+            color: #2a1e12;
+            font-weight: 700;
+            background: linear-gradient(145deg, #ffe3a3, #dbb45c);
+            border: 2px solid #fff1cc;
+            box-shadow: 0 0 22px rgba(219, 180, 92, 0.65);
+        }
+        .reading-backbar a:hover,
+        .reading-backbar button:hover {
+            filter: brightness(1.08);
+        }
+        body.is-reading .reading-backbar {
+            display: flex;
+            position: sticky;
+            top: 0;
+            z-index: 30;
+            background: linear-gradient(180deg, rgba(8, 6, 14, 0.97) 70%, rgba(8, 6, 14, 0.88));
+        }
+        body.is-reading .setup-chrome {
+            display: none !important;
+        }
+        body.is-reading .spread-container.active {
+            margin-top: 0;
+        }
+
         /* 响应式 */
         @media screen and (max-width: 900px) {
             html { font-size: 16px; }
-            .spread-layout { flex-direction: column; }
             .category-selector { flex-direction: column; align-items: stretch; }
-            .sanctum { padding: 2rem 1.5rem; }
-            .ritual-btn { font-size: 1.4rem; padding: 1rem 3rem; }
+            .sanctum { padding: 1.2rem 1rem 2rem; }
+            .ask-compose .ritual-btn { font-size: 1.15rem; padding: 0.85rem 1.6rem; }
         }
         @media screen and (max-width: 500px) {
             html { font-size: 14px; }
+            .sanctum { padding-left: 1rem; padding-right: 1rem; }
             .sanctum-header h1 { letter-spacing: 4px; }
             .spread-tag { padding: 0.5rem 1.2rem; font-size: 1rem; }
+            .reading-header h2 { letter-spacing: 0.06em; font-size: 1.28rem; }
+            .reading-backbar a,
+            .reading-backbar button {
+                font-size: 1.05rem;
+                letter-spacing: 0.04em;
+                padding: 0.62rem 1rem;
+            }
         }
     </style>
 </head>
@@ -553,19 +956,23 @@
 
     <div class="sanctum">
         <!-- 与 Next 壳同源：/tarot 经 middleware 直达本页时仍可回星云 / 进 React 分层 -->
-        <div style="display:flex;flex-wrap:wrap;gap:12px;justify-content:center;align-items:center;margin-bottom:1.1rem;padding-bottom:0.85rem;border-bottom:1px solid rgba(212,175,55,0.22);font-size:0.82rem;">
+        <div class="reading-backbar" id="readingBackbar" hidden>
+            <a href="/hub">← 星云</a>
+            <button type="button" id="backToAskBtn"><i class="fas fa-hand-sparkles"></i> 重新抽牌</button>
+        </div>
+        <div class="setup-chrome" style="display:flex;flex-wrap:wrap;gap:12px;justify-content:center;align-items:center;margin-bottom:1.1rem;padding-bottom:0.85rem;border-bottom:1px solid rgba(212,175,55,0.22);font-size:0.82rem;">
             <a href="/hub" style="color:#d4b68a;text-decoration:none;border:1px solid rgba(212,175,55,0.35);border-radius:999px;padding:0.35rem 0.85rem;background:rgba(0,0,0,0.35);">← 星云</a>
             <a href="/tarot?lab=1" style="color:#cbaf7a;text-decoration:none;border:1px solid rgba(212,175,55,0.28);border-radius:999px;padding:0.35rem 0.85rem;background:rgba(0,0,0,0.28);">React 分层版</a>
             <span style="color:#8a7a60;">大师 HTML 原版</span>
         </div>
         <!-- 标题 -->
-        <div class="sanctum-header">
+        <div class="sanctum-header setup-chrome">
             <h1>圣域 · 78秘仪</h1>
             <div class="sub">大阿卡那 + 四元素小牌</div>
         </div>
 
         <!-- 牌阵导航 -->
-        <div class="spread-nav" id="spreadNav">
+        <div class="spread-nav setup-chrome" id="spreadNav">
             <div class="spread-tag active" data-spread="single">单张牌</div>
             <div class="spread-tag" data-spread="celtic">凯尔特十字</div>
             <div class="spread-tag" data-spread="triangle">圣三角</div>
@@ -576,7 +983,7 @@
         </div>
 
         <!-- 问题库 -->
-        <div class="question-sanctum">
+        <div class="question-sanctum setup-chrome">
             <div class="category-selector">
                 <div class="category-tabs" id="categoryTabs" role="tablist" aria-label="议题大类">
                     <button type="button" class="category-tab active" role="tab" data-value="love" aria-selected="true">感情婚姻</button>
@@ -584,24 +991,38 @@
                     <button type="button" class="category-tab" role="tab" data-value="money" aria-selected="false">财运投资</button>
                     <button type="button" class="category-tab" role="tab" data-value="study" aria-selected="false">学业考试</button>
                     <button type="button" class="category-tab" role="tab" data-value="health" aria-selected="false">身体健康</button>
-                    <button type="button" class="category-tab" role="tab" data-value="relation" aria-selected="false">人际关系</button>
-                    <button type="button" class="category-tab" role="tab" data-value="child" aria-selected="false">生育子女</button>
-                    <button type="button" class="category-tab" role="tab" data-value="choice" aria-selected="false">选择决策</button>
                     <button type="button" class="category-tab" role="tab" data-value="pet" aria-selected="false">宠物</button>
+                    <button type="button" class="category-tab" role="tab" data-value="relation" aria-selected="false">人际关系</button>
+                    <button type="button" class="category-tab" role="tab" data-value="travel" aria-selected="false">出行迁居</button>
+                    <button type="button" class="category-tab" role="tab" data-value="lost" aria-selected="false">失物寻找</button>
+                    <button type="button" class="category-tab" role="tab" data-value="choice" aria-selected="false">选择决策</button>
                     <button type="button" class="category-tab" role="tab" data-value="spirit" aria-selected="false">灵性成长</button>
+                    <button type="button" class="category-tab" role="tab" data-value="other" aria-selected="false">其他</button>
+                    <button type="button" class="category-tab" role="tab" data-value="psyche" aria-selected="false">心理疏导</button>
+                    <button type="button" class="category-tab" role="tab" data-value="advice" aria-selected="false">人生建议</button>
+                </div>
+                <div class="ask-compose">
+                    <input id="askInput" type="text" maxlength="120" autocomplete="off" placeholder="输入你的问题" aria-label="输入你的问题" />
+                    <button class="ritual-btn" id="drawBtn"><i class="fas fa-hand-sparkles"></i> 抽牌</button>
                 </div>
                 <details class="category-questions-details" id="categoryQuestionsDetails">
-                    <summary id="categoryQuestionsSummary">点选上方议题大类，将展开并显示该类 20 条具体问题（可再点此栏收起）</summary>
+                    <summary id="categoryQuestionsSummary">不会写？点开看本类例子（可再点此栏收起）</summary>
                     <div class="category-questions-body">
-                        <div class="question-grid" id="questionGrid" aria-label="本类 20 条具体问题"></div>
+                        <div class="question-filter-tabs" id="questionFilterTabs" role="tablist" aria-label="本类二次筛选"></div>
+                        <div class="question-grid" id="questionGrid" aria-label="本类例子"></div>
                     </div>
                 </details>
             </div>
         </div>
-
-        <!-- 抽牌按钮 -->
-        <div class="draw-zone">
-            <button class="ritual-btn" id="drawBtn"><i class="fas fa-hand-sparkles"></i> 开启占卜仪式</button>
+        <div class="followup-zone setup-chrome" id="followupZone" hidden>
+            <div class="followup-compose">
+                <input id="followupInput" type="text" maxlength="80" placeholder="再问一句，例如：什么时候能见分晓？" />
+                <button type="button" id="followupAskBtn">换问法</button>
+            </div>
+            <details class="followup-more" id="followupMore">
+                <summary>同一方向还可以问</summary>
+                <div class="followup-chips" id="followupChips" aria-label="换个角度"></div>
+            </details>
         </div>
 
         <!-- 牌阵容器：单张牌 -->
@@ -612,7 +1033,7 @@
                     <div class="position-list" id="singleList"></div>
                 </div>
                 <div class="reading-panel">
-                    <div class="reading-header"><i class="fas fa-crown"></i><h2>牌义 · 精解</h2></div>
+                    <div class="reading-header"><i class="fas fa-crown"></i><div class="reading-heading"><h2>这一张</h2><p class="reading-question"></p></div></div>
                     <div id="singleDetail" class="card-detail"></div>
                 </div>
             </div>
@@ -626,7 +1047,7 @@
                     <div class="position-list" id="celticList"></div>
                 </div>
                 <div class="reading-panel">
-                    <div class="reading-header"><i class="fas fa-crown"></i><h2>牌义 · 精解</h2></div>
+                    <div class="reading-header"><i class="fas fa-crown"></i><div class="reading-heading"><h2>大师全盘合盘</h2><p class="reading-question"></p></div></div>
                     <div id="celticDetail" class="card-detail"></div>
                 </div>
             </div>
@@ -640,7 +1061,7 @@
                     <div class="position-list" id="triangleList"></div>
                 </div>
                 <div class="reading-panel">
-                    <div class="reading-header"><i class="fas fa-crown"></i><h2>牌义 · 精解</h2></div>
+                    <div class="reading-header"><i class="fas fa-crown"></i><div class="reading-heading"><h2>大师全盘合盘</h2><p class="reading-question"></p></div></div>
                     <div id="triangleDetail" class="card-detail"></div>
                 </div>
             </div>
@@ -654,7 +1075,7 @@
                     <div class="position-list" id="choiceList"></div>
                 </div>
                 <div class="reading-panel">
-                    <div class="reading-header"><i class="fas fa-crown"></i><h2>牌义 · 精解</h2></div>
+                    <div class="reading-header"><i class="fas fa-crown"></i><div class="reading-heading"><h2>大师全盘合盘</h2><p class="reading-question"></p></div></div>
                     <div id="choiceDetail" class="card-detail"></div>
                 </div>
             </div>
@@ -668,7 +1089,7 @@
                     <div class="position-list" id="hexagramList"></div>
                 </div>
                 <div class="reading-panel">
-                    <div class="reading-header"><i class="fas fa-crown"></i><h2>牌义 · 精解</h2></div>
+                    <div class="reading-header"><i class="fas fa-crown"></i><div class="reading-heading"><h2>大师全盘合盘</h2><p class="reading-question"></p></div></div>
                     <div id="hexagramDetail" class="card-detail"></div>
                 </div>
             </div>
@@ -682,7 +1103,7 @@
                     <div class="position-list" id="trinityList"></div>
                 </div>
                 <div class="reading-panel">
-                    <div class="reading-header"><i class="fas fa-crown"></i><h2>牌义 · 精解</h2></div>
+                    <div class="reading-header"><i class="fas fa-crown"></i><div class="reading-heading"><h2>大师全盘合盘</h2><p class="reading-question"></p></div></div>
                     <div id="trinityDetail" class="card-detail"></div>
                 </div>
             </div>
@@ -696,7 +1117,7 @@
                     <div class="position-list" id="venusList"></div>
                 </div>
                 <div class="reading-panel">
-                    <div class="reading-header"><i class="fas fa-crown"></i><h2>牌义 · 精解</h2></div>
+                    <div class="reading-header"><i class="fas fa-crown"></i><div class="reading-heading"><h2>大师全盘合盘</h2><p class="reading-question"></p></div></div>
                     <div id="venusDetail" class="card-detail"></div>
                 </div>
             </div>
@@ -704,8 +1125,8 @@
     </div>
 
     <!-- 引入解读数据 -->
-    <script src="tarotData.js?v=2"></script>
-    <script src="tarotMasterReadings.js?v=2"></script>
+    <script src="tarotData.js?v=3empty"></script>
+    <script src="tarotMasterReadings.js?v=3empty"></script>
     <!-- 感情/事业/财运/学业/生活六大类 题库脚本合计数十 MB：勿在此同步 <script src>，否则 iframe 长时间白屏；见 </body> 前异步注入。生活类 v= 与 lib/tarot-life-six-public-script-url.ts 一致。 -->
     <script>
         (function() {
@@ -813,9 +1234,1339 @@
                 return wrap(escapeHtmlReading(line));
             }
 
+            function resolveQuestionKey(questionText, categoryTab) {
+                const R = window.TarotQuestionResolve;
+                if (!R || !questionText) return questionText;
+                const catId = typeof R.tabToCategory === 'function' ? R.tabToCategory(categoryTab) : '';
+                if (typeof R.canonicalForReading === 'function') return R.canonicalForReading(questionText, catId);
+                return questionText;
+            }
+
+            /** 多牌阵合读取位：罪名／判决／执行（索引相对当前抽牌） */
+            const spreadSynthesisSlots = {
+                triangle: { charge: 1, verdict: 2, exec: 2 },
+                hexagram: { charge: 1, verdict: 2, exec: 3 },
+                trinity: { charge: 1, verdict: 2, exec: 2 },
+                venus: { charge: 2, verdict: 5, exec: 4 },
+                celtic: { charge: 0, verdict: 9, exec: 4 },
+                choice: { charge: 0, verdict: 2, exec: 5 },
+            };
+
+            function stripReadingTagLine(text) {
+                return String(text || '')
+                    .replace(/牌面看[^。\n]*。?/g, '')
+                    .replace(/\s+/g, ' ')
+                    .trim();
+            }
+
+            function getWesternRowForCard(cardId, questionText) {
+                const W = window.TarotWesternReading;
+                if (!questionText || !W || typeof W.get !== 'function' || !cardId) return null;
+                const baseId = String(cardId).replace('_rev', '');
+                const dmyId = baseIdToDmyTarotId(baseId);
+                if (!dmyId) return null;
+                const upright = !String(cardId).endsWith('_rev');
+                const R = window.TarotQuestionResolve;
+                const catId = (R && typeof R.tabToCategory === 'function')
+                    ? R.tabToCategory(getCategoryValue())
+                    : '感情婚姻';
+                return W.get(catId || '感情婚姻', questionText, dmyId, upright) || null;
+            }
+
+            function isHowTheySeeQuestion(questionText) {
+                const q = String(questionText || "");
+                if (q.indexOf("怎么看我") !== -1) return true;
+                if (q.indexOf("信哪头") !== -1) return true;
+                return false;
+            }
+
+            function lockedBookFor(questionText) {
+                const q = String(questionText || "");
+                if (q.indexOf("信哪头") !== -1) return window.Q02Locked || null;
+                return null;
+            }
+
+            function q02LockedFor(cardId, questionText) {
+                const book = lockedBookFor(questionText);
+                if (!book || !cardId) return null;
+                const baseId = String(cardId).replace("_rev", "");
+                const dmyId = baseIdToDmyTarotId(baseId);
+                if (!dmyId) return null;
+                const upright = !String(cardId).endsWith("_rev");
+                return book[dmyId + "|" + (upright ? "u" : "r")] || null;
+            }
+
+            function q02SingleFor(cardId, questionText) {
+                if (String(questionText || "").indexOf("信哪头") === -1) return null;
+                const book = window.Q02Single;
+                if (!book || !cardId) return null;
+                const baseId = String(cardId).replace("_rev", "");
+                const dmyId = baseIdToDmyTarotId(baseId);
+                if (!dmyId) return null;
+                const upright = !String(cardId).endsWith("_rev");
+                return book[dmyId + "|" + (upright ? "u" : "r")] || null;
+            }
+
+            function q01SingleFor(cardId, questionText) {
+                if (String(questionText || "").indexOf("怎么看我") === -1) return null;
+                const book = window.Q01Single;
+                if (!book || !cardId) return null;
+                const baseId = String(cardId).replace("_rev", "");
+                const dmyId = baseIdToDmyTarotId(baseId);
+                if (!dmyId) return null;
+                const upright = !String(cardId).endsWith("_rev");
+                return book[dmyId + "|" + (upright ? "u" : "r")] || null;
+            }
+
+            function articleFaces(questionText) {
+                const positions = positionsForSpread(activeSpread);
+                const cards = currentDraws[activeSpread];
+                if (!positions || !positions.length || !Array.isArray(cards) || cards.length < positions.length) return null;
+                const faces = [];
+                for (let i = 0; i < positions.length; i++) {
+                    const row = getWesternRowForCard(cards[i], questionText);
+                    const lean = row && String(row.lean || "").replace(/。$/, "").trim();
+                    const verdict = row && String(row.verdict || "").trim();
+                    const upright = !String(cards[i]).endsWith("_rev");
+                    const dmyId = baseIdToDmyTarotId(String(cards[i]).replace("_rev", ""));
+                    const item = document.querySelectorAll("#" + activeSpread + "List .position-item")[i];
+                    const shown = item && item.querySelector(".pos-card")
+                        ? String(item.querySelector(".pos-card").textContent || "").trim()
+                        : "";
+                    const locked = q02LockedFor(cards[i], questionText);
+                    const singleEssay = q02SingleFor(cards[i], questionText) || q01SingleFor(cards[i], questionText);
+                    const howThey = String(questionText || "").indexOf("怎么看我") !== -1;
+                    if ((!row || !lean || !verdict || !row.nameZh) && howThey && singleEssay && singleEssay.open && singleEssay.action) {
+                        faces.push({
+                            pos: positions[i],
+                            name: shown || "这一张",
+                            ori: upright ? "正着" : "逆着",
+                            shown: shown,
+                            lean: "有",
+                            see: "",
+                            verdict: "有",
+                            speak: singleEssay.open,
+                            doToday: singleEssay.action,
+                            picture: locked ? locked.picture : "",
+                            trust: locked ? locked.trust : "",
+                            watch: locked ? locked.watch : "",
+                            singleOpen: singleEssay.open,
+                            singleAction: singleEssay.action,
+                            key: dmyId ? dmyId + "|" + (upright ? "u" : "r") : "",
+                            label: positions[i] + " · " + (shown || "这一张")
+                        });
+                        continue;
+                    }
+                    if (!row || !lean || !verdict || !row.nameZh) return null;
+                    faces.push({
+                        pos: positions[i],
+                        name: row.nameZh,
+                        ori: upright ? "正着" : "逆着",
+                        shown: shown,
+                        lean: lean,
+                        see: "对方" + lean,
+                        verdict: verdict,
+                        speak: String(row.speak || "").replace(/骨子里/g, "底下").trim(),
+                        doToday: String(row.doToday || "").trim(),
+                        picture: locked ? locked.picture : "",
+                        trust: locked ? locked.trust : "",
+                        watch: locked ? locked.watch : "",
+                        singleOpen: singleEssay ? singleEssay.open : "",
+                        singleAction: singleEssay ? singleEssay.action : "",
+                        key: dmyId ? dmyId + "|" + (upright ? "u" : "r") : "",
+                        label: positions[i] + " · " + (shown || row.nameZh)
+                    });
+                }
+                return faces;
+            }
+
+            function splitSentences(text) {
+                return String(text || "").split("。").map(function (s) { return s.trim(); }).filter(Boolean);
+            }
+
+            function joinSen(list) {
+                return list.filter(Boolean).map(function (s) {
+                    s = String(s).trim();
+                    if (!s) return "";
+                    return /。$/.test(s) ? s : s + "。";
+                }).filter(Boolean).join("");
+            }
+
+            function cardPicture(speak, name) {
+                const parts = splitSentences(speak);
+                for (let i = 0; i < parts.length; i++) {
+                    if (parts[i].indexOf(name) !== -1 && (parts[i].indexOf("正着") !== -1 || parts[i].indexOf("逆着") !== -1)) {
+                        return parts[i].replace(/^.*?[正逆]着[，,]/, "").trim();
+                    }
+                }
+                return "";
+            }
+
+            function speakRest(speak, name) {
+                const parts = splitSentences(speak);
+                const out = [];
+                for (let i = 0; i < parts.length; i++) {
+                    const p = parts[i];
+                    if (p.indexOf("今天") !== -1) continue;
+                    if (p.indexOf(name) !== -1 && (p.indexOf("正着") !== -1 || p.indexOf("逆着") !== -1)) continue;
+                    if (p.indexOf("对方现在") === 0) continue;
+                    out.push(p);
+                }
+                return out;
+            }
+
+            function todaySentence(speak) {
+                const parts = splitSentences(speak);
+                for (let i = 0; i < parts.length; i++) {
+                    if (parts[i].indexOf("今天") !== -1) return parts[i] + "。";
+                }
+                return "";
+            }
+
+            function afterToday(speak) {
+                const parts = splitSentences(speak);
+                for (let i = 0; i < parts.length; i++) {
+                    if (parts[i].indexOf("今天") !== -1 && parts[i + 1]) return parts[i + 1];
+                }
+                return "";
+            }
+
+            function fromToday(speak) {
+                const parts = splitSentences(speak);
+                for (let i = 0; i < parts.length; i++) {
+                    if (parts[i].indexOf("今天") !== -1) return parts.slice(i).join("。");
+                }
+                return "";
+            }
+
+            function seatRole(spread, index) {
+                const book = {
+                    venus: ["self", "other", "bond", "stuck", "advice", "result", "hidden"],
+                    triangle: ["past", "other", "result"],
+                    hexagram: ["past", "other", "result", "advice", "scene", "fear"],
+                    trinity: ["scene", "other", "hidden"],
+                    celtic: ["other", "stuck", "hidden", "past", "result", "self", "scene", "fear", "scene", "result"],
+                    choice: ["scene", "stuck", "result", "scene", "stuck", "result"]
+                };
+                const list = book[spread] || [];
+                return list[index] || "other";
+            }
+
+            function shiftFirst(sentence, role) {
+                let s = String(sentence || "").replace(/骨子里/g, "底下").replace(/。$/, "").trim();
+                if (!s) return "";
+                if (role === "advice") return "";
+                if (role === "self") {
+                    s = s.replace(/^对方现在觉得/, "")
+                        .replace(/^对方现在把你看成/, "你像")
+                        .replace(/^对方现在把你放在/, "你站在")
+                        .replace(/^对方现在把你算进/, "你把自己算进")
+                        .replace(/^对方现在把你/, "")
+                        .replace(/^对方现在用/, "你让人用")
+                        .replace(/^对方现在看你是/, "你是")
+                        .replace(/^对方现在对你的看法是/, "你给人的看法是")
+                        .replace(/^对方现在/, "");
+                    s = s.replace(/你在对方眼里是/g, "你是").replace(/^觉得/, "");
+                    return s;
+                }
+                if (role === "bond") {
+                    return s.replace(/^对方现在觉得/, "这段里，")
+                        .replace(/^对方现在把你/, "这段把你")
+                        .replace(/^对方现在用/, "这段用")
+                        .replace(/^对方现在/, "这段里，");
+                }
+                if (role === "stuck") {
+                    return s.replace(/^对方现在觉得/, "")
+                        .replace(/^对方现在把你看成/, "过不去，对方把你看成")
+                        .replace(/^对方现在把你/, "过不去，对方把你")
+                        .replace(/^对方现在用/, "过不去，对方用")
+                        .replace(/^对方现在/, "");
+                }
+                if (role === "result") return s.replace(/^对方现在/, "再这样下去，对方");
+                if (role === "hidden") return s.replace(/^对方现在/, "还没说出口的是，对方");
+                if (role === "past") return s.replace(/^对方现在/, "从前对方");
+                if (role === "fear") return s.replace(/^对方现在/, "你把盼和怕读成了：对方");
+                if (role === "scene") {
+                    return s.replace(/^对方现在觉得/, "")
+                        .replace(/^对方现在把你/, "人被")
+                        .replace(/^对方现在用/, "看上去在用")
+                        .replace(/^对方现在/, "");
+                }
+                return s.replace(/^对方现在/, "对方");
+            }
+
+            function shiftVerdict(verdict, role) {
+                const parts = splitSentences(String(verdict || "").replace(/骨子里/g, "底下"));
+                if (!parts.length) return "";
+                parts[0] = shiftFirst(parts[0], role);
+                if (role === "self") {
+                    for (let i = 1; i < parts.length; i++) {
+                        parts[i] = parts[i].replace(/你在对方眼里是/g, "你是");
+                    }
+                }
+                return parts.filter(Boolean).join("。");
+            }
+
+            function seatParagraph(role, face) {
+                const pic = cardPicture(face.speak, face.name);
+                if (role === "advice") return joinSen([pic, fromToday(face.speak)]);
+                const shifted = shiftVerdict(face.verdict, role);
+                const parts = splitSentences(shifted);
+                if (parts.length >= 2) return joinSen([pic].concat(parts));
+                return joinSen([pic, shifted, (speakRest(face.speak, face.name)[0] || "")]);
+            }
+
+            function articleOpen(spread, faces) {
+                if (spread === "single") return String(faces[0].verdict || "").replace(/骨子里/g, "底下");
+                if (spread === "venus") {
+                    return joinSen([
+                        shiftFirst(splitSentences(faces[0].verdict)[0], "self"),
+                        shiftVerdict(faces[1].verdict, "other")
+                    ]);
+                }
+                if (spread === "choice" && faces.length >= 6) {
+                    return joinSen([
+                        "A走到头，" + shiftFirst(splitSentences(faces[2].verdict)[0], "other"),
+                        "B走到头，" + shiftFirst(splitSentences(faces[5].verdict)[0], "other"),
+                        "你问的是现在。你人站在哪一条，就只认那一条"
+                    ]);
+                }
+                const nowAt = { triangle: 1, hexagram: 1, trinity: 1, celtic: 0 }[spread];
+                const i = nowAt === undefined ? 0 : nowAt;
+                const face = faces[i] || faces[0];
+                return shiftVerdict(face.verdict, "other");
+            }
+
+            function articleAction(spread, faces) {
+                if (spread === "choice" && faces[1] && faces[4]) {
+                    return joinSen([
+                        "人在A。" + fromToday(faces[1].speak),
+                        "人在B。" + fromToday(faces[4].speak)
+                    ]);
+                }
+                const at = { venus: 4, triangle: 1, hexagram: 3, trinity: 1, celtic: 0, single: 0 }[spread];
+                const face = faces[at == null ? 0 : at] || faces[0];
+                if (!face) return "";
+                const move = fromToday(face.speak);
+                if (move) return joinSen([move]);
+                return shiftFirst(splitSentences(face.verdict)[0], "other");
+            }
+
+            function articleChain(spread, faces) {
+                if (!faces || faces.length < 2) return "";
+                const head = {
+                    triangle: "这三张是一条线。",
+                    choice: "这六张是一条线。",
+                    hexagram: "这六张是一条线。",
+                    trinity: "这三张是一条线。",
+                    celtic: "这十张是一条线。",
+                    venus: "这七张是一条线。"
+                }[spread] || "这一阵是一条线。";
+                const bits = faces.map(function (f, i) {
+                    const role = seatRole(spread, i);
+                    if (role === "advice") {
+                        const move = todaySentence(f.speak).replace(/。$/, "");
+                        return move || shiftFirst(splitSentences(f.verdict)[0], "other");
+                    }
+                    return shiftFirst(splitSentences(f.verdict)[0], role);
+                });
+                return head + joinSen(bits);
+            }
+
+            function singlePaidText(face) {
+                const pic = cardPicture(face.speak, face.name);
+                const rest = speakRest(face.speak, face.name);
+                return joinSen([pic].concat(rest));
+            }
+
+            function isSignalQuestion(questionText) {
+                return String(questionText || "").indexOf("信哪头") !== -1;
+            }
+
+            function isStencilSentence(s) {
+                const t = String(s || "");
+                if (t.indexOf("热的那头") !== -1 || t.indexOf("冷的那头") !== -1) return true;
+                if (/^热是/.test(t) || /^冷是/.test(t)) return true;
+                if (/^信冷的/.test(t) || /^信热的/.test(t)) return true;
+                if (t.indexOf("慢慢转好") !== -1 || t.indexOf("先热一阵") !== -1) return true;
+                if (t.indexOf("热的就") !== -1 || t.indexOf("冷的就") !== -1) return true;
+                if (t.indexOf("单方面的结果") !== -1) return true;
+                return false;
+            }
+
+            function isVerdictTail(s) {
+                const t = String(s || "");
+                if (isStencilSentence(t)) return true;
+                if (/^没有/.test(t)) return true;
+                if (/^不找|^再空|^再射|^出现不了|^做不到|^裂开是已经|^已经发生|^你继续/.test(t)) return true;
+                if (t.indexOf("对方就继续") !== -1) return true;
+                if (t.indexOf("已经信的") !== -1) return true;
+                return false;
+            }
+
+            function looksLikeMove(s) {
+                return /今天|看|不要|别逼|把|停|说|留|做|问|放慢|撤|少做|先/.test(String(s || ""));
+            }
+
+            function testMove(speak) {
+                const parts = splitSentences(speak);
+                const out = [];
+                let started = false;
+                for (let i = 0; i < parts.length; i++) {
+                    let p = parts[i];
+                    if (p.indexOf("今天") !== -1 && p.indexOf("不是今天") === -1) started = true;
+                    if (!started) continue;
+                    if (p.indexOf("反过来顾") !== -1) {
+                        p = "今天留一件你平时会替对方做的照顾，这次不做，看对方接不接";
+                    }
+                    p = p.replace(/[，,]没有[，,].*$/, "").replace(/[，,]热的就.*$/, "").replace(/[，,]冷的就.*$/, "").trim();
+                    if (!p || isVerdictTail(p) || !looksLikeMove(p)) continue;
+                    out.push(p);
+                    if (out.length >= 2) break;
+                }
+                return out.join("。");
+            }
+
+            function polishBit(text) {
+                let s = String(text || "").trim();
+                s = s.replace(/海还在，船期乱了/g, "海还在，船期是乱的");
+                s = s.replace(/对方下一段时间消失/g, "对方下一段时间会消失");
+                s = s.replace(/冷一点的慢才是对方给的/g, "这一点慢是对方给的");
+                s = s.replace(/改期和「快了」，可是对方开始用不会到看你/g, "改期和「快了」还在嘴上，对方已经用「不会到」在看你");
+                return s;
+            }
+
+            function facePic(face) {
+                return polishBit(face ? cardPicture(face.speak, face.name) : "");
+            }
+
+            function isWarmFace(face) {
+                if (!face || face.ori !== "正着") return false;
+                return {
+                    "权杖四": 1,
+                    "太阳": 1,
+                    "世界": 1,
+                    "星星": 1,
+                    "星币十": 1,
+                    "圣杯十": 1
+                }[face.name] === 1;
+            }
+
+            function isDoorFace(face) {
+                return !!(face && face.name === "权杖四" && face.ori === "正着");
+            }
+
+            function isHouseFace(face) {
+                return !!(face && face.name === "星币十" && face.ori === "正着");
+            }
+
+            function warmGloss(face) {
+                if (isDoorFace(face)) return "这扇门是开的，是给人走进去高兴的。它还不是今天已经握在手里的事";
+                if (isHouseFace(face)) return "这套日子是真的，能把人留下来。它不是一句情绪上的补丁";
+                return "";
+            }
+
+function sideOk(text) {
+                const s = String(text || "").trim();
+                return s.length >= 4;
+            }
+
+            function bitOk(text) {
+                const s = String(text || "").trim();
+                if (s.length < 6) return false;
+                if (/热的那头|冷的那头|这一头|这张牌|先做能被看见|像不像这一幕/.test(s)) return false;
+                return true;
+            }
+
+            function pairLine(face) {
+                if (!face) return "";
+                const blob = String(face.verdict || "") + "。" + String(face.speak || "");
+                const parts = splitSentences(blob);
+                for (let i = 0; i < parts.length; i++) {
+                    const m = parts[i].match(/热的那头(?:是)?([^，,]+)[，,]冷的那头(?:是)?(.+)/);
+                    if (!m) continue;
+                    let left = m[1].trim();
+                    let right = m[2].trim();
+                    if (/门关/.test(right) && isDoorFace(face)) right = "";
+                    if (/^若|^不是/.test(left) || /^若|^不是/.test(right)) {
+                        const keep = [right, left].filter(function (s) { return s.length >= 6 && !/^若|^不是/.test(s); })[0];
+                        if (keep) return polishBit(keep);
+                        continue;
+                    }
+                    if (sideOk(left) && sideOk(right) && (left.length >= 6 || right.length >= 6)) return polishBit(left + "，可是" + right);
+                }
+                return "";
+            }
+
+            function proseBits(face) {
+                if (!face) return [];
+                if (/先别信|两头都先|两头先|还不能信/.test(face.lean || "")) return ["两头先别认死，先认已经摆在眼前的事"];
+                const scored = [];
+                function add(text, score) {
+                    text = polishBit(String(text || "").replace(/。$/, "").trim());
+                    if (!bitOk(text)) return;
+                    for (let i = 0; i < scored.length; i++) if (scored[i].text === text) return;
+                    scored.push({ text: text, score: score });
+                }
+                const pair = pairLine(face);
+                if (pair) add(pair, 6);
+                const parts = splitSentences(String(face.verdict || "") + "。" + String(face.speak || ""));
+                for (let i = 0; i < parts.length; i++) {
+                    const p = parts[i];
+                    if (/^冷是/.test(p)) {
+                        if (pair) continue;
+                        const cold = p.replace(/^冷是/, "").trim();
+                        if (cold.length >= 6) add(cold.indexOf("对方") === 0 ? cold : "对方" + cold, 4);
+                        continue;
+                    }
+                    if (p.indexOf("今天") !== -1) continue;
+                    if (p.indexOf(face.name) !== -1 && /[正逆]着/.test(p)) continue;
+                    if (isStencilSentence(p) || isVerdictTail(p)) continue;
+                    if (/^信/.test(p) || /^对方现在/.test(p) || /^你要/.test(p)) continue;
+                    if (/两头都信|不极端|不逼宫|哪一头/.test(p)) continue;
+                    let score = 1;
+                    if (/才是对方给的|这一点慢是对方给的/.test(p)) score = 7;
+                    else if (/慢就是停/.test(p)) score = 6;
+                    else if (/不是/.test(p)) score = 8;
+                    else if (/不算|还没|不能/.test(p)) score = 3;
+                    add(p, score);
+                }
+                scored.sort(function (a, b) { return b.score - a.score; });
+                return scored.map(function (item) { return item.text; });
+            }
+
+            function humanSay(face, limit) {
+                if (!face) return "";
+                if (isDoorFace(face)) {
+                    const bits = [warmGloss(face)];
+                    if (/冷不能|说成关上/.test(String(face.verdict || "") + String(face.speak || ""))) {
+                        bits.push("今天的冷不能把这扇门说成关上");
+                    }
+                    return joinSen(bits);
+                }
+                if (isHouseFace(face)) return joinSen([warmGloss(face)]);
+                return joinSen(proseBits(face).slice(0, limit || 2));
+            }
+
+            function spokenPoint(face) {
+                const bits = proseBits(face);
+                return bits.length ? bits[0] : "";
+            }
+
+            function leanCause(face) {
+                if (!face) return "";
+                if (isDoorFace(face)) return "庆祝的门口还开着，人还没有走进去";
+                if (isHouseFace(face)) return "能传下去的日子是真的，不是补上去的一句热话";
+                const s = String(face.lean || "");
+                let matched = s.match(/热是([^，,]+)[，,]冷是([^，,]+)/);
+                function who(clause) {
+                    clause = String(clause || "").trim();
+                    if (!clause) return "";
+                    if (clause.indexOf("对方") === 0) return clause;
+                    return "对方" + clause;
+                }
+                if (matched) {
+                    const rest = s.replace(/^热是[^，,]+[，,]冷是[^，,]+[，,]?/, "").replace(/^信[^，。]*$/, "").trim();
+                    if (rest.length >= 6) return rest;
+                    const left = matched[1].trim();
+                    const right = matched[2].trim();
+                    if (left.length >= 4 && right.length >= 4) return who(left) + "，可是" + right;
+                    if (right.length >= 4) return who(right);
+                    if (left.length >= 4) return who(left);
+                }
+                matched = s.match(/冷是([^，,]+)/);
+                if (matched && matched[1].trim().length >= 2) return who(matched[1]);
+                matched = s.match(/热是([^，,]+)/);
+                if (matched && matched[1].trim().length >= 4) return who(matched[1]);
+                const bit = (proseBits(face)[0] || "");
+                if (bit.length >= 8) return bit;
+                return pairLine(face) || (facePic(face).split("，")[0] || "");
+            }
+
+            function focusOf(spread, faces) {
+                let pastI = 0;
+                let nowI = 0;
+                let foreI = faces.length - 1;
+                if (spread === "venus") { pastI = 0; nowI = 1; foreI = 5; }
+                else if (spread === "celtic") { pastI = 3; nowI = 0; foreI = 9; }
+                else if (spread === "triangle" || spread === "hexagram" || spread === "trinity") { pastI = 0; nowI = 1; foreI = 2; }
+                else if (spread === "choice") { pastI = 1; nowI = 4; foreI = 5; }
+                return { pastI: pastI, nowI: nowI, foreI: foreI };
+            }
+
+            function splitWatch(text) {
+                const s = String(text || "").trim();
+                const at = s.lastIndexOf("，看");
+                if (at > 0) return { step: s.slice(0, at).trim(), see: s.slice(at + 2).trim() };
+                return { step: s, see: s };
+            }
+
+            function trustParts(text) {
+                const parts = String(text || "").split("。").map(function (s) { return s.trim(); }).filter(Boolean);
+                if (!parts.length) return { lead: "", last: "" };
+                return { lead: parts.slice(0, -1).join("。"), last: parts[parts.length - 1] };
+            }
+
+            function coreBeat(text) {
+                const lead = trustParts(text).lead;
+                if (!lead) return "";
+                return lead.split("。")[0];
+            }
+
+            function seatBeat(text) {
+                const parts = String(text || "").split("。").map(function (s) { return s.trim(); }).filter(Boolean);
+                if (!parts.length) return "";
+                const last = parts[parts.length - 1];
+                if (parts.length >= 2 && last.length < 12) return parts[parts.length - 2] + "。" + last;
+                return last;
+            }
+
+            function signalSeat(role, face) {
+                const pic = face.picture || "";
+                const trust = String(face.trust || "").replace(/。$/, "").trim();
+                if (!pic && !trust) return "";
+                let body = seatBeat(trust);
+                if (role === "past" && body) body = "从前，" + body.replace(/^对方现在/, "对方");
+                if (role === "result" && isDoorFace(face)) return joinSen([pic, body, "人走进去才算"]);
+                return joinSen([pic, body]);
+            }
+
+            function signalOpen(spread, faces) {
+                if (!faces || !faces.length) return "";
+                if (faces.some(function (f) { return !f || !(f.picture || f.trust); })) return "";
+                if (faces.length === 1) {
+                    if (faces[0].singleOpen) return faces[0].singleOpen;
+                    return joinSen([faces[0].picture, faces[0].trust]);
+                }
+                if (spread === "choice" && faces.length >= 6) {
+                    return joinSen([
+                        "A走到头，" + faces[2].picture,
+                        coreBeat(faces[2].trust),
+                        "B走到头，" + faces[5].picture,
+                        coreBeat(faces[5].trust),
+                        "你人站在哪一条，就只认那一条。另一条的好，不能拿来补这一条"
+                    ]);
+                }
+                const at = focusOf(spread, faces);
+                const past = faces[at.pastI];
+                const now = faces[at.nowI];
+                const fore = faces[at.foreI];
+                const bits = [];
+                if (past && past !== now) {
+                    if (past.picture) bits.push(past.picture);
+                    if (past.trust) bits.push(coreBeat(past.trust));
+                }
+                if (now) bits.push((past && past !== now ? "所以现在" : "") + (now.picture || ""));
+                if (now && now.trust) bits.push(coreBeat(now.trust));
+                if (fore && fore !== now && fore !== past) {
+                    bits.push("再往前，" + (fore.picture || ""));
+                    if (fore.trust) bits.push(coreBeat(fore.trust));
+                }
+                const blob = bits.join("");
+                const lineFaces = [past, now, fore];
+                if (lineFaces.some(function (f) { return f && f.name === "宝剑十" && f.ori === "正着"; }) && blob.indexOf("不算重新开始") === -1) {
+                    bits.push("远处那点天亮，不算重新开始");
+                }
+                return joinSen(bits);
+            }
+
+            function signalAction(spread, faces, questionText) {
+                if (spread === "single" && faces[0] && faces[0].singleAction) return faces[0].singleAction;
+                const doorQuestion = String(questionText || "").indexOf("信哪头") !== -1;
+                if (doorQuestion && spread === "hexagram" && faces[3] && faces[2]
+                    && faces[3].name === "权杖侍从" && faces[3].ori === "逆着"
+                    && faces[2].name === "权杖四" && faces[2].ori === "正着") {
+                    return "今天把已经说好的那一次，你自己先到，不再另发一段把以后说满的话。看两件：对方来不来。来了以后，愿不愿意把你留在这个能一起高兴的门口里。";
+                }
+                if (doorQuestion && spread === "hexagram" && faces[0] && faces[1] && faces[2]
+                    && faces[0].name === "节制" && faces[0].ori === "逆着"
+                    && faces[1].name === "权杖三" && faces[1].ori === "逆着"
+                    && faces[2].name === "节制" && faces[2].ori === "正着") {
+                    return "今天若有一个真的到达时间，就说死，不再改期。看两件：对方来不来。来了以后，是停在这个慢里，还是真的把船期说死。";
+                }
+                if (spread === "choice" && faces[2] && faces[5]) {
+                    const a = splitWatch(faces[2].watch);
+                    const b = splitWatch(faces[5].watch);
+                    if (!a.step || !a.see || !b.step || !b.see || a.step === a.see || b.step === b.see) return "";
+                    return joinSen([
+                        "人在A。今天" + a.step + "。看两件：对方来不来。来了以后，" + a.see,
+                        "人在B。今天" + b.step + "。看两件：对方来不来。来了以后，" + b.see
+                    ]);
+                }
+                const fore = faces[focusOf(spread, faces).foreI] || faces[faces.length - 1];
+                const act = spread === "hexagram" ? faces[3] : (spread === "venus" ? faces[4] : fore);
+                if (!act) return "";
+                const pair = splitWatch(act.watch);
+                if (!pair.step || !pair.see || pair.step === pair.see) return "";
+                return "今天" + pair.step + "。看两件：对方来不来。来了以后，" + pair.see + "。";
+            }
+
+            function signalChain() {
+                return "";
+            }
+
+            function signalPaidSingle(face) {
+                return joinSen([face.picture, face.trust]);
+            }
+
+            function seatNameLine(face, withPos) {
+                const raw = String(face.shown || "").replace(/\s+/g, "");
+                const m = raw.match(/^(.+?)[·•](正位|逆位)$/);
+                const name = m ? m[1] : face.name;
+                const ori = m ? m[2] : (String(face.ori).indexOf("逆") !== -1 ? "逆位" : "正位");
+                if (withPos && face.pos) return face.pos + "，" + name + ori + "。";
+                return name + ori + "。";
+            }
+
+            function q01FinalArticle(faces) {
+                if (!faces.length) return null;
+                const head = spreadPanelTitle(activeSpread, getCategoryValue());
+                if (faces.length === 1) {
+                    const face = faces[0];
+                    const open = String(face.singleOpen || face.speak || "").trim();
+                    const action = String(face.singleAction || face.doToday || "").trim();
+                    if (!open || !action) return null;
+                    return {
+                        head: head,
+                        single: true,
+                        finalOnly: true,
+                        manuscript: false,
+                        free: open,
+                        lean: face.lean,
+                        verdict: face.verdict,
+                        open: open,
+                        chain: "",
+                        action: action,
+                        sections: []
+                    };
+                }
+                if (!window.Q01Spreads || typeof window.Q01Spreads.article !== "function") return null;
+                const built = window.Q01Spreads.article(activeSpread, faces);
+                if (!built || !built.open || !built.action || !built.sections || built.sections.length !== faces.length) return null;
+                built.head = head;
+                return built;
+            }
+
+            function buildHowTheySeeArticle(questionText) {
+                if (!isHowTheySeeQuestion(questionText)) return null;
+                const faces = articleFaces(questionText);
+                if (!faces) return null;
+                if (String(questionText || "").indexOf("怎么看我") !== -1) return q01FinalArticle(faces);
+                const single = faces.length === 1;
+                const signal = isSignalQuestion(questionText);
+                const open = signal ? signalOpen(activeSpread, faces) : articleOpen(activeSpread, faces);
+                const action = signal ? signalAction(activeSpread, faces, questionText) : articleAction(activeSpread, faces);
+                const chain = signal ? signalChain(activeSpread, faces) : articleChain(activeSpread, faces);
+                const sections = [];
+                if (!single) {
+                    for (let i = 0; i < faces.length; i++) {
+                        sections.push({
+                            nameLine: seatNameLine(faces[i], true),
+                            text: signal ? signalSeat(seatRole(activeSpread, i), faces[i], open) : seatParagraph(seatRole(activeSpread, i), faces[i])
+                        });
+                    }
+                }
+                if (!open || !action) return null;
+                return {
+                    head: spreadPanelTitle(activeSpread, getCategoryValue()),
+                    single: single,
+                    free: open,
+                    open: open,
+                    chain: chain,
+                    action: action,
+                    sections: sections
+                };
+            }
+
+            function focusSpreadSeat(detailDiv, index, doScroll) {
+                const seats = detailDiv.querySelectorAll(".west-seat");
+                if (!seats.length) return;
+                seats.forEach(function (el) {
+                    el.classList.toggle("is-on", Number(el.getAttribute("data-seat")) === index);
+                });
+                if (!doScroll) return;
+                const target = detailDiv.querySelector('.west-seat[data-seat="' + index + '"]');
+                if (target && typeof target.scrollIntoView === "function") {
+                    target.scrollIntoView({ block: "center", behavior: "smooth" });
+                }
+            }
+
+            function buildSpreadSynthesisHtml(questionText) {
+                const slots = spreadSynthesisSlots[activeSpread];
+                if (!slots || activeSpread === 'single') return '';
+                const cards = currentDraws[activeSpread];
+                if (!Array.isArray(cards) || cards.length < 2) return '';
+                const charge = getWesternRowForCard(cards[slots.charge], questionText);
+                const exec = getWesternRowForCard(cards[slots.exec], questionText);
+                if (!charge || !exec) return '';
+                const themeLine = stripReadingTagLine(charge.lean) || charge.lean;
+                const execLine = stripReadingTagLine(exec.doToday) || stripReadingTagLine(exec.lean);
+                if (!themeLine || !execLine) return '';
+                // 占梦：两块（本阵在说／醒来做）；其他大类仍三块（罪名／判决／执行）
+                const isDream = getCategoryValue() === 'dream';
+                if (isDream) {
+                    return `
+                                <div class="spread-synthesis master-section">
+                                    <div class="section-title" style="color:#c4a35a;font-weight:700;margin-bottom:0.6rem;">【本阵合读】</div>
+                                    <div class="section-title" style="color:#a48e62;font-weight:600;margin-bottom:0.35rem;">【本阵在说】</div>
+                                    <div class="section-content" style="margin-bottom:0.75rem;">${escapeHtmlReading(themeLine)}</div>
+                                    <div class="section-title" style="color:#a48e62;font-weight:600;margin-bottom:0.35rem;">【醒来做】</div>
+                                    <div class="section-content">${escapeHtmlReading(execLine)}</div>
+                                </div>`;
+                }
+                const positions = positionsForSpread(activeSpread);
+                const lines = [];
+                for (let i = 0; i < cards.length; i++) {
+                    const row = getWesternRowForCard(cards[i], questionText);
+                    const clause = row && String(row.lean || "").replace(/。$/, "").trim();
+                    if (!clause) continue;
+                    const pos = positions[i] || "";
+                    lines.push((pos ? pos + "，" : "") + "对方" + clause + "。");
+                }
+                if (lines.length < 2) return '';
+                return `
+                                <div class="spread-synthesis master-section">
+                                    <div class="section-title" style="color:#c4a35a;font-weight:700;margin-bottom:0.6rem;">【这一阵合起来】</div>
+                                    <div class="section-content">${escapeHtmlReading(lines.join(""))}</div>
+                                </div>`;
+            }
+
+            function dreamHandOf(row) {
+                if (!row) return "";
+                const m = String(row.doToday || "").match(/对上的那件，([^。]+)。/);
+                return m ? m[1] : "";
+            }
+
+            function dreamFrame(q) {
+                const s = String(q || "");
+                const frames = [
+                    ["在说什么", "听这个梦在说什么的时候", "它在说的是这一件，不是后面要发生的事。"],
+                    ["跑不掉", "跑不掉的时候", "追你的不是谁的脸。是这一截还挂在身上。"],
+                    ["反复做同一个梦", "同一个梦又来的时候", "它不是吓你，是这一下还没被白天接住。"],
+                    ["不当一回事", "想把这个梦放下的时候", "情节可以放下。这一件还在，就还没完。"],
+                    ["放大恐惧", "拿这牌来问的时候", "有用的是听清这一件，不是把怕再放大一圈。"],
+                    ["预兆，还是", "先别把它升成预告的时候", "这是白天的压力在消化，不是即将发生的事。"],
+                    ["接下来几周", "看近处这几周的时候", "它不替你排日期。近处就是这一件。"],
+                    ["接到白天", "往白天对的时候", "对的是同一种感觉，不是同一种情节。"],
+                    ["噩梦要不要当真", "刚被噩梦惊醒的时候", "当真的是这一种感觉，不是即将发生的情节。"],
+                    ["坠落／牙齿／考试", "掉下去、牙、考试这类梦里", "压着你的是这一件，不是那一种掉法。"],
+                    ["死亡或结束", "梦到结束的时候", "先别当成谁要出事。要分的是怕失去，还是这段该收。"],
+                    ["蛇／虫／牙", "蛇、虫、牙这类画面里", "顶着你的是这一件。先别解成凶兆。"],
+                    ["没准备好", "梦里没准备好、穿错的时候", "白天让你觉得要暴露的，是这一件。"],
+                    ["飞／坠落", "飞或者坠落的时候", "要分的是想逃，还是想把一件事抓在手里。"],
+                    ["这个人，代表", "梦里这个人出现的时候", "先别当成他本人。他演的是这一件。"],
+                    ["前任", "又梦到前任的时候", "先别急着判未了还是习惯。听它还占不占着一个位置。"],
+                    ["小孩／旧家", "梦里出现小孩或旧家的时候", "那是你里面还在说话的一处，不是叫你搬回去。"],
+                    ["告诉当事人", "想把梦告诉对方的时候", "真要开口，只说你的感觉，不把梦说成对方的错。"],
+                    ["暗恋", "梦到暗恋的人的时候", "这不是对方发来的信号。是你这边的这一件。"],
+                    ["已逝", "梦到已逝的人的时候", "先别判成托梦。多半是思念，或有一句没说完。"],
+                    ["引导者", "梦里那个引导者开口的时候", "你听的不是整段训话，是跟这一件对得上的那一句。"],
+                    ["怀孕", "梦到怀孕或小孩的时候", "先别定成喜兆。要分的是想创造，还是责任压过来。"],
+                    ["水／房子／迷路", "水、房子、迷路这些画面里", "先别把画面译成词典。指向的是这一件。"],
+                    ["多了一层", "房子多了一层或塌了的时候", "看的是哪一块在加，哪一块已经承不住。"],
+                    ["工作／迟到", "梦到工作或迟到的时候", "先别当成明天一定会出事。要分的是焦虑在加戏，还是真有一处疏漏。"],
+                    ["学校／考试", "又梦回学校、考试的时候", "你怕被评判的是这一件，不是那张旧卷子又要重考。"],
+                    ["拖着走", "想不被梦拖着走的时候", "醒来先落地。落地的地方就是这一件。"],
+                    ["记下来", "犹豫要不要记下的时候", "还在，就留两行。不在，就不必写成故事。"],
+                    ["同一点醒来", "总在同一点醒来的时候", "你总在同一点醒，身体和心事是一件事的两面。先当身体的，是紧和还没换的守。先当心事的，是被写大的故事。"],
+                    ["失眠加上乱梦", "失眠又乱梦的这个晚上", "先看这一件更像要减刺激，还是要写下来。不要两件一起加码。"],
+                    ["助眠", "吃了助眠还在做梦的时候", "可以照原话记下。这不是你自己的诊断。药先不动。"],
+                    ["发烧", "身体还不舒服的时候", "先当身体。缓过来还在，再当心事。"],
+                    ["午睡", "午睡又做同一个梦的时候", "午睡还是同一个梦，是白天那件没停。先停一小截，画面才换得了。"],
+                    ["夜里喊", "夜里被人听见喊的时候", "当一回事的是这种紧，不是去圆情节。"],
+                    ["屏幕", "想戒晚间屏幕的时候", "先少一块，看这一件还靠不靠着那块亮。少一块不是保证。"],
+                    ["牙齿掉了", "梦到牙齿掉了的时候", "你怕失去控制的是这一件。不是牙真的要掉。"],
+                    ["厕所", "梦里找不到厕所、来不及的时候", "对应的难堪是这一件。"],
+                    ["刹车", "梦里车失控、刹车失灵的时候", "白天抓不住的是这一件。不是预告路上出事。"],
+                    ["旧手机", "旧手机、旧号突然能用的时候", "先别判成有人要回来。要分的是怀念，还是有一句没说完。"],
+                    ["打包", "梦里一直打包、搬家的时候", "先别定成你必须搬走。要分的是生活真要动，还是心里在换季。"],
+                    ["出轨", "梦到伴侣出轨的时候", "这不是证据。它演的是你这边的这一件。"],
+                    ["同事出事", "梦到同事出事的时候", "上班先别当成预告。你留下的是这一件。"],
+                    ["咨询", "考虑要不要拿去咨询的时候", "若这一件已经连着白天你绕不开的事，就值得带这两行去。"],
+                    ["孩子", "孩子做噩梦的时候", "你先陪着。这一件不要讲给孩子听。"],
+                    ["预兆", "家人拿梦逼你改计划的时候", "你听的是这一件，不是他们的怕。计划不必因此改。"],
+                    ["没准备", "连续梦到迟到、没准备的时候", "白天真该看的是一份材料。对得上的是这一件。"],
+                    ["点名", "梦到被当众点名的时候", "你怕的那一次暴露是这一件。不是明天真的会被叫起来。"],
+                    ["辞职", "辞职的梦又来的时候", "先别当成明天就要交辞呈。要分的是满了，还是压力在加戏。"],
+                    ["高中", "梦回高中、梦到老师的时候", "你还在用的那把尺子，就是这一件。"],
+                    ["发薪", "发薪或绩效前夜", "先当这一件被放大了。不当成结果预告，也不整段扔掉。"],
+                    ["绩效", "发薪或绩效前夜", "先当这一件被放大了。不当成结果预告，也不整段扔掉。"]
+                ];
+                for (let i = 0; i < frames.length; i++) {
+                    if (s.includes(frames[i][0])) return { sit: frames[i][1], close: frames[i][2] };
+                }
+                return { sit: "听这个梦的时候", close: "它今晚说的就是这一件。" };
+            }
+
+            function dreamLean(row) {
+                return String(row && row.lean || "").trim().replace(/。$/, "");
+            }
+
+            function dreamMoment(row) {
+                return String(row && row.verdict || "").trim();
+            }
+
+            function dreamSit(text, sit) {
+                return String(text || "").split("{sit}").join(sit);
+            }
+
+            function dreamClause(row) {
+                return dreamLean(row).split("。")[0];
+            }
+
+            function dreamCardLine(sit, before, row, land) {
+                return dreamMoment(row);
+            }
+
+            function dreamWake(q, primary, other) {
+                const hand = dreamHandOf(primary) || dreamHandOf(other) || "今天只放下已经说清的那一小截";
+                let extra = "";
+                const s = String(q || "");
+                if (s.includes("同一点醒来")) {
+                    return "醒来留两行。第一行只写醒来时身体最沉的那一下，一句。第二行写最近哪件事，是同一种守着、写大、不松手。今晚只做一件具体的：把故事停掉，吃一点，或把守夜降一档，然后躺下。画面你还没说。你说了，才能分清哪一句是身体，哪一句是心事。";
+                }
+                if (s.includes("助眠")) extra = "药先不动。若要跟医生提，就带这两行原话，不带你自己的诊断。";
+                else if (s.includes("发烧")) extra = "人还不舒服的时候，先当身体。缓过来这一下还在，再当心事。";
+                else if (s.includes("孩子")) extra = "先陪着孩子，话少一点。这一幕不要讲给孩子听。牌不替孩子下诊断。若夜惊反复，再问儿科或睡眠的人。";
+                else if (s.includes("出轨")) extra = "梦不是证据，不要拿它去问罪。说之前先分清：这是怕，还是白天有一句你没问过的事实。";
+                else if (s.includes("辞职")) extra = "这不等于明天就交辞职信。先别递辞呈。";
+                else if (s.includes("预兆")) extra = "家人的怕归他们。你不用按他们说的预兆改计划。";
+                else if (s.includes("夜里喊")) extra = "若喊得很频，跟医生提一句，不自己下结论。";
+                else if (s.includes("噩梦要不要当真")) extra = "醒来先把脚放回地上。当真的是那种感觉，不是即将发生的情节。";
+                const frame = dreamFrame(q);
+                return "醒来留两行。第一行只写梦里最沉的那种感觉，一句。第二行写最近哪件事，给你的就是这种感觉。对上的那件，" + hand + "。做的时候摊开，不绕开。梦里的画面你还没说。你说了，这一截才能对上那一件。" + extra;
+            }
+
+            function dreamSpreadPlan(spread, n) {
+                if (spread === "choice" && n >= 6) {
+                    return {
+                        open: "你先别急着给这个梦下判词。我按你抽出的两边说，你听里面那一下就行。",
+                        wakeAt: 2,
+                        groups: [
+                            { title: "A 这一边", lines: [
+                                [0, "{sit}，这一边还抓得住的，不是你更会逃。", false],
+                                [1, "没过去，是因为紧接着这一下。", false],
+                                [2, "这一边走完，不是逃脱。", true]
+                            ]},
+                            { title: "B 这一边", lines: [
+                                [3, "另一边，{sit}，你想换成的是这一下。", false],
+                                [4, "可换过去并不轻。", false],
+                                [5, "那一边走完，人还在原地，是因为这一下。", true]
+                            ]}
+                        ],
+                        scene: function (sit, close, rows) {
+                            var L = rows.map(dreamLean);
+                            return "一边，" + L[0] + L[1] + "走到这一边的头上，" + L[2] + "另一边，" + L[3] + L[4] + "走到那一边的头上，" + L[5] + close;
+                        }
+                    };
+                }
+                if (spread === "triangle" && n >= 3) {
+                    return {
+                        open: "你先别急着给这个梦下判词。我按过去、现在、未来说，你听里面那一件就行。",
+                        wakeAt: 2,
+                        groups: [
+                            { title: "过去", lines: [[0, "{sit}，先发生的是这一截。", true]] },
+                            { title: "现在", lines: [[1, "它现在还停在这一下，不是已经过去了。", true]] },
+                            { title: "未来", lines: [[2, "再往前不是一张日程。{sit}，它会走到这一下。", true]] }
+                        ],
+                        scene: function (sit, close, rows) {
+                            var L = rows.map(dreamLean);
+                            return L[0] + "到了现在，" + L[1] + "再往前，" + L[2] + close;
+                        }
+                    };
+                }
+                if (spread === "trinity" && n >= 3) {
+                    return {
+                        open: "你先别急着给这个梦下判词。我按信号、白天、消化说，你听里面那一件就行。",
+                        wakeAt: 1,
+                        groups: [
+                            { title: "信号", lines: [[0, "{sit}，信号先落在这一下。", true]] },
+                            { title: "白天", lines: [[1, "它接到白天的，是这一下，不对情节。", true]] },
+                            { title: "消化", lines: [[2, "你夜里真正在消化的，是这一下。", true]] }
+                        ],
+                        scene: function (sit, close, rows) {
+                            var L = rows.map(dreamLean);
+                            return "信号先是，" + L[0] + "白天对上的是，" + L[1] + "夜里在消化的是，" + L[2] + close;
+                        }
+                    };
+                }
+                if (spread === "hexagram" && n >= 6) {
+                    return {
+                        open: "你先别急着给这个梦下判词。我按这六张的位置说，你听里面那一下就行。",
+                        wakeAt: 3,
+                        groups: [
+                            { title: "过去", lines: [[0, "{sit}，它从这一截来。", true]] },
+                            { title: "现在", lines: [[1, "此刻还站在这一下。", true]] },
+                            { title: "未来", lines: [[2, "再往前不是日期，是这一下。", true]] },
+                            { title: "行动", lines: [[3, "今天真要动的，是这一下，不是把梦再解一遍。", true]] },
+                            { title: "环境", lines: [[4, "周围推着你的，是这一下。", false]] },
+                            { title: "希望/恐惧", lines: [[5, "你盼的和你怕的，都挤在这一下里。", true]] }
+                        ],
+                        scene: function (sit, close, rows) {
+                            if (String(close).includes("身体和心事")) {
+                                return "身体和心事是一件事的两面。"
+                                    + dreamClause(rows[0]) + "，再加上" + dreamClause(rows[1]) + "，会把身体叫醒。"
+                                    + "再往前先做的，是" + dreamClause(rows[2]) + "。"
+                                    + "你容易把这一醒写成大事：" + dreamClause(rows[3]) + "。"
+                                    + "手还抓着的，是" + dreamClause(rows[4]) + "。"
+                                    + "盼和怕还在扒的，是" + dreamClause(rows[5]) + "。"
+                                    + "先当身体的，是紧和守夜。先当心事的，是那个被你写大的故事。";
+                            }
+                            var L = rows.map(dreamLean);
+                            return L[0] + L[1] + "再往前，" + L[2] + "今天先动的是，" + L[3] + "周围是，" + L[4] + "你盼的和你怕的，是" + L[5] + close;
+                        }
+                    };
+                }
+                if (spread === "celtic" && n >= 10) {
+                    return {
+                        open: "你先别急着给这个梦下判词。我按这十张的位置说，你听里面那一件就行。",
+                        wakeAt: 9,
+                        groups: [
+                            { title: "现在这一截", lines: [
+                                [0, "{sit}，你正站在这一下。", true],
+                                [1, "挡住你的，不是梦里那张脸，是这一下。", true]
+                            ]},
+                            { title: "从哪来，往哪去", lines: [
+                                [3, "它从过去这一截长出来。", true],
+                                [4, "再往前，先别写成注定。它倾向这一下。", false],
+                                [9, "整组走到头，停在这一下。", true]
+                            ]},
+                            { title: "谁在这局里", lines: [
+                                [5, "你自己在这件事里的位置，是这一下。", false],
+                                [6, "周围的人、日子，推着的是这一下。", false],
+                                [8, "别人眼里的你，和你夜里的自己，差在这一下。", true]
+                            ]},
+                            { title: "底下那一层", lines: [
+                                [2, "你没说出口、夜里却在响的，是这一下。", true],
+                                [7, "你盼它变好，又怕它发生，两头都是这一下。", true]
+                            ]}
+                        ],
+                        scene: function (sit, close, rows) {
+                            var L = rows.map(dreamLean);
+                            return "你正站在，" + L[0] + "挡住的是，" + L[1] + "从过去来的是，" + L[3] + "走到头是，" + L[9] + close;
+                        }
+                    };
+                }
+                if (spread === "venus" && n >= 7) {
+                    return {
+                        open: "你先别急着给这个梦下判词。我按这七张的位置说，你听里面那一件就行。",
+                        wakeAt: 5,
+                        groups: [
+                            { title: "你", lines: [[0, "{sit}，你自己这一侧是这一下。", true]] },
+                            { title: "梦里的那一个", lines: [[1, "梦里那个人先别当成他本人。他演的是这一下。", true]] },
+                            { title: "中间那一截", lines: [[2, "你和这件事之间，停在这一下。", true]] },
+                            { title: "结在哪", lines: [[3, "结打在这一下，不在情节。", true]] },
+                            { title: "可以做的", lines: [[4, "今天用得上的，是这一下。", true]] },
+                            { title: "走到哪", lines: [[5, "这么走下去，停在这一下。", true]] },
+                            { title: "还没说的", lines: [[6, "底下还藏着的，是这一下。", false]] }
+                        ],
+                        scene: function (sit, close, rows) {
+                            var L = rows.map(dreamLean);
+                            return "你这一侧，" + L[0] + "梦里那一个演的是，" + L[1] + "中间停在，" + L[2] + "今天用得上的是，" + L[4] + close;
+                        }
+                    };
+                }
+                return {
+                    open: "你先别急着给这个梦下判词。你听里面这一下就行。",
+                    wakeAt: 0,
+                    groups: [
+                        { title: "这一下", lines: [[0, "{sit}，牌说的就是这一下。", true]] }
+                    ],
+                    scene: function (sit, close, rows) {
+                        return dreamLean(rows[0]) + close;
+                    }
+                };
+            }
+
+            function buildDreamFanwenHtml(questionText) {
+                const cards = currentDraws[activeSpread];
+                if (!Array.isArray(cards) || !cards.length) return "";
+                const rows = cards.map(function (id) { return getWesternRowForCard(id, questionText); });
+                if (rows.some(function (r) { return !r || !r.verdict || !r.lean; })) return "";
+                const frame = dreamFrame(questionText);
+                const plan = dreamSpreadPlan(activeSpread, rows.length);
+                const block = function (title, text) {
+                    return '<div class="master-section" style="margin-top:1.1rem;">'
+                        + '<div class="section-title" style="color:#c4a35a;font-weight:700;margin-bottom:0.5rem;">' + title + '</div>'
+                        + '<div class="section-content">' + nlToBrEscaped(text) + '</div></div>';
+                };
+                const activeItem = document.querySelector("#" + activeSpread + "List .position-item.active");
+                const activeId = activeItem && activeItem.dataset.id;
+                let activeIndex = cards.indexOf(activeId);
+                if (activeIndex < 0) activeIndex = 0;
+                let mid = "";
+                for (let g = 0; g < plan.groups.length; g++) {
+                    const group = plan.groups[g];
+                    const lines = group.lines.filter(function (line) { return line[0] === activeIndex; });
+                    if (!lines.length) continue;
+                    const text = lines.map(function (line) {
+                        return dreamCardLine(frame.sit, line[1], rows[line[0]], line[2]);
+                    }).join("\n\n");
+                    mid += block(group.title, text);
+                }
+                mid += block("同一幕", plan.scene(frame.sit, frame.close, rows));
+                const wakeRow = rows[activeIndex] || rows[plan.wakeAt] || rows[rows.length - 1];
+                const wake = dreamWake(questionText, wakeRow, rows[rows.length - 1]);
+                return '<div class="card-detail western-question-reading">'
+                    + '<div class="master-section" style="margin-top:0.6rem;">'
+                    + '<div class="section-title" style="color:#a48e62;font-weight:600;margin-bottom:0.5rem;">【你正在问】</div>'
+                    + '<div class="section-content">' + escapeHtmlReading(questionText) + '</div></div>'
+                    + '<div class="master-section" style="margin-top:1.1rem;">'
+                    + '<div class="section-content">' + nlToBrEscaped(plan.open) + '</div></div>'
+                    + mid
+                    + block("醒来做", wake)
+                    + '</div>';
+            }
+
             /**
-             * 感情婚姻 + 已入库具体问题文案：五段式专属解读（命中则 true，否则 false 走原大师 love）
+             * 西方手写解读：单牌保留「今天就做」；多牌改为「此位提示」+ 底部本阵合读。
+             * 占梦按范文读整组：两边连成同一幕，不把单张牌义单独抛出来。
              */
+            function paintWestArticle(detailDiv, article, paidOn, cardId, questionText, getMasterReadingFn) {
+                const gate = (paidOn || article.finalOnly || article.spreadEssay) ? "" : `
+                                <p style="margin:0 0 1.5rem;">
+                                    <button type="button" class="west-pay-open" style="background:transparent;color:#c4a35a;border:none;padding:0;cursor:pointer;font:inherit;">付费后看完整的这一篇</button>
+                                </p>`;
+                const bodyHtml = renderReadingMarkdown(articleToMarkdown(article, paidOn));
+                detailDiv.innerHTML = `
+                            <div class="card-detail western-question-reading west-article">
+                                ${bodyHtml}
+                                ${gate}
+                            </div>`;
+                const payBtn = detailDiv.querySelector(".west-pay-open");
+                if (payBtn) {
+                    payBtn.addEventListener("click", function () {
+                        try { sessionStorage.setItem("laby-west-paid", "1"); } catch (e) {}
+                        renderWesternQuestionReading(detailDiv, cardId, questionText, getMasterReadingFn);
+                    });
+                }
+            }
+
+            function applySpreadLive(article, faces, spread, data) {
+                if (data && data.article && data.article.open && Array.isArray(data.article.seats) && data.article.action) {
+                    const sections = [];
+                    for (let i = 0; i < faces.length; i++) {
+                        sections.push({
+                            nameLine: seatNameLine(faces[i], true),
+                            text: data.article.seats[i] || ""
+                        });
+                    }
+                    return {
+                        head: article.head,
+                        single: false,
+                        free: data.article.open,
+                        open: data.article.open,
+                        chain: data.article.chain || "",
+                        action: data.article.action,
+                        sections: sections
+                    };
+                }
+                const sections = [];
+                const clip = function (text) {
+                    const parts = String(text || "").split("。").map(function (s) { return s.trim(); }).filter(Boolean);
+                    return parts.slice(0, 2).join("。") + (parts.length ? "。" : "");
+                };
+                for (let i = 0; i < faces.length; i++) {
+                    sections.push({
+                        nameLine: seatNameLine(faces[i], true),
+                        text: clip(faces[i] && faces[i].singleOpen)
+                    });
+                }
+                const at = focusOf(spread, faces);
+                const actI = spread === "hexagram" ? 3 : (spread === "venus" ? 4 : (spread === "celtic" ? 9 : 2));
+                let action = faces[actI] && faces[actI].singleAction ? faces[actI].singleAction : "";
+                if (spread === "choice" && faces[2] && faces[5]) {
+                    action = "人在A。" + (faces[2].singleAction || "") + "人在B。" + (faces[5].singleAction || "");
+                }
+                const past = faces[at.pastI];
+                const now = faces[at.nowI] || faces[0];
+                const fore = faces[at.foreI];
+                const open = clip(past && past.singleOpen) + "因为" + clip(now && now.singleOpen) + "所以" + clip(fore && fore.singleOpen);
+                return {
+                    head: article.head,
+                    single: false,
+                    free: open,
+                    open: open,
+                    chain: "",
+                    action: action,
+                    sections: sections
+                };
+            }
+
+            function renderWesternQuestionReading(detailDiv, cardId, questionText, getMasterReadingFn) {
+                const W = window.TarotWesternReading;
+                if (!questionText || !W || typeof W.get !== 'function') return false;
+                const baseId = cardId.replace('_rev', '');
+                const dmyId = baseIdToDmyTarotId(baseId);
+                if (!dmyId) return false;
+                const upright = !cardId.endsWith('_rev');
+                const R = window.TarotQuestionResolve;
+                const catId = (R && typeof R.tabToCategory === 'function')
+                    ? R.tabToCategory(getCategoryValue())
+                    : '感情婚姻';
+                let row = W.get(catId || '感情婚姻', questionText, dmyId, upright);
+                const q01Essay = q01SingleFor(cardId, questionText);
+                if (!row && q01Essay && q01Essay.open && q01Essay.action && String(questionText || "").indexOf("怎么看我") !== -1) {
+                    row = {
+                        lean: "有",
+                        verdict: "有",
+                        speak: q01Essay.open,
+                        soul: "留",
+                        doToday: q01Essay.action,
+                        nameZh: "这一张",
+                        upright: upright
+                    };
+                }
+                if (!row) {
+                    if (typeof W.missing === 'function' && W.missing(catId || '感情婚姻', questionText)) return false;
+                    if (typeof W.ensure === 'function') {
+                        const token = (detailDiv._westToken = (detailDiv._westToken || 0) + 1);
+                        const cid = cardId;
+                        const q = questionText;
+                        detailDiv.innerHTML = `
+                            <div class="card-detail western-question-reading">
+                                <div class="section-content">这题的解读正在读进来。</div>
+                            </div>`;
+                        W.ensure(questionText).then(function () {
+                            if (detailDiv._westToken !== token) return;
+                            renderWesternQuestionReading(detailDiv, cid, q, getMasterReadingFn);
+                        });
+                        return true;
+                    }
+                    return false;
+                }
+                if (getCategoryValue() === 'dream') {
+                    const essay = buildDreamFanwenHtml(questionText);
+                    if (essay) {
+                        detailDiv.innerHTML = essay;
+                        return true;
+                    }
+                }
+                const mr = getMasterReadingFn(cardId, getCategoryValue());
+                const cardTitle = mr ? mr.name : (window.tarotData && window.tarotData[cardId] && window.tarotData[cardId].name ? window.tarotData[cardId].name : cardId);
+                const ori = upright ? '正位' : '逆位';
+                const multi = (spreadPositions[activeSpread] || []).length > 1;
+                const isDream = getCategoryValue() === 'dream';
+                const actionTitle = isDream ? '【醒来做】' : (multi ? '【此位提示】' : '【今天就做这一步】');
+                const actionBody = (!isDream && multi)
+                    ? (stripReadingTagLine(row.doToday) || row.doToday)
+                    : row.doToday;
+                const synthesis = multi && !isDream ? buildSpreadSynthesisHtml(questionText) : '';
+                const essay = !isDream && !row.soul && !row.doToday && row.verdict && row.speak;
+                const article = (essay || String(questionText || "").indexOf("怎么看我") !== -1) ? buildHowTheySeeArticle(questionText) : null;
+                if (String(questionText || "").indexOf("怎么看我") !== -1 && !article) {
+                    detailDiv.innerHTML = `<div class="card-detail western-question-reading"><div class="section-content">这张定稿没有读到。</div></div>`;
+                    return true;
+                }
+                let paidOn = false;
+                try { paidOn = sessionStorage.getItem("laby-west-paid") === "1"; } catch (e) { paidOn = false; }
+                let where = "";
+                if (essay && multi && !article) {
+                    const activeItem = document.querySelector("#" + activeSpread + "List .position-item.active");
+                    const posName = activeItem && activeItem.querySelector(".pos-name")
+                        ? String(activeItem.querySelector(".pos-name").textContent || "").trim()
+                        : "";
+                    if (posName) where = "这一格是" + posName + "。";
+                }
+                if (article && (essay || String(questionText || "").indexOf("怎么看我") !== -1)) {
+                    const paidKey = paidOn ? "1" : "0";
+                    const contentSig = (currentDraws[activeSpread] || []).join(",") + "|" + questionText + "|" + activeSpread + "|v23";
+                    const sig = contentSig + "|" + paidKey;
+                    if (detailDiv.dataset.westSig === sig && detailDiv.querySelector(".west-article")) return true;
+                    if (detailDiv._westLive && detailDiv._westLive.sig === contentSig) {
+                        paintWestArticle(detailDiv, detailDiv._westLive.article, paidOn, cardId, questionText, getMasterReadingFn);
+                        detailDiv.dataset.westSig = sig;
+                        return true;
+                    }
+                    const wantLive = !article.single && String(questionText || "").indexOf("信哪头") !== -1;
+                    if (wantLive) {
+                        if (detailDiv.dataset.westPending === contentSig) return true;
+                        detailDiv.dataset.westPending = contentSig;
+                        detailDiv.innerHTML = '<div class="card-detail western-question-reading"><div class="section-content">这一手正在写成一篇。</div></div>';
+                        const cardsNow = (currentDraws[activeSpread] || []).slice();
+                        const spreadNow = activeSpread;
+                        const facesNow = articleFaces(questionText);
+                        fetch("/api/tarot-spread", {
+                            method: "POST",
+                            headers: { "Content-Type": "application/json" },
+                            body: JSON.stringify({ question: questionText, spread: spreadNow, cards: cardsNow })
+                        }).then(function (res) { return res.json(); }).then(function (data) {
+                            if (detailDiv.dataset.westPending !== contentSig) return;
+                            const live = applySpreadLive(article, facesNow, spreadNow, data);
+                            detailDiv._westLive = { sig: contentSig, article: live };
+                            detailDiv.dataset.westPending = "";
+                            detailDiv.dataset.westSig = sig;
+                            paintWestArticle(detailDiv, live, paidOn, cardId, questionText, getMasterReadingFn);
+                        }).catch(function () {
+                            if (detailDiv.dataset.westPending !== contentSig) return;
+                            const live = applySpreadLive(article, facesNow, spreadNow, { fallback: true });
+                            detailDiv._westLive = { sig: contentSig, article: live };
+                            detailDiv.dataset.westPending = "";
+                            detailDiv.dataset.westSig = sig;
+                            paintWestArticle(detailDiv, live, paidOn, cardId, questionText, getMasterReadingFn);
+                        });
+                        return true;
+                    }
+                    detailDiv.dataset.westSig = sig;
+                    paintWestArticle(detailDiv, article, paidOn, cardId, questionText, getMasterReadingFn);
+                    return true;
+                }
+                if (essay) {
+                    const body = paidOn ? row.speak : row.verdict;
+                    const gate = paidOn ? "" : `
+                                <div class="master-section" style="margin-top:1rem;">
+                                    <button type="button" class="west-pay-open" style="background:transparent;color:#c4a35a;border:1px solid rgba(196,163,90,.45);border-radius:999px;padding:0.45rem 0.9rem;cursor:pointer;">付费后看完整的这一篇</button>
+                                </div>`;
+                    detailDiv.innerHTML = `
+                            <div class="card-detail western-question-reading">
+                                <div class="detail-cardname">${escapeHtmlReading(cardTitle)}</div>
+                                <div class="master-section" style="margin-top:0.6rem;">
+                                    <div class="section-title" style="color:#a48e62;font-weight:600;margin-bottom:0.5rem;">【你正在问】</div>
+                                    <div class="section-content">${escapeHtmlReading(questionText)}</div>
+                                </div>
+                                <div class="master-section" style="margin-top:1.1rem;">
+                                    <div class="section-content">${nlToBrEscaped(where + body)}</div>
+                                </div>
+                                ${gate}
+                                ${paidOn ? synthesis : ""}
+                            </div>`;
+                    const payBtn = detailDiv.querySelector(".west-pay-open");
+                    if (payBtn) {
+                        payBtn.addEventListener("click", function () {
+                            try { sessionStorage.setItem("laby-west-paid", "1"); } catch (e) {}
+                            renderWesternQuestionReading(detailDiv, cardId, questionText, getMasterReadingFn);
+                        });
+                    }
+                    return true;
+                }
+                detailDiv.innerHTML = `
+                            <div class="card-detail western-question-reading">
+                                <div class="detail-cardname">${escapeHtmlReading(cardTitle)}</div>
+                                <div class="master-section" style="margin-top:0.6rem;">
+                                    <div class="section-title" style="color:#a48e62;font-weight:600;margin-bottom:0.5rem;">【你正在问】</div>
+                                    <div class="section-content">${escapeHtmlReading(questionText)}</div>
+                                </div>
+                                <div class="master-section" style="margin-top:1.1rem;">
+                                    <div class="section-title" style="color:#c4a35a;font-weight:700;margin-bottom:0.5rem;">【判断】${escapeHtmlReading(row.lean)}</div>
+                                    <div class="section-content">${nlToBrEscaped(row.verdict)}</div>
+                                </div>
+                                <div class="master-section" style="margin-top:1rem;">
+                                    <div class="section-title" style="color:#a48e62;font-weight:600;margin-bottom:0.5rem;">【这张牌对你说】${escapeHtmlReading(row.nameZh)}·${ori}</div>
+                                    <div class="section-content">${nlToBrEscaped(row.speak)}</div>
+                                </div>
+                                <div class="master-section" style="margin-top:1rem;">
+                                    <div class="section-title" style="color:#a48e62;font-weight:600;margin-bottom:0.5rem;">【灵魂上】</div>
+                                    <div class="section-content">${nlToBrEscaped(row.soul)}</div>
+                                </div>
+                                <div class="master-section" style="margin-top:1rem;">
+                                    <div class="section-title" style="color:#a48e62;font-weight:600;margin-bottom:0.5rem;">${actionTitle}</div>
+                                    <div class="section-content">${nlToBrEscaped(actionBody)}</div>
+                                </div>
+                                ${synthesis}
+                            </div>`;
+                return true;
+            }
+
             function renderLoveQuestionSpecificReading(detailDiv, cardId, questionText, getMasterReadingFn) {
                 const gm = window.TarotQuestionLove && window.TarotQuestionLove.getMasterQuestionContent;
                 if (!questionText || typeof gm !== 'function') return false;
@@ -823,7 +2574,7 @@
                 const dmyId = baseIdToDmyTarotId(baseId);
                 if (!dmyId) return false;
                 const upright = !cardId.endsWith('_rev');
-                const qc = gm('感情婚姻', questionText, dmyId, upright, { placeholder: false });
+                const qc = gm('感情婚姻', resolveQuestionKey(questionText, 'love'), dmyId, upright, { placeholder: false });
                 if (!qc || qc.isPlaceholder) return false;
                 const mr = getMasterReadingFn(cardId, 'love');
                 const cardTitle = mr ? mr.name : (window.tarotData && window.tarotData[cardId] && window.tarotData[cardId].name ? window.tarotData[cardId].name : cardId);
@@ -869,7 +2620,7 @@
                 const dmyId = baseIdToDmyTarotId(baseId);
                 if (!dmyId) return false;
                 const upright = !cardId.endsWith('_rev');
-                const qc = gm('事业工作', questionText, dmyId, upright, { placeholder: false });
+                const qc = gm('事业工作', resolveQuestionKey(questionText, 'career'), dmyId, upright, { placeholder: false });
                 if (!qc || qc.isPlaceholder) return false;
                 const mr = getMasterReadingFn(cardId, 'career');
                 const cardTitle = mr ? mr.name : (window.tarotData && window.tarotData[cardId] && window.tarotData[cardId].name ? window.tarotData[cardId].name : cardId);
@@ -915,7 +2666,7 @@
                 const dmyId = baseIdToDmyTarotId(baseId);
                 if (!dmyId) return false;
                 const upright = !cardId.endsWith('_rev');
-                const qc = gm('财运投资', questionText, dmyId, upright, { placeholder: false });
+                const qc = gm('财运投资', resolveQuestionKey(questionText, 'money'), dmyId, upright, { placeholder: false });
                 if (!qc || qc.isPlaceholder) return false;
                 const mr = getMasterReadingFn(cardId, 'money');
                 const cardTitle = mr ? mr.name : (window.tarotData && window.tarotData[cardId] && window.tarotData[cardId].name ? window.tarotData[cardId].name : cardId);
@@ -962,7 +2713,7 @@
                 const dmyId = baseIdToDmyTarotId(baseId);
                 if (!dmyId) return false;
                 const upright = !cardId.endsWith('_rev');
-                const qc = gm('学业考试', questionText, dmyId, upright, { placeholder: false });
+                const qc = gm('学业考试', resolveQuestionKey(questionText, 'study'), dmyId, upright, { placeholder: false });
                 if (!qc || qc.isPlaceholder) return false;
                 const mr = getMasterReadingFn(cardId, 'study');
                 const cardTitle = mr ? mr.name : (window.tarotData && window.tarotData[cardId] && window.tarotData[cardId].name ? window.tarotData[cardId].name : cardId);
@@ -1016,7 +2767,7 @@
                         const dmyId = baseIdToDmyTarotId(baseId);
                         if (dmyId) {
                             const upright = !cardId.endsWith('_rev');
-                            const qc = gm6(lifeSixCatId, questionText.trim(), dmyId, upright, { placeholder: false });
+                            const qc = gm6(lifeSixCatId, resolveQuestionKey(questionText.trim(), categoryTab), dmyId, upright, { placeholder: false });
                             if (qc && !qc.isPlaceholder) {
                                 const mr = getMasterReadingFn(cardId, categoryTab);
                                 const cardTitle = mr ? mr.name : (window.tarotData && window.tarotData[cardId] && window.tarotData[cardId].name ? window.tarotData[cardId].name : cardId);
@@ -1131,6 +2882,70 @@
                 venus: ['自己', '对方', '关系', '问题', '建议', '结果', '潜在影响']
             };
 
+            function positionsForSpread(spread) {
+                const cat = getCategoryValue();
+                if (spread === 'trinity') {
+                    if (cat === 'lost') return ['物', '人', '你'];
+                    if (cat === 'dream') return ['信号', '白天', '消化'];
+                    if (cat === 'pet') return ['症状', '照护', '你'];
+                    if (cat === 'health') return ['症状', '节奏', '你'];
+                    return ['身', '心', '灵'];
+                }
+                return spreadPositions[spread] || [];
+            }
+
+            function spreadPanelTitle(spread, cat) {
+                if (spread === 'single') return '今日一牌';
+                if (spread === 'celtic') return '十方 · 位置';
+                if (spread === 'triangle') {
+                    if (cat === 'lost') return '时间之流 · 找回';
+                    if (cat === 'dream') return '时间之流 · 梦信号';
+                    return '时间之流';
+                }
+                if (spread === 'choice') return '二择一 · 抉择';
+                if (spread === 'hexagram') {
+                    if (cat === 'lost') return '六芒星 · 找回';
+                    if (cat === 'dream') return '六芒星 · 梦信号';
+                    return '六芒星 · 洞见';
+                }
+                if (spread === 'trinity') {
+                    if (cat === 'lost') return '物／人／你';
+                    if (cat === 'dream') return '信号／白天／消化';
+                    if (cat === 'pet') return '症状／照护／你';
+                    if (cat === 'health') return '症状／节奏／你';
+                    return '身心灵 · 三位';
+                }
+                if (spread === 'venus') {
+                    if (cat === 'relation') return '维纳斯 · 人际';
+                    return '维纳斯 · 感情';
+                }
+                return '';
+            }
+
+            /** 维纳斯仅感情／人际；错配时自动切回时间之流 */
+            function syncSpreadUiForCategory(cat) {
+                const venusOk = cat === 'love' || cat === 'relation';
+                const venusTag = document.querySelector('.spread-tag[data-spread="venus"]');
+                if (venusTag) {
+                    if (venusOk) venusTag.removeAttribute('hidden');
+                    else venusTag.setAttribute('hidden', '');
+                }
+                ['single', 'celtic', 'triangle', 'choice', 'hexagram', 'trinity', 'venus'].forEach((spread) => {
+                    const containerId = 'spread' + spread.charAt(0).toUpperCase() + spread.slice(1);
+                    const h3 = document.querySelector('#' + containerId + ' .position-panel h3');
+                    if (h3) h3.textContent = spreadPanelTitle(spread, cat);
+                });
+                if (!venusOk && activeSpread === 'venus') {
+                    const triangleTag = document.querySelector('.spread-tag[data-spread="triangle"]');
+                    if (triangleTag) {
+                        document.querySelectorAll('.spread-tag').forEach((t) => t.classList.remove('active'));
+                        triangleTag.classList.add('active');
+                        activeSpread = 'triangle';
+                        document.querySelectorAll('.spread-container').forEach((c) => c.classList.remove('active'));
+                    }
+                }
+            }
+
             // 78张牌ID列表（简化，实际需要完整）
             const allCardIds = [
                 // 大牌
@@ -1153,8 +2968,174 @@
 
             // 当前激活的牌阵
             let activeSpread = 'single';
-            // 存储每个牌阵的当前牌ID
             const currentDraws = {};
+            let pinnedQuestion = '';
+            const askedQueue = [];
+
+            function hasPinnedDraw() {
+                return Array.isArray(currentDraws[activeSpread]) && currentDraws[activeSpread].length > 0;
+            }
+
+            function getQuestionText() {
+                if (pinnedQuestion) return pinnedQuestion;
+                const el = document.querySelector('.question-option.selected');
+                return el ? el.textContent.trim() : '';
+            }
+
+            function refreshActiveReading() {
+                const cards = currentDraws[activeSpread];
+                if (Array.isArray(cards) && cards[0]) updateReading(activeSpread, cards[0]);
+            }
+
+            function inlineReadingMarkdown(text) {
+                return escapeHtmlReading(text).replace(/\*\*([^*]+)\*\*/g, '<strong class="west-name">$1</strong>');
+            }
+
+            function renderReadingMarkdown(md) {
+                const blocks = String(md || "").split(/\n{2,}/).map(function (block) {
+                    return block.trim();
+                }).filter(Boolean);
+                let html = "";
+                for (let i = 0; i < blocks.length; i++) {
+                    const line = blocks[i];
+                    if (line.indexOf("### ") === 0 && line.indexOf("破局试金石") !== -1) {
+                        const next = blocks[i + 1] && blocks[i + 1].indexOf("### ") !== 0 ? blocks[i + 1] : "";
+                        html += `<aside class="west-callout"><h3 class="west-kicker">${inlineReadingMarkdown(line.slice(4))}</h3>`;
+                        if (next) {
+                            html += `<p class="west-flow">${inlineReadingMarkdown(next)}</p>`;
+                            i += 1;
+                        }
+                        html += "</aside>";
+                        continue;
+                    }
+                    if (line.indexOf("### ") === 0) {
+                        html += `<h3 class="west-kicker">${inlineReadingMarkdown(line.slice(4))}</h3>`;
+                    } else {
+                        html += `<p class="west-flow">${inlineReadingMarkdown(line)}</p>`;
+                    }
+                }
+                return html;
+            }
+
+            function articleToMarkdown(article, paidOn) {
+                if (article.manuscript && article.single) {
+                    return ["### 【判断】", "", article.lean, "", article.verdict, "", "### 【这张牌对你说】", "", article.open].join("\n");
+                }
+                if (article.spreadEssay) {
+                    const blocks = ["### 【核心定盘】", "", article.open, ""];
+                    for (let i = 0; i < article.sections.length; i++) {
+                        const sec = article.sections[i];
+                        blocks.push("**" + sec.nameLine + "**", "", sec.text, "");
+                    }
+                    blocks.push("### 【破局试金石】", "", article.action);
+                    return blocks.join("\n");
+                }
+                if (article.finalOnly) {
+                    if (article.single) {
+                        return ["### 【核心定盘】", "", article.open, "", "### 【破局试金石】", "", article.action].join("\n");
+                    }
+                    const blocks = [];
+                    for (let i = 0; i < article.sections.length; i++) {
+                        const sec = article.sections[i];
+                        blocks.push("**" + sec.nameLine + "**", "", "### 【核心定盘】", "", sec.text, "", "### 【破局试金石】", "", sec.action, "");
+                    }
+                    return blocks.join("\n");
+                }
+                const parts = ["### 【核心定盘】", "", article.open, ""];
+                if (paidOn && !article.single && article.sections && article.sections.length) {
+                    if (!article.single) parts.push("### 【命运连线串联】", "");
+                    for (let i = 0; i < article.sections.length; i++) {
+                        const sec = article.sections[i];
+                        parts.push("**" + sec.nameLine + "** " + sec.text, "");
+                    }
+                    if (article.chain) parts.push(article.chain, "");
+                }
+                parts.push("### 【破局试金石】", "", article.action);
+                return parts.join("\n");
+            }
+
+            function renderAskedQueue() {
+                /* 抽牌前不展示连问记录，避免像第二套作业 */
+            }
+
+            function syncReadingQuestion() {
+                const q = getQuestionText();
+                document.querySelectorAll('.reading-question').forEach(function (el) {
+                    el.textContent = q || '';
+                });
+            }
+
+            function enterReadingMode() {
+                document.body.classList.add('is-reading');
+                const bar = document.getElementById('readingBackbar');
+                if (bar) bar.hidden = false;
+                window.scrollTo(0, 0);
+            }
+
+            function leaveReadingMode() {
+                document.body.classList.remove('is-reading');
+                const bar = document.getElementById('readingBackbar');
+                if (bar) bar.hidden = true;
+                document.querySelectorAll('.spread-container').forEach(function (c) {
+                    c.classList.remove('active');
+                });
+                delete currentDraws[activeSpread];
+                updateFollowupHint();
+                window.scrollTo(0, 0);
+            }
+
+            function updateFollowupHint() {
+                const zone = document.getElementById('followupZone');
+                const btn = document.getElementById('drawBtn');
+                if (zone) zone.hidden = true;
+                if (btn) btn.innerHTML = '<i class="fas fa-hand-sparkles"></i> 抽牌';
+                syncReadingQuestion();
+            }
+
+            function renderFollowups(category) {
+                const box = document.getElementById('followupChips');
+                const more = document.getElementById('followupMore');
+                if (!box) return;
+                const R = window.TarotQuestionResolve;
+                const catId = R && typeof R.tabToCategory === 'function' ? R.tabToCategory(category) : '';
+                const current = getQuestionText();
+                let list = [];
+                if (R && typeof R.followupsFor === 'function' && current) {
+                    list = R.followupsFor(catId, current) || [];
+                }
+                box.innerHTML = '';
+                list.forEach((chip) => {
+                    const el = document.createElement('button');
+                    el.type = 'button';
+                    el.className = 'followup-chip' + (pinnedQuestion === chip.label ? ' active' : '');
+                    el.textContent = chip.label;
+                    el.addEventListener('click', () => setPinnedQuestion(chip.label, true));
+                    box.appendChild(el);
+                });
+                if (more) more.hidden = list.length === 0;
+                updateFollowupHint();
+            }
+
+            function setPinnedQuestion(text, addQueue, fromAsk) {
+                pinnedQuestion = String(text || '').trim();
+                if (addQueue !== false && hasPinnedDraw() && pinnedQuestion && askedQueue.indexOf(pinnedQuestion) === -1) {
+                    askedQueue.push(pinnedQuestion);
+                }
+                document.querySelectorAll('.question-option').forEach((o) => {
+                    o.classList.toggle('selected', o.textContent.trim() === pinnedQuestion);
+                });
+                document.querySelectorAll('.followup-chip').forEach((o) => {
+                    o.classList.toggle('active', o.textContent.trim() === pinnedQuestion);
+                });
+                const follow = document.getElementById('followupInput');
+                if (follow && pinnedQuestion) follow.value = pinnedQuestion;
+                const ask = document.getElementById('askInput');
+                if (ask && !fromAsk) ask.value = pinnedQuestion;
+                const western = window.TarotWesternReading;
+                if (pinnedQuestion && western && typeof western.ensure === 'function') western.ensure(pinnedQuestion);
+                refreshActiveReading();
+                renderFollowups(getCategoryValue());
+            }
 
             // ---------- 随机抽取函数 ----------
             function drawCards(count) {
@@ -1168,12 +3149,12 @@
 
             // ---------- 渲染指定牌阵 ----------
             function renderSpread(spread) {
-                const count = spreadPositions[spread].length;
+                const positions = positionsForSpread(spread);
+                const count = positions.length;
                 if (!currentDraws[spread]) {
                     currentDraws[spread] = drawCards(count);
                 }
                 const cardIds = currentDraws[spread];
-                const positions = spreadPositions[spread];
                 const listId = spread + 'List';
                 const listContainer = document.getElementById(listId);
                 if (!listContainer) return;
@@ -1181,27 +3162,16 @@
                 listContainer.innerHTML = '';
                 cardIds.forEach((cardId, index) => {
                     const item = document.createElement('div');
-                    item.className = 'position-item' + (index === 0 ? ' active' : '');
+                    item.className = 'position-item';
                     item.dataset.id = cardId;
                     item.dataset.spread = spread;
-                    // 从 tarotData 获取牌名，若无则显示ID
                     const cardInfo = window.tarotData?.[cardId] || { name: cardId.replace('_rev', '逆位').replace(/_/g, ' ') };
                     const displayName = cardInfo.name || cardId;
-                    item.innerHTML = `<span class="pos-name">${positions[index]}</span><span class="pos-card">${displayName}</span>`;
+                    item.innerHTML = `<span class="pos-name">${positions[index] || ''}</span><span class="pos-card">${displayName}</span>`;
                     listContainer.appendChild(item);
                 });
 
-                // 默认显示第一个解读
                 if (cardIds.length > 0) updateReading(spread, cardIds[0]);
-
-                // 绑定点击事件
-                document.querySelectorAll(`#${listId} .position-item`).forEach(item => {
-                    item.addEventListener('click', function() {
-                        document.querySelectorAll(`#${listId} .position-item`).forEach(i => i.classList.remove('active'));
-                        this.classList.add('active');
-                        updateReading(spread, this.dataset.id);
-                    });
-                });
             }
 
             // ---------- 更新右侧解读 ----------
@@ -1214,23 +3184,40 @@
                 const detailDiv = document.getElementById(spread + 'Detail');
                 const category = getCategoryValue();
                 // 當前選中的具體問題（若有）
-                const selectedQuestionEl = document.querySelector('.question-option.selected');
-                const questionText = selectedQuestionEl ? selectedQuestionEl.textContent.trim() : '';
+                const questionText = getQuestionText();
 
-                if (category === 'love' && renderLoveQuestionSpecificReading(detailDiv, cardId, questionText, getMasterReading)) {
+                if (renderWesternQuestionReading(detailDiv, cardId, questionText, getMasterReading)) {
                     return;
                 }
-                if (category === 'career' && renderCareerQuestionSpecificReading(detailDiv, cardId, questionText, getMasterReading)) {
+                if (questionText) {
+                    const td = window.tarotData && window.tarotData[cardId];
+                    const cardTitle = (td && td.name) ? td.name : cardId;
+                    detailDiv.innerHTML = `
+                            <div class="card-detail western-question-reading">
+                                <div class="detail-cardname">${escapeHtmlReading(cardTitle)}</div>
+                                <div class="master-section" style="margin-top:0.6rem;">
+                                    <div class="section-title" style="color:#a48e62;font-weight:600;margin-bottom:0.5rem;">【你正在问】</div>
+                                    <div class="section-content">${escapeHtmlReading(questionText)}</div>
+                                </div>
+                                <div class="master-section" style="margin-top:1.1rem;">
+                                    <div class="section-title" style="color:#c4a35a;font-weight:700;margin-bottom:0.5rem;">【判断】本题这篇还没写入</div>
+                                    <div class="section-content">只走新解读。旧的五段已经拿掉。写到这题这张牌才会出现正文。</div>
+                                </div>
+                            </div>`;
                     return;
                 }
-                if (category === 'money' && renderMoneyQuestionSpecificReading(detailDiv, cardId, questionText, getMasterReading)) {
-                    return;
-                }
-                if (category === 'study' && renderStudyQuestionSpecificReading(detailDiv, cardId, questionText, getMasterReading)) {
-                    return;
-                }
-                const lifeModuleTabs = ['money', 'health', 'relation', 'child', 'choice', 'pet', 'spirit'];
-                if (lifeModuleTabs.indexOf(category) >= 0 && renderLifeCategoryQuestionModulesReading(detailDiv, cardId, questionText, category, getMasterReading)) {
+
+                if (spread !== "single") {
+                    const td = window.tarotData && window.tarotData[cardId];
+                    const cardTitle = (td && td.name) ? td.name : cardId;
+                    detailDiv.innerHTML = `
+                            <div class="card-detail western-question-reading">
+                                <div class="detail-cardname">${escapeHtmlReading(cardTitle)}</div>
+                                <div class="master-section" style="margin-top:1.1rem;">
+                                    <div class="section-title" style="color:#c4a35a;font-weight:700;margin-bottom:0.5rem;">【判断】牌阵这篇还没写入</div>
+                                    <div class="section-content">牌阵合读已经拿掉。写到这一阵才会出现正文。</div>
+                                </div>
+                            </div>`;
                     return;
                 }
 
@@ -1383,6 +3370,7 @@
             const navTags = document.querySelectorAll('.spread-tag');
             navTags.forEach(tag => {
                 tag.addEventListener('click', function() {
+                    if (this.hasAttribute('hidden')) return;
                     navTags.forEach(t => t.classList.remove('active'));
                     this.classList.add('active');
                     activeSpread = this.dataset.spread;
@@ -1396,13 +3384,17 @@
 
             // ---------- 抽牌按钮 ----------
             document.getElementById('drawBtn').addEventListener('click', function() {
+                const ask = document.getElementById('askInput');
+                const typed = ask ? String(ask.value || '').trim() : '';
+                if (typed) setPinnedQuestion(typed, false, true);
+                syncSpreadUiForCategory(getCategoryValue());
                 // 显示当前牌阵容器
                 document.querySelectorAll('.spread-container').forEach(c => c.classList.remove('active'));
                 const containerId = 'spread' + activeSpread.charAt(0).toUpperCase() + activeSpread.slice(1);
                 document.getElementById(containerId)?.classList.add('active');
 
                 // 重新抽取当前牌阵的牌
-                const count = spreadPositions[activeSpread].length;
+                const count = positionsForSpread(activeSpread).length;
                 currentDraws[activeSpread] = drawCards(count);
                 renderSpread(activeSpread);
 
@@ -1419,6 +3411,16 @@
                     }, index * 80 + 300);
                 });
                 spawnParticles(60);
+                askedQueue.length = 0;
+                if (pinnedQuestion) askedQueue.push(pinnedQuestion);
+                const input = document.getElementById('followupInput');
+                if (input && pinnedQuestion) input.value = pinnedQuestion;
+                updateFollowupHint();
+                enterReadingMode();
+            });
+
+            document.getElementById('backToAskBtn').addEventListener('click', function () {
+                leaveReadingMode();
             });
 
             // ---------- 粒子系统 ----------
@@ -1474,7 +3476,7 @@
                 }
             }
 
-            // 问题库：仅 WESTERN 十大类；每类固定预留 20 条，无其他大类、无多余条目（渲染时再 slice(0,20) 防误增）
+            // 问题库：19 大类；每类界面 20 条（解析脚本优先，此处作回退）
             const questionBank = {
                 love: [
                     '这段关系的本质是什么？',
@@ -1696,6 +3698,204 @@
                     '群里从来不说话我是不是废了？',
                     '想原谅一个人见面又火大怎么办？',
                 ],
+                travel: [
+                    '这次出行顺利吗？',
+                    '该不该搬家？',
+                    '签证能办下来吗？',
+                    '哪天搬家比较好？',
+                    '航班／交通会延误吗？',
+                    '该不该换城市？',
+                    '搬家该选哪个方向？',
+                    '这次出差的目的能达成吗？',
+                    '移民／移居适合现在做吗？',
+                    '这趟出门要注意什么？',
+                    '买房／租房该选哪个？',
+                    '车子／车况会有问题吗？',
+                    '该不该现在出门？',
+                    '旅途最可能在哪一段出状况？',
+                    '搬家的时机对吗？',
+                    '换房手续能顺利吗？',
+                    '出差谈判会顺利吗？',
+                    '该不该买车？',
+                    '出国旅行该选哪个时间窗？',
+                    '新住处适不适合长期住？',
+                ],
+                legal: [
+                    '官司能赢吗？',
+                    '合同纠纷该怎么处理？',
+                    '孩子抚养权／监护权怎么保障？',
+                    '该请律师吗？',
+                    '和解好还是打到底？',
+                    '对方会和解吗？',
+                    '离婚协议怎么谈？',
+                    '开庭我该怎么准备？',
+                    '证据够吗？',
+                    '该不该告对方？',
+                    '律师该选哪个？',
+                    '判决会对我有利吗？',
+                    '探视权能争取到吗？',
+                    '赔偿能拿到吗？',
+                    '官司要打多久？',
+                    '调解能成吗？',
+                    '法律文件该怎么签？',
+                    '上诉还有没有机会？',
+                    '这个案子最该防哪一刀？',
+                    '关键证人会不会出庭？',
+                ],
+                lost: [
+                    '丢的东西能找回吗？',
+                    '该往哪个方向找？',
+                    '什么时候能找到？',
+                    '东西掉在哪里？',
+                    '被谁拿走了？',
+                    '该不该报警？',
+                    '失物在室内还是室外？',
+                    '钱包／证件能找回吗？',
+                    '手机／贵重物品能找回吗？',
+                    '找不到了该放弃吗？',
+                    '线索在哪？',
+                    '有人捡到会还吗？',
+                    '该不该在网上发寻物？',
+                    '几天内能找到？',
+                    '被偷还是自己弄丢？',
+                    '找回来会损坏吗？',
+                    '东西还在家里吗？',
+                    '该先找哪个地点？',
+                    '失物被别人用了吗？',
+                    '找的时候最该注意什么？',
+                ],
+                dream: [
+                    '这个梦代表什么意思？',
+                    '梦到吵架／打架代表什么？',
+                    '噩梦有什么寓意？',
+                    '反复做同一个梦代表什么？',
+                    '梦到蛇代表什么？',
+                    '梦到去世的亲人代表什么？',
+                    '梦到掉牙代表什么？',
+                    '梦到怀孕／生孩子代表什么？',
+                    '梦到水／火代表什么？',
+                    '梦到被追代表什么？',
+                    '梦到考试代表什么？',
+                    '梦到结婚代表什么？',
+                    '梦到死亡代表什么？',
+                    '梦到动物代表什么？',
+                    '梦到飞代表什么？',
+                    '梦到钱／捡钱代表什么？',
+                    '梦到房子代表什么？',
+                    '梦是吉是凶？',
+                    '这个梦要我注意生活里哪件事？',
+                    '反复梦到同一个人代表什么？',
+                ],
+                fengshui: [
+                    '家里风水要注意什么？',
+                    '哪个风水物品比较适合？',
+                    '办公室／房子风水如何？',
+                    '这个房子适不适合我们住？',
+                    '摆什么能招财？',
+                    '床位／书桌该怎么摆？',
+                    '大门朝向有问题吗？',
+                    '煞气怎么化解？',
+                    '旺桃花怎么摆？',
+                    '祖坟／阴宅要注意什么？',
+                    '搬家要选哪天？',
+                    '装修动工吉日？',
+                    '办公室座位怎么选？',
+                    '镜子摆放对吗？',
+                    '植物放哪好？',
+                    '缺角怎么补？',
+                    '风水物品摆哪个方位？',
+                    '这个方位适合我吗？',
+                    '厨房／卫生间有没有要注意的？',
+                    '今年家里要不要动格局？',
+                ],
+                proxy: [
+                    '我家人／朋友最近如何？',
+                    '他的工作／感情会顺利吗？',
+                    '代问：他现在最该处理哪件事？',
+                    '我妈／我爸身体会好吗？',
+                    '我姐／我哥最近顺利吗？',
+                    '我朋友能度过难关吗？',
+                    '他的病能好吗？',
+                    '他会回来吗？',
+                    '对方现在在想什么？',
+                    '我孩子最近如何？',
+                    '我伴侣的事业会好吗？',
+                    '代问长辈健康？',
+                    '他心里还有我吗？',
+                    '我闺蜜／兄弟感情会顺利吗？',
+                    '家人关系会改善吗？',
+                    '他什么时候能好？',
+                    '代问：他近三个月运势如何？',
+                    '我同事能升职吗？',
+                    '替她问：他心里还有她吗？',
+                    '替家人问：最近这件事会不会过？',
+                ],
+                other: [
+                    '这件事会顺利吗？',
+                    '接下来三个月运势如何？',
+                    '我该注意什么？',
+                    '今年运势如何？',
+                    '这件事该不该做？',
+                    '我当下最需要什么？',
+                    '时机对吗？',
+                    '该不该相信直觉？',
+                    '这件事的结果会如何？',
+                    '有什么机遇？',
+                    '有什么考验？',
+                    '我现在最该动手做哪一件？',
+                    '这件事卡住的关键是什么？',
+                    '该不该再等一等？',
+                    '我看漏了什么？',
+                    '这件事会拖多久？',
+                    '谁能帮上忙？',
+                    '最坏情况我该怎么准备？',
+                    '近期整体运势如何？',
+                    '这件事值不值得继续投入？',
+                ],
+                psyche: [
+                    '我反复出现的焦虑，其实在为哪一部分的自己发声？',
+                    '当我责备自己的时候，内心那个声音最害怕的是什么？',
+                    '我最常「装没事」的情绪是什么？如果让它说话，会说什么？',
+                    '过去的某个创伤或失望，现在还在怎样影响我？',
+                    '我现在最需要学会的，是设立界限，还是允许自己被支持？',
+                    '这段情绪低谷，可以成为我重新认识自己的怎样一个契机？',
+                    '我最害怕的情绪是什么？这种害怕本身在告诉我什么？',
+                    '过去的某次伤害，我现在是否真正允许自己放下了？',
+                    '如果我可以对过去那个受伤的自己说一句话，我会说什么？',
+                    '我内心的批判声音，通常在我做什么事情时最响亮？',
+                    '我的自我价值感是否绑定了某些外在条件？',
+                    '当我犯错时，我如何对待自己？',
+                    '我目前最大的压力源是什么？它是在提醒我改变什么吗？',
+                    '面对压力时，我第一反应是战斗、逃跑还是僵住？',
+                    '我是否有减压的「紧急工具箱」？',
+                    '如何区分可应对的压力和需要求助的过载？',
+                    '我能否把情绪看作内在天气，接受它来，也接受它走？',
+                    '专业心理咨询对我是否有帮助？我是否愿意尝试？',
+                    '如果疗愈是一个旅程，我现在走到了哪一站？',
+                    '今天，我可以感谢哪种情绪带给我的信息？',
+                ],
+                advice: [
+                    '我人生当前阶段的主旋律是什么？',
+                    '如果把过去几年的人生视为一部电影，现在正处在怎样的章节？',
+                    '在「别人期待我成为谁」和「我真正想成为谁」之间，我目前站在什么位置？',
+                    '现在最需要被我认真对待的三个优先事项是什么？',
+                    '面对重大选择时，我如何让决定更贴近自己的价值观？',
+                    '有哪件一直想做却反复拖延的事，其实象征着更深的人生召唤？',
+                    '如果未来的「理想版自己」来给我提一个当下建议，他／她会说什么？',
+                    '在有限的生命时间里，我最不想留下的遗憾是什么？',
+                    '我的人生是否在朝着某个有意义的方向前进？',
+                    '我是否在活出自己想要的版本，还是活成了别人期待的样子？',
+                    '人生的这个十字路口，有哪些路是通往安全的，哪些是通往真实的？',
+                    '我如何知道自己已经准备好进入下一个人生阶段？',
+                    '如果我今天必须写下墓志铭，我希望上面写什么？',
+                    '我如何平衡「活在当下」和「规划未来」？',
+                    '如果生命只剩五年，我会如何重新安排生活？',
+                    '什么让我感到真正活着，而不是只是在过日子？',
+                    '我的人生中，什么比成功更重要？',
+                    '我是否在用忙碌逃避某个更深的人生问题？',
+                    '当下我最该放下的是什么？',
+                    '宇宙此刻最想让我看见的人生方向是什么？',
+                ],
             };
 
             const CATEGORY_LABEL_ZH = {
@@ -1704,40 +3904,108 @@
                 money: '财运投资',
                 study: '学业考试',
                 health: '身体健康',
-                relation: '人际关系',
-                child: '生育子女',
-                choice: '选择决策',
                 pet: '宠物',
+                relation: '人际关系',
+                travel: '出行迁居',
+                legal: '官司法律',
+                child: '生育子女',
+                lost: '失物寻找',
+                choice: '选择决策',
+                dream: '占梦境',
+                fengshui: '占风水',
+                proxy: '代人问卜',
                 spirit: '灵性成长',
+                other: '其他',
+                psyche: '心理疏导',
+                advice: '人生建议',
             };
 
             const categoryTabs = document.getElementById('categoryTabs');
             const questionGrid = document.getElementById('questionGrid');
+            const questionFilterTabs = document.getElementById('questionFilterTabs');
             const categoryQuestionsSummary = document.getElementById('categoryQuestionsSummary');
             const categoryQuestionsDetails = document.getElementById('categoryQuestionsDetails');
+            let exampleFilterId = 'hot';
+            let exampleFilterCat = '';
+
+            function groupsForFilter(groups, filterId, filters, catId) {
+                const tab = (filters || []).find((t) => t.id === filterId) || (filters || [])[0];
+                if (tab && tab.surface && tab.surface.length) {
+                    return [{ categoryId: catId, label: '高频', surface: tab.surface.slice() }];
+                }
+                if (!groups || !groups.length) return [];
+                if (tab && (tab.groupLabels || []).length) {
+                    const want = new Set(tab.groupLabels);
+                    return groups.filter((g) => want.has(g.label));
+                }
+                return groups.slice();
+            }
+
+            function renderExampleFilters(category, filters) {
+                if (!questionFilterTabs) return;
+                if (!filters || filters.length < 2) {
+                    questionFilterTabs.classList.remove('is-on');
+                    questionFilterTabs.innerHTML = '';
+                    return;
+                }
+                questionFilterTabs.classList.add('is-on');
+                questionFilterTabs.innerHTML = filters.map((t) => {
+                    const on = t.id === exampleFilterId ? ' active' : '';
+                    const sel = t.id === exampleFilterId ? 'true' : 'false';
+                    return `<button type="button" class="question-filter-tab${on}" role="tab" data-filter="${t.id}" aria-selected="${sel}">${t.label}</button>`;
+                }).join('');
+                questionFilterTabs.querySelectorAll('.question-filter-tab').forEach((btn) => {
+                    btn.addEventListener('click', () => {
+                        exampleFilterId = btn.getAttribute('data-filter') || 'hot';
+                        renderQuestions(category);
+                    });
+                });
+            }
 
             function renderQuestions(category) {
-                const raw = questionBank[category] || questionBank.love;
-                const qs = raw.slice(0, 20);
+                const R = window.TarotQuestionResolve;
+                const catId = R && typeof R.tabToCategory === 'function' ? R.tabToCategory(category) : '';
+                const groups = R && typeof R.groups === 'function' ? R.groups(catId) : null;
+                const filters = (R && typeof R.filters === 'function') ? R.filters(catId) : [];
+                if (exampleFilterCat !== category) {
+                    exampleFilterCat = category;
+                    exampleFilterId = 'hot';
+                }
+                const hasFilters = !!(filters && filters.length >= 2);
+                renderExampleFilters(category, hasFilters ? filters : []);
                 let html = '';
+                // 西方大师页只认西方题库；禁止回退到页面内嵌的旧国内 questionBank。
+                const rows = (groups && groups.length)
+                    ? (hasFilters ? groupsForFilter(groups, exampleFilterId, filters, catId) : groups)
+                    : [];
+                const seen = new Set();
+                const qs = [];
+                rows.forEach((g) => {
+                    (g.surface || []).forEach((q) => {
+                        if (!q || seen.has(q)) return;
+                        seen.add(q);
+                        qs.push(q);
+                    });
+                });
                 qs.forEach((q) => {
                     html += `<div class="question-option">${q}</div>`;
                 });
                 questionGrid.innerHTML = html;
                 const label = CATEGORY_LABEL_ZH[category] || category;
                 if (categoryQuestionsSummary) {
-                    categoryQuestionsSummary.textContent = `「${label}」· 本类 20 条具体问题（点此栏可收起）`;
+                    if (hasFilters) {
+                        categoryQuestionsSummary.textContent = `不会写？点开看「${label}」的例子，先选一类（可再点此栏收起）`;
+                    } else {
+                        const n = (groups || []).reduce((s, g) => s + ((g.surface || []).length), 0) || 20;
+                        categoryQuestionsSummary.textContent = `不会写？点开看「${label}」的 ${n} 条例子（可再点此栏收起）`;
+                    }
                 }
                 document.querySelectorAll('.question-option').forEach((opt) => {
                     opt.addEventListener('click', function () {
-                        document.querySelectorAll('.question-option').forEach((o) => o.classList.remove('selected'));
-                        this.classList.add('selected');
-                        const activeItem = document.querySelector(`#${activeSpread}List .position-item.active`);
-                        if (activeItem && activeItem.dataset.id) {
-                            updateReading(activeSpread, activeItem.dataset.id);
-                        }
+                        setPinnedQuestion(this.textContent.trim(), true);
                     });
                 });
+                renderFollowups(category);
             }
 
             categoryTabs.querySelectorAll('.category-tab').forEach((tab) => {
@@ -1749,15 +4017,58 @@
                     tab.classList.add('active');
                     tab.setAttribute('aria-selected', 'true');
                     const val = tab.dataset.value;
-                    if (categoryQuestionsDetails) {
-                        categoryQuestionsDetails.open = true;
-                    }
+                    syncSpreadUiForCategory(val);
                     renderQuestions(val);
-                    const activeItem = document.querySelector(`#${activeSpread}List .position-item.active`);
-                    if (activeItem && activeItem.dataset.id) {
-                        updateReading(activeSpread, activeItem.dataset.id);
-                    }
+                    renderFollowups(val);
+                    refreshActiveReading();
                 });
+            });
+
+            syncSpreadUiForCategory(getCategoryValue());
+
+            document.getElementById('followupAskBtn')?.addEventListener('click', () => {
+                const input = document.getElementById('followupInput');
+                const text = input ? String(input.value || '').trim() : '';
+                if (!text) return;
+                setPinnedQuestion(text, true);
+                if (input) input.value = '';
+            });
+            document.getElementById('followupInput')?.addEventListener('keydown', (e) => {
+                if (e.key === 'Enter') {
+                    e.preventDefault();
+                    document.getElementById('followupAskBtn')?.click();
+                }
+            });
+
+            function bootFollowups() {
+                // 必须等西方题库挂上，否则会短暂/长期画出旧国内预题。
+                if (!window.TarotQuestionResolve || !window.TarotQuestionWestern) {
+                    setTimeout(bootFollowups, 60);
+                    return;
+                }
+                renderQuestions(getCategoryValue());
+                renderFollowups(getCategoryValue());
+            }
+            bootFollowups();
+
+            const askInput = document.getElementById('askInput');
+            function pinFromAsk() {
+                const text = askInput ? String(askInput.value || '').trim() : '';
+                if (text) setPinnedQuestion(text, true, true);
+            }
+            askInput?.addEventListener('input', () => {
+                pinnedQuestion = String(askInput.value || '').trim();
+                document.querySelectorAll('.question-option').forEach((o) => {
+                    o.classList.toggle('selected', o.textContent.trim() === pinnedQuestion);
+                });
+            });
+            askInput?.addEventListener('change', pinFromAsk);
+            askInput?.addEventListener('blur', pinFromAsk);
+            askInput?.addEventListener('keydown', (e) => {
+                if (e.key !== 'Enter') return;
+                e.preventDefault();
+                pinFromAsk();
+                document.getElementById('drawBtn')?.click();
             });
 
             categoryQuestionsDetails?.addEventListener('toggle', () => {
@@ -1771,25 +4082,64 @@
             // 初始不渲染，等用户点击抽牌按钮后再显示
         })();
     </script>
+    <script src="tarot-q02-locked.js?v=121empty"></script>
+    <script src="tarot-q02-single.js?v=121empty"></script>
+    <script src="tarot-q01-single.js?v=228"></script>
+    <script src="tarot-q01-spread-hand.js?v=115lock"></script>
+    <script src="tarot-q01-celtic-hand.js?v=115lock"></script>
+    <script src="tarot-q01-spreads.js?v=115lock"></script>
+    <script src="tarotWesternReading.js?v=74"></script>
+    <script src="tarotQuestionResolve.js?v=40"></script>
+    <script src="tarotQuestionWestern.js?v=7"></script>
     <script>
         (function () {
-            var urls = [
-                'tarotQuestionLoveContent.js?v=1',
-                'tarotQuestionCareerContent.js?v=2',
-                'tarotQuestionMoneyContent.js?v=1',
-                'tarotQuestionStudyContent.js?v=1',
-                'tarotQuestionLifeCategoriesContent.js?v=7'
-            ];
-            for (var i = 0; i < urls.length; i++) {
-                var s = document.createElement('script');
-                s.src = urls[i];
-                s.async = true;
-                if (urls[i].indexOf('tarotQuestionLifeCategoriesContent') !== -1) {
-                    s.setAttribute('data-tarot-life-six-bundle', '1');
-                }
-                document.head.appendChild(s);
-            }
+            var W = window.TarotQuestionWestern;
+            var R = window.TarotQuestionResolve;
+            if (!W || !R) return;
+            // 本页预题只走西方题库，不再回退东方/国内 Resolve 题表。
+            R.groups = function (id) { return (W.groups && W.groups[id]) || []; };
+            R.filters = function (id) { return (W.filters && W.filters[id]) || []; };
+            R.followups = function (id) {
+                var row = W.followups && W.followups[id];
+                return (row && row.length) ? row : [];
+            };
         })();
     </script>
+    <script>
+        (function () {
+            var host = location.hostname;
+            if (host !== "localhost" && host !== "127.0.0.1") return;
+            var last = "";
+            var inflight = false;
+            function tick() {
+                if (inflight) return;
+                inflight = true;
+                var ac = typeof AbortController !== "undefined" ? new AbortController() : null;
+                var timer = setTimeout(function () { if (ac) ac.abort(); }, 1500);
+                fetch("/tarot-dev-stamp.txt?t=" + Date.now(), {
+                    cache: "no-store",
+                    signal: ac ? ac.signal : undefined
+                })
+                    .then(function (r) { return r.ok ? r.text() : ""; })
+                    .then(function (t) {
+                        t = String(t || "").trim();
+                        if (!t || t.charAt(0) === "<") return;
+                        if (last && t !== last) {
+                            location.reload();
+                            return;
+                        }
+                        last = t;
+                    })
+                    .catch(function () {})
+                    .then(function () {
+                        clearTimeout(timer);
+                        inflight = false;
+                    });
+            }
+            tick();
+            setInterval(tick, 2500);
+        })();
+    </script>
+    <!-- 旧五段解读脚本已停用：只留 tarotWesternReading.js -->
 </body>
 </html>

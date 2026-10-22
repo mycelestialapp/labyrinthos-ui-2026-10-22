@@ -1,0 +1,138 @@
+import { makeWesternDir, wg } from "./types";
+
+const C = "灵性成长";
+
+const Q = {
+  purpose: "我这阶段的人生方向是什么？",
+  calling: "有没有一条真正属于我的路，还是我在找一句漂亮的话？",
+  stuck: "我灵性上卡在哪一层？",
+  nextChapter: "这一章的功课完了没有，能不能翻篇？",
+  yes: "生命现在对我说的是推进还是停？",
+  gift: "我真正的天赋，用在哪才不浪费？",
+  wasted: "我是不是把力气用在显灵上，忘了把日子过好？",
+  meaning: "最近这阵空，是意义在换，还是我累了？",
+  darkNight: "这算灵性的黑夜，还是抑郁该去找人？",
+  empty: "信过的那些话突然不灵了，我还往前走吗？",
+  guide: "接下来最该听的内在声音是哪一个？",
+  higher: "那句「更大的自己」今晚想让我做什么？",
+  intuition: "直觉在拦我什么，我听不听？",
+  fearOrGut: "这是直觉，还是焦虑穿了直觉的衣服？",
+  download: "突然涌进来的念头，信哪一句、放下哪一句？",
+  blocked: "感知被堵住了，今晚先松哪一口？",
+  signs: "最近这些巧合，要不要当真？",
+  overread: "我是在接收信号，还是在每件事里硬找意义？",
+  shadow: "阴影现在指着我哪一块？",
+  project: "我最受不了别人的那一点，是不是我自己的？",
+  shame: "羞耻这块，今晚还要不要继续藏？",
+  angerHoly: "这股怒，是该表达，还是该炼成界限？",
+  fear: "灵性路上最怕的那件事，要不要面对？",
+  innerChild: "内在那个小孩，现在要陪伴还是要边界？",
+  practice: "冥想／抽牌／祷告这套，还要坚持吗？",
+  tooMuchTarot: "我是在用牌看路，还是一天抽太多次在躲决定？",
+  daily: "把灵性落到今天，只做哪一件就够？",
+  ritual: "这个仪式／新月练习，对我是落地还是表演？",
+  altar: "坛／日常小仪式，今晚还要摆吗，还是先睡觉？",
+  moon: "跟着月相走，对我有用，还是变成新的压力？",
+  sit: "今天该坐下来，还是该出门把身体用起来？",
+  tooMuch: "我是在成长，还是在用灵性逃避账单和关系？",
+  bypass: "我说「放下了」，其实是不是还没哭完？",
+  ego: "我是在觉察，还是在显得很觉察？",
+  comparePath: "刷到别人的觉醒叙事，我是被启发还是被掏空？",
+  perform: "分享修行，是连接，还是在收集认同？",
+  community: "这个灵性圈子，还适合我吗？",
+  teacher: "这个老师／体系，我还跟吗？",
+  redFlag: "我是不是把老师当成了不会错的人？",
+  leaveGroup: "该不该离开这个社群／课程？",
+  doubt: "我开始怀疑这套了，是该换还是该更深？",
+  science: "理智把灵性拆掉了，今晚还留哪一口？",
+  familySee: "家人觉得我走火入魔，我怎么站稳又不伤人？",
+  hide: "这段修行，该不该对亲近的人开口？",
+  twin: "这段算灵魂课题，还是普通的爱恨被我神话了？",
+  soulmate: "我是在等一个注定的人，还是在推迟过自己的日子？",
+  cord: "和某人的牵绊，该剪、该松，还是该谈？",
+  energyVamp: "谁在吸我的注意和力气，今晚怎么设界限？",
+  protect: "我该加强保护，还是该少进入那些场？",
+  afterFight: "吵完／分开后，灵性功课是原谅还是离开？",
+  body: "身体这层，和灵性是不是脱节了？",
+  ground: "我飘了，今晚用什么把人拽回地面？",
+  night: "夜里那阵空，该静坐还是该睡觉？",
+  grief: "哀悼还没走完，我是不是急着升华？",
+  deathTeach: "靠近失去这件事，要我学会的是什么？",
+  restHoly: "休息算不算修行，还是我又在愧疚？",
+  service: "灵性要不要用到对人有用的那一步？",
+  charge: "把天赋收钱，是亵渎还是终于尊重自己？",
+  giftUse: "这份敏感／看见，用在工作里还是先自用？",
+  burnoutSpirit: "帮太多人看、听、疗，我是不是空了？",
+  integration: "一次强烈体验之后，怎么回到洗碗和上班？",
+  past: "「以前的自己」还在拽我，要对话还是要道别？",
+  ancestor: "家族这层未了的，我该碰哪一口、不碰哪一口？",
+  forgive: "原谅是为对方，还是为让自己能走路？",
+  notYet: "我还没准备好原谅，强求会不会更假？",
+  yesBody: "身体已经说yes或no了，我还要不要再问一次牌？",
+  stopReading: "这件事，该停问、自己活了吗？",
+  newPath: "换一条传统／换一套练习，现在合适吗？",
+  returnOld: "离开很久的信仰／练习，还能不能回去？",
+  simple: "我是不是把路走复杂了，其实只需一件小事？",
+  release: "今天最该放下什么？",
+};
+
+export const WESTERN_SPIRIT_GROUPS = [
+  wg(C, "方向与天命", ["方向", "天命", "天赋", "下一章"], [
+    Q.purpose, Q.calling, Q.nextChapter, Q.yes, Q.gift, Q.giftUse, Q.wasted, Q.meaning, Q.simple,
+  ]),
+  wg(C, "卡住与黑夜", ["卡住", "空", "黑夜", "不灵"], [
+    Q.stuck, Q.darkNight, Q.empty, Q.meaning, Q.integration, Q.past,
+  ]),
+  wg(C, "直觉与分辨", ["直觉", "巧合", "信号", "焦虑"], [
+    Q.intuition, Q.fearOrGut, Q.download, Q.blocked, Q.signs, Q.overread, Q.guide, Q.higher, Q.yesBody, Q.stopReading,
+  ]),
+  wg(C, "阴影功课", ["阴影", "投射", "羞耻", "小孩"], [
+    Q.shadow, Q.project, Q.shame, Q.angerHoly, Q.fear, Q.innerChild, Q.forgive, Q.notYet,
+  ]),
+  wg(C, "练习与仪式", ["冥想", "抽牌", "仪式", "月相"], [
+    Q.practice, Q.tooMuchTarot, Q.daily, Q.ritual, Q.altar, Q.moon, Q.sit,
+  ]),
+  wg(C, "逃避与表演", ["逃避", "放下了", "显得觉察", "刷"], [
+    Q.tooMuch, Q.bypass, Q.ego, Q.comparePath, Q.perform,
+  ]),
+  wg(C, "老师与圈子", ["老师", "圈子", "怀疑", "离开"], [
+    Q.community, Q.teacher, Q.redFlag, Q.leaveGroup, Q.doubt, Q.science, Q.newPath, Q.returnOld,
+  ]),
+  wg(C, "家人怎么看", ["家人", "开口", "走火"], [
+    Q.familySee, Q.hide,
+  ]),
+  wg(C, "关系里的灵性", ["灵魂课题", "牵绊", "界限"], [
+    Q.twin, Q.soulmate, Q.cord, Q.energyVamp, Q.protect, Q.afterFight,
+  ]),
+  wg(C, "身体与落地", ["身体", "地面", "夜里", "休息"], [
+    Q.body, Q.ground, Q.night, Q.restHoly, Q.sit, Q.release,
+  ]),
+  wg(C, "哀悼与转化", ["哀悼", "失去", "家族"], [
+    Q.grief, Q.deathTeach, Q.ancestor, Q.past,
+  ]),
+  wg(C, "天赋与服务", ["服务", "收钱", "帮人看"], [
+    Q.service, Q.charge, Q.burnoutSpirit, Q.gift, Q.giftUse,
+  ]),
+];
+
+export const WESTERN_SPIRIT_DIR = makeWesternDir(
+  [
+    Q.purpose, Q.stuck, Q.intuition, Q.fearOrGut, Q.shadow, Q.practice,
+    Q.tooMuch, Q.tooMuchTarot, Q.teacher, Q.twin, Q.ground, Q.grief,
+    Q.charge, Q.stopReading, Q.darkNight, Q.signs,
+  ],
+  WESTERN_SPIRIT_GROUPS,
+  [
+    { id: "path", label: "方向/天命", groupLabels: ["方向与天命"] },
+    { id: "night", label: "卡住/黑夜", groupLabels: ["卡住与黑夜"] },
+    { id: "gut", label: "直觉/分辨", groupLabels: ["直觉与分辨"] },
+    { id: "shadow", label: "阴影功课", groupLabels: ["阴影功课"] },
+    { id: "practice", label: "练习/仪式", groupLabels: ["练习与仪式"] },
+    { id: "ego", label: "逃避/表演", groupLabels: ["逃避与表演"] },
+    { id: "teacher", label: "老师/圈子", groupLabels: ["老师与圈子", "家人怎么看"] },
+    { id: "rel", label: "关系里的灵性", groupLabels: ["关系里的灵性"] },
+    { id: "body", label: "身体/哀悼", groupLabels: ["身体与落地", "哀悼与转化"] },
+    { id: "gift", label: "天赋/服务", groupLabels: ["天赋与服务"] },
+  ],
+  "西方人问灵性，会问方向、直觉还是焦虑、阴影、练习会不会变成逃避、老师能不能信、抽牌是不是太多。落到今天能做的一步，替代不了心理急救。",
+);

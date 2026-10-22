@@ -1,5 +1,5 @@
 /**
- * 占卜问题分类：基于「全网最详细占卜问题分类大全」的 13 大类，
+ * 占卜问题分类：塔罗 19 大类（17 题库原类 + 心理疏导、人生建议）。
  * 用于将用户问题归入领域，以便解读时「牌意 + 实际情况」给出贴题指引。
  * 分类匹配依赖 questionCategoryKeywords（关键词库），新增问法只需在词库中加词，无需改本文件。
  */
@@ -26,7 +26,10 @@ const CATEGORY_LABELS: Record<QuestionCategory, string> = {
   生育子女: '生育子女',
   失物寻找: '失物寻找',
   选择决策: '选择决策',
+  占梦境: '占梦境',
   代人问卜: '代人问卜',
+  心理疏导: '心理疏导',
+  人生建议: '人生建议',
   灵性成长: '灵性成长',
   占风水: '占风水',
   其他: '此事',
@@ -44,12 +47,31 @@ export function detectQuestionCategory(question: string): {
   if (!q) {
     return { category: '其他', label: CATEGORY_LABELS.其他 };
   }
+  let bestCategory: QuestionCategory = "其他";
+  let bestScore = 0;
   for (const { category, keywords } of CATEGORY_KEYWORDS) {
-    if (keywords.some((kw) => q.includes(normalizeQuestionTextZh(kw)))) {
-      return { category, label: CATEGORY_LABELS[category] };
+    let score = 0;
+    const matched: string[] = [];
+    for (const kw of keywords) {
+      const kn = normalizeQuestionTextZh(kw);
+      const allowOneCharPet = category === "宠物" && (kn === "猫" || kn === "狗");
+      if (!kn || (kn.length < 2 && !allowOneCharPet)) continue;
+      if (!q.includes(kn)) continue;
+      // 避免同一类里“同事/和同事”这类包含关系重复计分
+      if (matched.some((m) => m.includes(kn))) continue;
+      for (let i = matched.length - 1; i >= 0; i--) {
+        if (kn.includes(matched[i])) matched.splice(i, 1);
+      }
+      matched.push(kn);
+      score += 1;
+    }
+    // 同分时保留数组顺序靠前者（更具体的分类可放前面）
+    if (score > bestScore) {
+      bestScore = score;
+      bestCategory = category;
     }
   }
-  return { category: '其他', label: CATEGORY_LABELS.其他 };
+  return { category: bestCategory, label: CATEGORY_LABELS[bestCategory] };
 }
 
 /**
@@ -78,11 +100,17 @@ export const CATEGORY_GUIDANCE: Record<QuestionCategory, string> = {
   生育子女:
     '就生育與子女而言，牌面提示你關注身心與時機的取捨、階段的轉變與準備，以及消息與緣分——宜放鬆心態、順其自然。',
   失物寻找:
-    '就失物與尋找而言，牌面提示你關注方向與取捨、變動中的線索與可能，以及訊息與時機——可從常放處與近期動線再留意。',
+    '就失物与寻找而言，牌面提示你关注方向与取舍、变动中的线索与可能，以及讯息与时机——可从常放处与近期动线再留意。',
   选择决策:
-    '就選擇與決策而言，牌面提示你關注取捨與決斷、選項背後的轉變與得失，以及直覺與訊息——宜靜心後再定，選定即前行。',
+    '就选择与决策而言，牌面提示你关注取舍与决断、选项背后的转变与得失，以及直觉与讯息——宜静心后再定，选定即前行。',
+  占梦境:
+    '就梦境而言，牌面提示你把梦当作白天没处理完的情绪与信息，而不是单独的判决书——对照近日压力、关系和未说出口的话。',
   代人问卜:
-    '就你所問的對方之事而言，牌面提示你關注其處境中的取捨、轉變與可能，以及溝通與訊息——可作參考，仍以當事人為準。',
+    '就你所问的对方之事而言，牌面提示你关注其处境中的取舍、转变与可能，以及沟通与讯息——可作参考，仍以当事人为准。',
+  心理疏导:
+    '就情绪与内在状态而言，牌面提示你看见感受、界限与是否需要现实里的支持——占卜作对照，急症与持续痛苦请寻求专业帮助。',
+  人生建议:
+    '就人生阶段与方向而言，牌面提示你分清「安全的路」和「真实的路」，以及当下真正该排第一的那一件——选定后小步执行。',
   灵性成长:
     '就靈性與成長而言，牌面提示你關注內在的取捨與課題、階段的轉化與提升，以及直覺與訊息——可作內省與方向之參。',
   占风水:

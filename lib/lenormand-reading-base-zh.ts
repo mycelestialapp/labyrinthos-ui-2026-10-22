@@ -39,11 +39,11 @@ const SPREAD_META: Record<LenormandSpreadId, SpreadMeta> = {
   },
   line5: {
     name: "五线",
-    role: "看“诉求—推力—核心矛盾—资源—根基”五层结构。",
+    role: "从左读到右，第 3 张是心脏；1-2 铺过来，4-5 落地收局。",
   },
   box9: {
     name: "九宫",
-    role: "看“中心主轴 + 周边拉扯”的多层关系结构。",
+    role: "先看中心，再看上下左右十字，四角只作环境拉扯。",
   },
   grand: {
     name: "大展",
@@ -57,7 +57,7 @@ const POSITIVE_WORDS = ["幸运", "成功", "希望", "收获", "礼物", "关�
 function detectIntent(question: string): ReadingIntent {
   const q = normalizeQuestionTextZh(question);
   if (!q) return "state";
-  if (/(会不会|能不能|有没有|是否|是不是|行不行|可不可以|该不该|要不要|对吗|靠谱吗|能成吗|会好吗|行吗)/.test(q)) {
+  if (/(会不会|能不能|有没有|是否|是不是|行不行|可不可以|该不该|要不要|对吗|靠谱吗|能成吗|会好吗|行吗|还爱|爱我吗|爱不爱|吗[？?]?$)/.test(q)) {
     return "judgement";
   }
   if (/(为什么|怎么回事|原因|咋回事|何以|为何|什么原因)/.test(q)) return "diagnosis";

@@ -7,6 +7,7 @@ import { ChevronLeft, Copy, Layers, Sparkles } from "lucide-react";
 import { TAROT_DECK_ZH, TAROT_SPREADS, type TarotSpreadId } from "@/lib/tarot-deck-zh";
 import { drawTarotCards, type TarotDrawnCard } from "@/lib/tarot-seeded-draw";
 import { resolveLifeSixMergeCategoryId } from "@/lib/tarot-life-six-merge-category-id";
+import { tarotQuestionKeyForReading } from "@/lib/tarot-question-resolve-zh";
 import { TAROT_SANCTUARY_READING_FOOTNOTE_ZH } from "@/lib/tarot-life-six-sanctum-copy-zh";
 import {
   loadTarotQuestionLifeCategoriesScriptOnce,
@@ -160,7 +161,7 @@ export default function TarotSanctuary({ plainLayout = false }: { plainLayout?: 
     if (!lifeSixMergeCat) return base;
     return mergeLifeSixMasterLayeredReadingZh({
       categoryId: lifeSixMergeCat,
-      questionTrim: question.trim(),
+      questionTrim: tarotQuestionKeyForReading(question.trim(), lifeSixMergeCat),
       drawn,
       positionLabelsZh: spread.positionLabelsZh,
       base,
@@ -247,7 +248,7 @@ export default function TarotSanctuary({ plainLayout = false }: { plainLayout?: 
         <section className="rounded-3xl border border-[rgba(197,160,89,0.18)] bg-gradient-to-br from-[rgba(36,32,52,0.75)] to-[rgba(10,8,24,0.92)] p-5 shadow-[inset_0_1px_0_rgba(255,255,255,0.06)] sm:p-7">
           <div className="mb-6 flex items-end justify-between gap-3">
             <h2 className="text-[11px] font-medium uppercase tracking-[0.28em] text-[#C5A059]/85">问法圣殿</h2>
-            <span className="text-[10px] text-zinc-600">十大类 · 点选或自填</span>
+            <span className="text-[10px] text-zinc-600">点选或自填</span>
           </div>
           <TarotQuestionSanctum
             visualVariant="lab"
@@ -309,6 +310,11 @@ export default function TarotSanctuary({ plainLayout = false }: { plainLayout?: 
           >
             {shuffling ? "洗牌中…" : drawn ? "重新抽牌" : "洗牌并抽牌"}
           </button>
+          {drawn ? (
+            <p className="mt-3 text-center text-xs leading-relaxed text-zinc-500">
+              抽完后，改上面的问题就会用同一副牌重读。要新牌，再点「重新抽牌」。
+            </p>
+          ) : null}
         </section>
 
         {/* 中带：牌面 */}
@@ -459,7 +465,7 @@ export default function TarotSanctuary({ plainLayout = false }: { plainLayout?: 
         <section className="oracle-chamber">
           <div className="title-domain">
             <div className="arcane-line">问法圣殿</div>
-            <div className="arcane-sub">十大类 · 点选或自填</div>
+            <div className="arcane-sub">点选或自填</div>
           </div>
           <TarotQuestionSanctum
             visualVariant="oracle"
@@ -515,6 +521,11 @@ export default function TarotSanctuary({ plainLayout = false }: { plainLayout?: 
           >
             {shuffling ? "洗牌中…" : drawn ? "重新抽牌" : "洗牌并抽牌"}
           </button>
+          {drawn ? (
+            <p className="mt-3 text-center text-xs leading-relaxed text-[#cbaf7a]/80">
+              抽完后，改上面的问题就会用同一副牌重读。要新牌，再点「重新抽牌」。
+            </p>
+          ) : null}
         </section>
 
         <section className="oracle-chamber">

@@ -46,7 +46,7 @@ export default function TarotMasterHtmlFrame() {
       </header>
       <iframe
         title="圣域塔罗大师版"
-        src="/tarot-master.html"
+        src="/tarot-master.html?v=115lock"
         className="w-full flex-1 border-0 bg-[#0b0510]"
         style={{
           flex: "1 1 0",

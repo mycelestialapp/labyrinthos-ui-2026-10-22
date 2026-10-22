@@ -1,11 +1,9 @@
 /**
- * 雷诺曼免费层解读：与旧工程 `Dmy-projects/src/lib/lenormandMasterReading.ts` 中
- * `buildFreeReadingExplanation` + `LENORMAND_SPREAD_LAYOUTS` 同源（不调 AI）。
- * 单牌 mirror/reality 等大师句仍以空库为准；贴题感主要来自阵位角色 + 问题分类指引。
+ * 阵位标签（工作台与旧调用共用）。用户可见解读已改走大师连读，无正逆位。
  */
 import type { LenormandCard } from "./lenormand-cards";
 import type { LenormandSpreadId } from "./lenormand-spread-id";
-import { buildReadingBlocks } from "./lenormand-reading-base-zh";
+import { buildLenormandMasterReadingZh } from "./lenormand-master-reading-zh";
 
 export type LenormandSpreadKind = "TRIAD" | "CROSS" | "SQUARE" | "GRAND_TABLEAU";
 
@@ -16,27 +14,27 @@ export interface LenormandSpreadPosition {
 
 export const LENORMAND_SPREAD_LAYOUTS: Record<LenormandSpreadKind, LenormandSpreadPosition[]> = {
   TRIAD: [
-    { label: "根源冲动", logic: "挖掘没说出口的欲望或隐秘恐惧" },
-    { label: "能量瓶颈", logic: "剖析当前最核心的心理或环境矛盾" },
-    { label: "走向/代价", logic: "直指如果不干预，惯性将带你去往何处" },
+    { label: "过去", logic: "起因、已经发生的铺垫" },
+    { label: "现在", logic: "当前现场" },
+    { label: "将来", logic: "走向" },
   ],
   CROSS: [
-    { label: "愿景", logic: "脑海中幻想的最优版本" },
-    { label: "现状推力", logic: "正在把你推向当前局面的外在或内在驱动力" },
-    { label: "核心阻碍", logic: "当前最胶着、最难解的缠结点" },
-    { label: "资源转机", logic: "可利用的外部支持或意外切入点" },
-    { label: "根基", logic: "童年印记或长期形成的人格底色" },
+    { label: "铺垫", logic: "事情怎么铺过来的" },
+    { label: "推力", logic: "正在把局面往前推的那一股" },
+    { label: "核心", logic: "五线心脏，整句先看这里" },
+    { label: "落地", logic: "落到什么现场、什么动作上" },
+    { label: "收局", logic: "这条线收到什么结果上" },
   ],
   SQUARE: [
-    { label: "外部环境", logic: "此刻你身处的客观情境与局势" },
-    { label: "显意识", logic: "你自认为正在思考、关注的议题" },
-    { label: "理性策略", logic: "你目前采取的计划、策略与应对方式" },
-    { label: "情感状态", logic: "此刻真实的情绪波动与需求" },
-    { label: "核心课题", logic: "这一局真正要面对的主题与功课" },
-    { label: "行动模式", logic: "你惯性做出的反应与行动路径" },
-    { label: "过去印记", logic: "过去事件或早期经验留下的影子" },
-    { label: "身体/日常", logic: "身体状态与日常习惯中反映出的信息" },
-    { label: "未来趋势", logic: "在不刻意干预下，能量自然延伸的方向" },
+    { label: "左上·环境", logic: "角落拉扯，不是主轴" },
+    { label: "上·念头", logic: "脑子里在转什么" },
+    { label: "右上·环境", logic: "角落拉扯" },
+    { label: "左·已然", logic: "已经发生、已经在场" },
+    { label: "中心", logic: "九宫心脏，先看这里" },
+    { label: "右·将然", logic: "接下来会碰到什么" },
+    { label: "左下·环境", logic: "角落拉扯" },
+    { label: "下·根基", logic: "日子、身体、底盘" },
+    { label: "右下·环境", logic: "角落拉扯" },
   ],
   GRAND_TABLEAU: [
     { label: "问卜者", logic: "自我、当事人核心状态" },
@@ -93,76 +91,11 @@ export function spreadIdToKind(spreadId: LenormandSpreadId): LenormandSpreadKind
   }
 }
 
-/** 与旧版 `buildFreeReadingExplanation` 一致；末尾不设「订阅解锁」营销句。 */
+/** 用户可见解读：单面连读，无正逆位。 */
 export function buildLenormandFreeReadingZh(
   spreadId: LenormandSpreadId,
   cards: LenormandCard[],
   inquiry?: string,
 ): string {
-  const spreadType = spreadIdToKind(spreadId);
-  const positions = LENORMAND_SPREAD_LAYOUTS[spreadType];
-
-  if (!positions?.length || cards.length === 0) {
-    const names = cards.map((c) => c.nameZh).join("、");
-    const meanings = cards.map((c) => c.shortMeaning).filter(Boolean);
-    if (meanings.length) return `本局抽到 ${names}。${meanings.join("；")}。`;
-    return `本局抽到 ${names}。`;
-  }
-
-  const maxLen = Math.min(cards.length, positions.length);
-  const positionLines: string[] = [];
-  for (let i = 0; i < maxLen; i++) {
-    const pos = positions[i];
-    const card = cards[i];
-    if (!pos || !card) continue;
-    positionLines.push(`- 【${pos.label}】${card.nameZh}：${card.shortMeaning}`);
-  }
-
-  const blocks = buildReadingBlocks({ spreadId, cards, inquiry });
-  const synthesis = buildSynthesisLine(spreadType, cards);
-  const boundary = compactGuidance(blocks.boundary.replace(/^边界：/, ""));
-
-  const head: string[] = [
-    `【开篇】${blocks.opening}`,
-    `【牌阵职责】${blocks.spreadRole}`,
-  ];
-  if (blocks.motherTopicLine) {
-    head.push(`【母题对焦】${blocks.motherTopicLine}`);
-  }
-  return [
-    ...head,
-    "【逐位解读】",
-    ...positionLines,
-    "【单牌正反面（按问题大类）】",
-    ...blocks.cardPolarityLines,
-    `【合局】${synthesis}`,
-    `【正反面】${blocks.polarity}`,
-    `【贴题焦点】${blocks.focus}`,
-    `【边界】${boundary}`,
-  ].join("\n");
-}
-
-function buildSynthesisLine(spreadType: LenormandSpreadKind, cards: LenormandCard[]): string {
-  if (cards.length === 0) return "当前信息不足，先补齐牌面再看走向。";
-  const names = cards.map((c) => c.nameZh);
-  if (spreadType === "TRIAD" && names.length >= 3) {
-    return `从「${names[0]}」到「${names[1]}」再到「${names[2]}」，主线是“起因—卡点—走向”。`;
-  }
-  if (spreadType === "CROSS" && names.length >= 5) {
-    return `五位里，核心在第 3 位（${names[2]}），第 1/2 位给动机，第 4/5 位给资源与根基。`;
-  }
-  if (spreadType === "SQUARE" && names.length >= 9) {
-    return `九宫先看中心位（${names[4]}），再看上下左右，它决定你当下这局的主轴。`;
-  }
-  return `这组牌先给方向，不给绝对答案；你的选择会改变后续结果。`;
-}
-
-function compactGuidance(raw: string): string {
-  const clean = (raw || "").replace(/\s+/g, " ").trim();
-  if (!clean) return "";
-  // 仅保留前两句，避免把长模板整段塞进免费层。
-  const pieces = clean.split(/(?<=[。！？])/).map((s) => s.trim()).filter(Boolean);
-  const joined = pieces.slice(0, 2).join("");
-  if (joined.length <= 120) return joined;
-  return `${joined.slice(0, 120)}...`;
+  return buildLenormandMasterReadingZh(spreadId, cards, inquiry);
 }
