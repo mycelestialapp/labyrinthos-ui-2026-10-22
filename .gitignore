@@ -67,3 +67,16 @@ next-env.d.ts
 __pycache__/
 /tmp-*
 /_tmp_*
+
+# kept on this computer; omitted from GitHub so Bolt can import (text limit 7.8 MB)
+/public/tarotQuestionResolve.js
+/public/tarotQuestionWestern.js
+/public/tarot-q01-single.js
+/public/vendor/three.min.js
+/public/vendor/gsap.min.js
+/lib/data/us-geonames-by-fips.json
+/lib/data/us-county-centroids.json
+/scripts/q4-love-energy-fragment.ts
+/scripts/q3-teach-minors-fragment.ts
+/scripts/emit-q3-teach-minors.mjs
+/scripts/study-minor-master-synth.mjs
